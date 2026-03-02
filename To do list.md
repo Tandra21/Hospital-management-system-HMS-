@@ -16,7 +16,7 @@
 ✓ nearby-hospitals.html
 ```
 
-###  **Doctor Management**
+### **Doctor Management**
 ```
 ✓ doctor-search.html
 ✓ doctor-profile.html
@@ -29,10 +29,10 @@
 ✓ patient-dashboard.html
 ✓ appointment-booking.html
 ✓ medical-history.html
-X prescriptions.html
+✓ prescriptions.html
 ✓ lab-reports.html
-X profile-settings.html
-X notifications.html
+✓ profile-settings.html
+✓ notifications.html
 ```
 
 ###  **Admin Panel**
@@ -48,7 +48,7 @@ X settings.html
 
 ###  **Additional Modules**
 ```
-✓ pharmacy/ - Medicine Inventory
+X pharmacy/ - Medicine Inventory
 ✓ laboratory/ - Lab Tests
 X billing/ - Payment System
 ✓ ward/ - Bed Management
@@ -56,7 +56,7 @@ X ambulance/ - Emergency
 X telemedicine/ - Video Consult
 ```
 
-###  **Components & Assets**
+### **Components & Assets**
 ```
 ✓ navbar.html - Navigation
 ✓ footer.html - Footer
@@ -66,7 +66,7 @@ X telemedicine/ - Video Consult
 ✓ loader.html - Animations
 ```
 
-###  **CSS Framework**
+### 🎭 **CSS Framework**
 ```
 ✓ base.css - Variables
 ✓ layout.css - Grid/Flex
@@ -76,7 +76,7 @@ X telemedicine/ - Video Consult
 ✓ dark-mode.css - Theme
 ```
 
-###  **JavaScript Modules**
+### **JavaScript Modules**
 ```
 ✓ main.js - Core
 ✓ auth.js - Authentication
@@ -91,45 +91,45 @@ X telemedicine/ - Video Consult
 
 ## **IN PROGRESS (Current Sprint)**
 
-###  **High Priority - This Week**
+### **High Priority **
 
 ```
- Appointment System [75%]
+Appointment System 
    └── Real-time slots
    └── SMS/Email reminders
    └── Queue management
    └── Reschedule/Cancel
 
-Payment Integration [70%]
+ Payment Integration
    └── SSLCommerz/bKash
    └── Invoice generation
    └── Payment history
    └── Refund system
 
-Review System [80%]
+Review System 
    └── Star ratings
    └── Photo uploads
    └── Verified reviews
    └── Moderation
 ```
 
-### **Medium Priority**
+###  **Medium Priority**
 
 ```
- Telemedicine Module [60%]
+ Telemedicine Module 
    └── Video consultation
    └── Digital prescription
    └── E-prescription
    └── Follow-up scheduling
 
- Pharmacy Integration [65%]
+ Pharmacy Integration 
    └── Medicine delivery
    └── Stock management
    └── Expiry alerts
    └── Order tracking
 ```
 
-###  **Database Schema [90%]**
+### **Database Schema **
 ```
 ✓ users.sql
 ✓ hospitals.sql
@@ -140,10 +140,16 @@ Review System [80%]
 ✓ lab_tests.sql
 ✓ billing.sql
 ✓ reviews.sql
-✓ notifications.sql
+X notifications.sql
+```
+
+---
+
 ##  **FUTURE ROADMAP**
 
-###  **Phase 1:
+###  **Phase 1: **
+
+```
  AI-Powered Health Assistant [NEW]
    └── Symptom checker
    └── Disease prediction
@@ -166,8 +172,11 @@ Review System [80%]
    └── Bengali
    └── English
    └── UI translation
-### **Phase 2:
+```
 
+###  **Phase 2:**
+
+```
  Complete HMS Integration
    └── OPD/IPD management
    └── OT scheduling
@@ -194,9 +203,10 @@ Review System [80%]
    └── Tax calculation
 ```
 
-### **Phase 3:
+###  **Phase 3: Q4 2024 (Oct-Dec)**
 
- Third-party Integrations
+```
+Third-party Integrations
    └── Google Maps
    └── SMS gateway
    └── Email service
@@ -208,20 +218,20 @@ Mobile App Development
    └── Offline mode
    └── Biometric login
 
- Business Intelligence
+Business Intelligence
    └── Custom reports
    └── Data visualization
    └── Predictive analytics
    └── Performance metrics
 
- Compliance Reports
+Compliance Reports
    └── Government reports
    └── Health ministry
    └── Insurance reports
    └── Audit trails
 ```
 
-### **Phase 4:
+### 🚀 **Phase 4: **
 
 ```
  Microservices Architecture
@@ -243,6 +253,8 @@ Mobile App Development
    └── HIPAA compliance
 ```
 
+---
+
 ##  **STATISTICS**
 
 ```
@@ -263,7 +275,7 @@ Mobile App Development
 
 ---
 
-##  **TARGET METRICS (Dec 2024)**
+##  **TARGET METRICS **
 
 ```
  Active Users: 100,000+
@@ -278,27 +290,27 @@ Mobile App Development
 
 ---
 
-##  **DEVELOPMENT TEAM**
+## 👥 **DEVELOPMENT TEAM**
 
 ```
 ┌─────────────────────────────────────┐
-│ 👨‍💻 Ahsanul Yamin Babor             │
-│    Technical Lead                   │
-│    ahsanaulyaminbabor@gmail.com    │
-│    +880 1772-172829                 │
-├─────────────────────────────────────┤
-│ 👨‍💻 Md Monowarul Aziz                │
-│    Backend Developer                │
+│ 👨‍💻 Md Monowarul Aziz               │
+│    Backend Developer, Manager      │
 │    amdmonowarul47@gmail.com         │
 │    +880 1820-832814                  │
 ├─────────────────────────────────────┤
+│ 👨‍💻 Ahsanul Yamin Babor               │
+│    Frontend Developer                │
+│    ahsanulyaminbabor@gmail.com        │
+│    +880 1820-832814                  │
+├─────────────────────────────────────┤
 │ 👩‍💻 Tandra Pramanik                   │
-│    Frontend Developer               │
-│    tandra01304@gmail.com            │
-│    +880 1304-012162                  │
+│     Database Administrator          │
+│     tandra01304@gmail.com            │
+│     +880 1304-012162                  │
 ├─────────────────────────────────────┤
 │ 👨‍💻 A H M Al Toufiq Noor             │
-│    Database Administrator           │
+│    Frontend Developer, Desinger      │
 │    altoufiqnoor294@gmail.com        │
 │    +880 1877-022966                  │
 └─────────────────────────────────────┘
@@ -306,29 +318,25 @@ Mobile App Development
 
 ---
 
-## **TECHNICAL SPECIFICATIONS**
+##  **TECHNICAL SPECIFICATIONS**
 
 ```
  Frontend: HTML5, CSS3, JavaScript
  CSS Framework: Custom + Tailwind
  Icons: Font Awesome 6
  Images: Unsplash + Custom
- Database: MySQL / MongoDB
- Backend: Node.js / PHP (Planned)
- Mobile: React Native (Q4 2024)
-APIs: RESTful (In Progress)
- Security: JWT, HTTPS
- Hosting: AWS / DigitalOcean (Planned)
+ Database: MongoDB
+ Backend: Django 
 ```
 
 ---
 
-## 🔗 **IMPORTANT LINKS**
+##  **IMPORTANT LINKS**
 
 ```
- GitHub: private/medfind
- Testing: test.medfind.com
- Production: www.medfind.com
+GitHub: private/medfind
+Testing: test.medfind.com
+Production: www.medfind.com
 ```
 
 ---
@@ -368,8 +376,8 @@ APIs: RESTful (In Progress)
 ##  **NEXT STEPS**
 
 ```
-1. Complete Appointment System
-2. Integrate Payment Gateway
+1. Complete Appointment System 
+2. Integrate Payment Gateway 
 3. Launch Telemedicine Module 
 4. Start Mobile App Development 
 5. Beta Testing 
