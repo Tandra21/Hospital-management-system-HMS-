@@ -294,25 +294,25 @@ Compliance Reports
 
 ```
 ┌─────────────────────────────────────┐
-│ 👨‍💻 Md Monowarul Aziz               │
-│    Backend Developer, Manager      │
+│ 👨‍💻 Md Monowarul Aziz                │
+│    Backend Developer, Manager       │
 │    amdmonowarul47@gmail.com         │
-│    +880 1820-832814                  │
+│    +880 1820-832814                 │
 ├─────────────────────────────────────┤
-│ 👨‍💻 Ahsanul Yamin Babor               │
-│    Frontend Developer                │
-│    ahsanulyaminbabor@gmail.com        │
-│    +880 1820-832814                  │
+│ 👨‍💻 Ahsanul Yamin Babor              │
+│    Frontend Developer               │
+│    ahsanulyaminbabor@gmail.com      │
+│    +880 1820-832814                 │
 ├─────────────────────────────────────┤
-│ 👩‍💻 Tandra Pramanik                   │
+│ 👩‍💻 Tandra Pramanik                  │
 │     Database Administrator          │
-│     tandra01304@gmail.com            │
-│     +880 1304-012162                  │
+│     tandra01304@gmail.com           │
+│     +880 1304-012162                │
 ├─────────────────────────────────────┤
 │ 👨‍💻 A H M Al Toufiq Noor             │
-│    Frontend Developer, Desinger      │
+│    Frontend Developer, Desinger     │
 │    altoufiqnoor294@gmail.com        │
-│    +880 1877-022966                  │
+│    +880 1877-022966                 │
 └─────────────────────────────────────┘
 ```
 
