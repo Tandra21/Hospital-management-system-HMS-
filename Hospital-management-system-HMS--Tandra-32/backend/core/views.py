@@ -91,16 +91,18 @@ def booking_success(request):
     return render(request, 'core/booking_success.html')
 
 
+def medicine_inventory(request):
+    return render(request, 'core/medicine_inventory.html')
+
+
 # API Views
 @csrf_exempt
 @require_http_methods(["GET"])
 def api_doctors(request):
-    doctors = list(db.doctors.find({}, {
-        '_id': {'$toString': '$_id'},
-        'name': 1,
-        'specialty': 1,
-        'fee': 1
-    }))
+    doctors = []
+    for doctor in db.doctors.find({}, {'name': 1, 'specialty': 1, 'fee': 1}):
+        doctor['_id'] = str(doctor['_id'])
+        doctors.append(doctor)
     return JsonResponse(doctors, safe=False)
 
 
@@ -148,3 +150,47 @@ def api_appointment_book(request):
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_medicines(request):
+    medicines = []
+    for medicine in db.medicines.find({}):
+        medicine['_id'] = str(medicine['_id'])
+        medicines.append(medicine)
+    return JsonResponse(medicines, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_medicine_order(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON payload'}, status=400)
+
+    if 'items' not in data or not isinstance(data['items'], list) or not data['items']:
+        return JsonResponse({'error': 'Order items are required'}, status=400)
+
+    if 'total_amount' not in data:
+        return JsonResponse({'error': 'Total amount is required'}, status=400)
+
+    try:
+        total_amount = float(data['total_amount'])
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid total amount'}, status=400)
+
+    order = {
+        'items': data['items'],
+        'total_amount': total_amount,
+        'status': 'pending',
+        'created_at': datetime.utcnow(),
+    }
+    if 'customer_name' in data:
+        order['customer_name'] = data['customer_name']
+    if 'customer_contact' in data:
+        order['customer_contact'] = data['customer_contact']
+
+    result = db.medicine_orders.insert_one(order)
+    return JsonResponse({'message': 'Medicine order placed successfully', 'order_id': str(result.inserted_id)})

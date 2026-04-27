@@ -39,6 +39,8 @@ This backend is a simple Django app that uses MongoDB for doctor, hospital, and 
 
 - `GET /api/doctors/` — Get list of all doctors (JSON)
 - `POST /api/appointment-book/` — Book an appointment (form data)
+- `GET /api/medicines/` — Get medicine inventory (JSON)
+- `POST /api/medicine-order/` — Place a medicine order (JSON)
 
 ### Appointment Booking API
 
@@ -56,3 +58,17 @@ POST to `/api/appointment-book/` with form data:
 - `medical_history` (optional)
 
 Returns JSON: `{"message": "Appointment booked successfully", "appointment_id": "..."}`
+
+### Medicine Inventory API
+
+GET `/api/medicines/` returns the current medicine inventory as JSON.
+
+POST `/api/medicine-order/` with JSON body:
+
+- `items` — array of objects with `id`, `name`, `price`, and `qty`
+- `total_amount` — total order amount
+- `customer_name` — optional
+- `customer_contact` — optional
+
+Returns JSON: `{"message": "Medicine order placed successfully", "order_id": "..."}`
+
