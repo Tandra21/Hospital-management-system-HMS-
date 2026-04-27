@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Doctor Search - Hospital Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="get" action="/doctor-search/">
+        <input type="text" name="q" placeholder="Search doctor, specialty, or hospital" value="{{ query }}" />
+        <button class="button" type="submit">Search</button>
+    </form>
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h3>Doctors</h3>
+        {% if doctors %}
+            {% for doctor in doctors %}
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
+                    <strong>{{ doctor.name }}</strong><br />
+                    {{ doctor.specialty }} at {{ doctor.hospital }}<br />
+                    Fee: ৳ {{ doctor.fee }}<br />
+                    <a class="button" href="/doctor/{{ doctor._id }}/">Details</a>
+                    <a class="button button-outline" href="/doctor/{{ doctor._id }}/book/">Book</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No doctors found. Add sample data or adjust your search.</p>
+        {% endif %}
+    </div>
+    <div class="card">
+        <h3>Hospitals</h3>
+        {% if hospitals %}
+            {% for hospital in hospitals %}
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
+                    <strong>{{ hospital.name }}</strong><br />
+                    {{ hospital.city }}, {{ hospital.division }}<br />
+                    <a class="button" href="/hospital/{{ hospital._id }}/">View</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No hospitals found. Add sample data or adjust your search.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

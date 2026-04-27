@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Hospital Details - {{ hospital.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ hospital.name }}</h2>
+    <p><strong>City:</strong> {{ hospital.city }}</p>
+    <p><strong>Division:</strong> {{ hospital.division }}</p>
+    <p><strong>Phone:</strong> {{ hospital.phone }}</p>
+    <p><strong>Rating:</strong> {{ hospital.rating }}</p>
+    <h3>Doctors in this Hospital</h3>
+    {% for doctor in doctors %}
+        <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
+            <strong>{{ doctor.name }}</strong><br />
+            {{ doctor.specialty }}<br />
+            <a class="button" href="/doctor/{{ doctor._id }}/">Details</a>
+            <a class="button button-outline" href="/doctor/{{ doctor._id }}/book/">Book</a>
+        </div>
+    {% empty %}
+        <p>No doctors listed yet for this hospital.</p>
+    {% endfor %}
+</div>
+{% endblock %}
