@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MedFind Bangladesh - Digital Healthcare Platform. Find doctors, hospitals, blood donors and AI health tools.">
+<title>Bed Management — MedFind Bangladesh</title>
+<link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+  --ink:#07101f;--ink2:#0b1829;--ink3:#0f1f35;
+  --card:#0d1b30;--card2:#112033;
+  --blue:#3b82f6;--violet:#8b5cf6;--teal:#14b8a6;
+  --emerald:#10b981;--rose:#f43f5e;--amber:#f59e0b;
+  --sky:#0ea5e9;--orange:#f97316;
+  --t1:#e2e8f0;--t2:#94a3b8;--t3:#475569;
+  --border:rgba(255,255,255,.065);--bh:rgba(255,255,255,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--t1);min-height:100vh;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px;}
+
+/* ═══ TOPNAV ══════════════════════════════════════════════════════════ */
+.tnav{background:var(--ink2);border-bottom:1px solid var(--border);padding:.9rem 1.5rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100;}
+.tnav-logo{display:flex;align-items:center;gap:.65rem;}
+.tnav-logo-box{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--violet));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.tnav-logo-name{font-weight:800;font-size:.95rem;background:linear-gradient(90deg,#93c5fd,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tnav-sep{width:1px;height:22px;background:var(--border);}
+.tnav-crumb{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--t3);}
+.tnav-crumb a{color:var(--t3);text-decoration:none;transition:.2s;}
+.tnav-crumb a:hover{color:var(--t1);}
+.tnav-crumb-cur{color:var(--t1);font-weight:600;}
+.tnav-right{margin-left:auto;display:flex;align-items:center;gap:.75rem;}
+.live-pill{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:700;color:var(--emerald);background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);padding:.28rem .7rem;border-radius:20px;}
+.live-pill::before{content:'';width:6px;height:6px;background:var(--emerald);border-radius:50%;animation:lp 1.5s infinite;box-shadow:0 0 6px var(--emerald);}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.25}}
+.nav-btn{height:34px;padding:0 .875rem;background:var(--ink3);border:1px solid var(--border);border-radius:9px;color:var(--t2);font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.45rem;transition:.2s;font-family:'Outfit',sans-serif;}
+.nav-btn:hover{color:var(--t1);border-color:var(--bh);}
+.nav-btn.primary{background:linear-gradient(135deg,var(--blue),var(--violet));border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.3);}
+.nav-btn.primary:hover{box-shadow:0 6px 20px rgba(59,130,246,.45);}
+
+/* ═══ HOSPITAL SELECTOR BAR ══════════════════════════════════════════ */
+.hsel-bar{background:var(--ink2);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.hsel-label{font-size:.75rem;font-weight:700;color:var(--t3);}
+.hsel{padding:.5rem 1rem;background:var(--ink3);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:.83rem;font-family:'Outfit',sans-serif;outline:none;cursor:pointer;transition:.2s;}
+.hsel:focus{border-color:rgba(59,130,246,.45);}
+.hsel-badge{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:#93c5fd;padding:.3rem .75rem;border-radius:20px;font-size:.72rem;font-weight:700;}
+.hsel-info{font-size:.72rem;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+.sync-info{margin-left:auto;display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:var(--t3);}
+
+/* ═══ MAIN LAYOUT ══════════════════════════════════════════════════════ */
+.wrap{max-width:1540px;margin:0 auto;padding:1.25rem 1.5rem 3rem;}
+
+/* ═══ KPI STRIP ══════════════════════════════════════════════════════ */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:.875rem;margin-bottom:1.25rem;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;display:flex;align-items:center;gap:.875rem;transition:.2s;cursor:default;}
+.kpi:hover{border-color:var(--bh);transform:translateY(-2px);}
+.kic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.kic.b{background:rgba(59,130,246,.15);color:#93c5fd;} .kic.g{background:rgba(16,185,129,.15);color:#6ee7b7;} .kic.r{background:rgba(244,63,94,.15);color:#fda4af;} .kic.a{background:rgba(245,158,11,.15);color:#fcd34d;} .kic.v{background:rgba(139,92,246,.15);color:#c4b5fd;} .kic.o{background:rgba(249,115,22,.15);color:#fdba74;}
+.kv{font-size:1.7rem;font-weight:800;font-family:'Outfit',sans-serif;line-height:1;letter-spacing:-.02em;}
+.kl{font-size:.68rem;color:var(--t2);font-weight:500;margin-top:.15rem;}
+.ksub{font-size:.6rem;color:var(--t3);}
+
+/* ═══ OCCUPANCY PROGRESS BAR ═══════════════════════════════════════════ */
+.occ-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;}
+.occ-title{font-size:.8rem;font-weight:700;color:var(--t2);flex-shrink:0;}
+.occ-bars{flex:1;display:flex;flex-direction:column;gap:.5rem;}
+.occ-row{display:flex;align-items:center;gap:.75rem;}
+.occ-lbl{font-size:.7rem;font-weight:600;color:var(--t2);width:80px;flex-shrink:0;}
+.occ-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden;}
+.occ-fill{height:100%;border-radius:6px;transition:width 1.2s ease;}
+.occ-pct{font-size:.7rem;font-weight:700;color:var(--t2);width:35px;text-align:right;flex-shrink:0;}
+
+/* ═══ WARD TABS ══════════════════════════════════════════════════════ */
+.ward-tabs{display:flex;gap:.5rem;margin-bottom:1.1rem;overflow-x:auto;padding-bottom:.25rem;}
+.ward-tab{padding:.6rem 1.1rem;border-radius:30px;border:1.5px solid var(--border);background:var(--ink3);cursor:pointer;font-size:.78rem;font-weight:700;color:var(--t2);transition:.25s;display:flex;align-items:center;gap:.5rem;white-space:nowrap;flex-shrink:0;}
+.ward-tab:hover{border-color:rgba(255,255,255,.15);}
+.ward-tab.on{background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(59,130,246,.3);}
+.wt-count{font-size:.63rem;padding:.12rem .45rem;border-radius:10px;background:rgba(255,255,255,.15);}
+
+/* ═══ BED LAYOUT ════════════════════════════════════════════════════ */
+.bed-layout{display:grid;grid-template-columns:1fr 320px;gap:1.25rem;}
+.bed-main{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.bed-main-hdr{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;}
+.bed-main-title{font-weight:800;font-size:.92rem;display:flex;align-items:center;gap:.6rem;}
+.bed-filters{display:flex;gap:.5rem;flex-wrap:wrap;}
+.bf{padding:.35rem .85rem;border:1.5px solid var(--border);border-radius:20px;background:transparent;cursor:pointer;font-size:.72rem;font-weight:700;color:var(--t2);transition:.2s;font-family:'Outfit',sans-serif;}
+.bf:hover{border-color:rgba(255,255,255,.2);color:var(--t1);}
+.bf.on{border-color:var(--blue);color:#93c5fd;background:rgba(59,130,246,.1);}
+
+.bed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:.75rem;padding:1.25rem;}
+.bcard{border:2px solid;border-radius:12px;padding:.875rem .75rem;text-align:center;cursor:pointer;transition:.22s;position:relative;overflow:hidden;}
+.bcard:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.3);}
+.bcard.available{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.3);}
+.bcard.occupied{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.3);}
+.bcard.reserved{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3);}
+.bcard.maintenance{background:rgba(100,116,139,.07);border-color:rgba(100,116,139,.2);}
+.bcard.critical{background:rgba(244,63,94,.09);border-color:rgba(244,63,94,.5);animation:critblink .8s ease-in-out infinite;}
+@keyframes critblink{0%,100%{border-color:rgba(244,63,94,.5)}50%{border-color:rgba(244,63,94,.15)}}
+.bdot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;}
+.bdot.g{background:var(--emerald);} .bdot.b{background:var(--blue);} .bdot.a{background:var(--amber);} .bdot.g2{background:var(--t3);} .bdot.r{background:var(--rose);animation:critblink .8s infinite;}
+.bic{font-size:1.7rem;margin-bottom:.35rem;}
+.bnum{font-weight:800;font-size:.82rem;color:var(--t1);}
+.bstatus{font-size:.62rem;font-weight:700;margin-top:.2rem;}
+.bstatus.g{color:#6ee7b7;} .bstatus.b{color:#93c5fd;} .bstatus.a{color:#fcd34d;} .bstatus.t3{color:var(--t3);} .bstatus.r{color:#fda4af;}
+.bpat{font-size:.58rem;color:var(--t2);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bhrs{font-size:.55rem;color:var(--t3);}
+
+/* LEGEND */
+.bed-legend{display:flex;gap:1rem;padding:.875rem 1.25rem;border-top:1px solid var(--border);background:rgba(255,255,255,.01);flex-wrap:wrap;}
+.leg-i{display:flex;align-items:center;gap:.45rem;font-size:.72rem;color:var(--t2);}
+.leg-dot{width:9px;height:9px;border-radius:3px;}
+
+/* ═══ SIDEBAR ═══════════════════════════════════════════════════════ */
+.bsidebar{display:flex;flex-direction:column;gap:1rem;}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.scard-hdr{padding:.875rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem;}
+.scard-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.82rem;}
+.scard-title{font-weight:700;font-size:.84rem;color:var(--t1);}
+.scard-body{padding:1rem 1.1rem;}
+
+/* Quick alloc form */
+.alloc-form{display:flex;flex-direction:column;gap:.65rem;}
+.af-row{display:flex;flex-direction:column;gap:.3rem;}
+.af-lbl{font-size:.7rem;font-weight:700;color:var(--t2);}
+.af-inp,.af-sel{padding:.6rem .875rem;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--t1);font-size:.8rem;font-family:'Outfit',sans-serif;outline:none;transition:.2s;width:100%;}
+.af-inp:focus,.af-sel:focus{border-color:rgba(59,130,246,.45);}
+.af-inp::placeholder{color:var(--t3);}
+.af-btn{width:100%;padding:.75rem;background:linear-gradient(135deg,var(--blue),var(--violet));border:none;border-radius:10px;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;transition:.25s;font-family:'Outfit',sans-serif;}
+.af-btn:hover{box-shadow:0 6px 18px rgba(59,130,246,.35);transform:translateY(-1px);}
+
+/* Patient list */
+.pat-row{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.pat-row:last-child{border-bottom:none;}
+.pat-ava{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex-shrink:0;}
+.pat-name{font-size:.8rem;font-weight:600;color:var(--t1);}
+.pat-detail{font-size:.68rem;color:var(--t2);}
+.pat-badge{padding:.18rem .55rem;border-radius:20px;font-size:.63rem;font-weight:700;white-space:nowrap;margin-top:.1rem;display:inline-block;}
+.pb-crit{background:rgba(244,63,94,.15);color:#fda4af;} .pb-stable{background:rgba(16,185,129,.12);color:#6ee7b7;} .pb-obs{background:rgba(245,158,11,.12);color:#fcd34d;}
+
+/* Donut chart */
+.chart-wrap{padding:.875rem;}
+
+/* ═══ TIMELINE ══════════════════════════════════════════════════════ */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:.75rem;padding:.6rem 0;position:relative;}
+.tl-item::before{content:'';position:absolute;left:9px;top:26px;bottom:-4px;width:1px;background:var(--border);}
+.tl-item:last-child::before{display:none;}
+.tl-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.55rem;flex-shrink:0;margin-top:2px;}
+.tl-dot.g{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
+.tl-dot.b{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.3);}
+.tl-dot.a{background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+.tl-dot.r{background:rgba(244,63,94,.2);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
+.tl-text{font-size:.75rem;color:var(--t2);padding-top:.1rem;}
+.tl-text strong{color:var(--t1);}
+.tl-time{font-size:.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+
+/* ═══ MODALS ══════════════════════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--ink2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:540px;box-shadow:0 40px 80px rgba(0,0,0,.5);animation:mup .25s ease;}
+@keyframes mup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-hdr{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-weight:800;font-size:.97rem;display:flex;align-items:center;gap:.65rem;}
+.modal-close{background:rgba(255,255,255,.07);border:none;color:var(--t2);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.modal-close:hover{color:var(--rose);background:rgba(244,63,94,.12);}
+.modal-body{padding:1.4rem;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.1rem;}
+.mg-item{background:var(--ink3);border:1px solid var(--border);border-radius:11px;padding:.875rem;}
+.mg-lbl{font-size:.65rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:.3rem;}
+.mg-val{font-weight:800;font-size:.9rem;color:var(--t1);}
+.modal-actions{display:flex;gap:.65rem;margin-top:1rem;}
+.ma-btn{flex:1;padding:.75rem;border-radius:11px;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s;border:none;font-family:'Outfit',sans-serif;}
+.ma-discharge{background:linear-gradient(135deg,var(--emerald),#059669);color:#fff;}
+.ma-transfer{background:linear-gradient(135deg,var(--amber),#d97706);color:#fff;}
+.ma-maint{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--border);}
+.ma-alloc{background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;}
+.ma-available{background:linear-gradient(135deg,var(--emerald),var(--teal));color:#fff;}
+.modal-section{background:var(--ink3);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1rem;}
+.modal-section-title{font-size:.7rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem;}
+.modal-form{display:flex;flex-direction:column;gap:.65rem;}
+.mf-row{display:flex;flex-direction:column;gap:.3rem;}
+.mf-lbl{font-size:.72rem;font-weight:700;color:var(--t2);}
+.mf-inp,.mf-sel{padding:.65rem .9rem;background:var(--ink);border:1.5px solid var(--border);border-radius:9px;color:var(--t1);font-size:.85rem;font-family:'Outfit',sans-serif;outline:none;transition:.2s;width:100%;}
+.mf-inp:focus,.mf-sel:focus{border-color:rgba(59,130,246,.45);}
+.mf-inp::placeholder{color:var(--t3);}
+.mf-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+.mf-submit{width:100%;padding:.8rem;background:linear-gradient(135deg,var(--blue),var(--violet));border:none;border-radius:11px;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;transition:.25s;font-family:'Outfit',sans-serif;margin-top:.5rem;}
+.mf-submit:hover{box-shadow:0 8px 22px rgba(59,130,246,.4);transform:translateY(-1px);}
+
+/* ═══ ANIMATIONS ═══════════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.bcard{animation:fadeUp .3s ease both;}
+
+@media(max-width:1200px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.bed-layout{grid-template-columns:1fr}.bsidebar{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.kpi-strip{grid-template-columns:1fr 1fr}.bsidebar{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- TOPNAV -->
+<nav class="tnav">
+  <a class="nav-brand" href="../../index.html"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+  <div class="tnav-logo">
+    <div class="tnav-logo-box"><i class="fas fa-heartbeat"></i></div>
+    <div class="tnav-logo-name">MedFind</div>
+  </div>
+  <div class="tnav-sep"></div>
+  <div class="tnav-crumb">
+    <a href="../admin/dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+    <i class="fas fa-chevron-right" style="font-size:.6rem"></i>
+    <a href="#">Hospital</a>
+    <i class="fas fa-chevron-right" style="font-size:.6rem"></i>
+    <span class="tnav-crumb-cur">Bed Management</span>
+  </div>
+  <div class="tnav-right">
+    <div class="live-pill">LIVE</div>
+    <button class="nav-btn" onclick="refreshData()"><i class="fas fa-arrows-rotate" id="refIc"></i> Refresh</button>
+    <button class="nav-btn primary" onclick="document.getElementById('allocModal').classList.add('show')"><i class="fas fa-plus"></i> Allocate Bed</button>
+  </div>
+</nav>
+
+<!-- HOSPITAL SELECTOR -->
+<div class="hsel-bar">
+  <span class="hsel-label">Hospital:</span>
+  <select class="hsel" id="hospSel" onchange="loadHosp()">
+    <option value="dmch">Dhaka Medical College Hospital</option>
+    <option value="bsmmu">BSMMU</option>
+    <option value="square">Square Hospitals Ltd.</option>
+    <option value="evercare">Evercare Hospital</option>
+    <option value="popular">Popular Medical Centre</option>
+    <option value="nhf">National Heart Foundation</option>
+  </select>
+  <span class="hsel-badge" id="hselBadge">Dhaka Division</span>
+  <span class="hsel-info" id="hselInfo">Beds: Loading...</span>
+  <div class="sync-info">
+    <i class="fas fa-circle" style="font-size:.5rem;color:var(--emerald)"></i>
+    Synced: <span id="syncTime">Just now</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kic b"><i class="fas fa-bed"></i></div>
+      <div><div class="kv" id="kTotal">0</div><div class="kl">Total Beds</div><div class="ksub">All wards</div></div>
+    </div>
+    <div class="kpi">
+      <div class="kic g"><i class="fas fa-check-circle"></i></div>
+      <div><div class="kv" id="kAvail">0</div><div class="kl">Available</div><div class="ksub" id="kAvailPct">0%</div></div>
+    </div>
+    <div class="kpi">
+      <div class="kic b"><i class="fas fa-person-dots-from-line"></i></div>
+      <div><div class="kv" id="kOccupied">0</div><div class="kl">Occupied</div><div class="ksub" id="kOccRate">—</div></div>
+    </div>
+    <div class="kpi">
+      <div class="kic a"><i class="fas fa-clock"></i></div>
+      <div><div class="kv" id="kReserved">0</div><div class="kl">Reserved</div><div class="ksub">Pre-booked</div></div>
+    </div>
+    <div class="kpi">
+      <div class="kic r"><i class="fas fa-heart-pulse"></i></div>
+      <div><div class="kv" id="kCritical">0</div><div class="kl">Critical</div><div class="ksub">Immediate care</div></div>
+    </div>
+    <div class="kpi">
+      <div class="kic o"><i class="fas fa-tools"></i></div>
+      <div><div class="kv" id="kMaint">0</div><div class="kl">Maintenance</div><div class="ksub">Out of service</div></div>
+    </div>
+  </div>
+
+  <!-- OCCUPANCY BAR -->
+  <div class="occ-card">
+    <span class="occ-title"><i class="fas fa-chart-bar" style="color:var(--blue)"></i> Occupancy Overview</span>
+    <div class="occ-bars">
+      <div class="occ-row">
+        <span class="occ-lbl" style="color:#6ee7b7">Available</span>
+        <div class="occ-track"><div class="occ-fill" id="occA" style="background:var(--emerald);width:0%"></div></div>
+        <span class="occ-pct" id="occAPct">0%</span>
+      </div>
+      <div class="occ-row">
+        <span class="occ-lbl" style="color:#93c5fd">Occupied</span>
+        <div class="occ-track"><div class="occ-fill" id="occO" style="background:var(--blue);width:0%"></div></div>
+        <span class="occ-pct" id="occOPct">0%</span>
+      </div>
+      <div class="occ-row">
+        <span class="occ-lbl" style="color:#fcd34d">Reserved</span>
+        <div class="occ-track"><div class="occ-fill" id="occR" style="background:var(--amber);width:0%"></div></div>
+        <span class="occ-pct" id="occRPct">0%</span>
+      </div>
+      <div class="occ-row">
+        <span class="occ-lbl" style="color:#fda4af">Critical</span>
+        <div class="occ-track"><div class="occ-fill" id="occC" style="background:var(--rose);width:0%"></div></div>
+        <span class="occ-pct" id="occCPct">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WARD TABS -->
+  <div class="ward-tabs" id="wardTabs"></div>
+
+  <!-- BED LAYOUT -->
+  <div class="bed-layout">
+    <!-- BED GRID -->
+    <div class="bed-main">
+      <div class="bed-main-hdr">
+        <div class="bed-main-title"><i class="fas fa-th" style="color:var(--blue)"></i><span id="activeWardName">General Ward</span></div>
+        <div class="bed-filters">
+          <button class="bf on" onclick="setFilter('all',this)">All</button>
+          <button class="bf" onclick="setFilter('available',this)">Free</button>
+          <button class="bf" onclick="setFilter('occupied',this)">Occupied</button>
+          <button class="bf" onclick="setFilter('critical',this)">Critical</button>
+          <button class="bf" onclick="setFilter('reserved',this)">Reserved</button>
+          <button class="bf" onclick="setFilter('maintenance',this)">Maint.</button>
+        </div>
+      </div>
+      <div class="bed-grid" id="bedGrid"></div>
+      <div class="bed-legend">
+        <div class="leg-i"><div class="leg-dot" style="background:var(--emerald)"></div> Available</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--blue)"></div> Occupied</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--amber)"></div> Reserved</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--rose)"></div> Critical</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--t3)"></div> Maintenance</div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="bsidebar">
+      <!-- Occupancy Donut -->
+      <div class="scard">
+        <div class="scard-hdr">
+          <div class="scard-ico" style="background:rgba(59,130,246,.15);color:#93c5fd;"><i class="fas fa-chart-pie"></i></div>
+          <div class="scard-title">Bed Status</div>
+        </div>
+        <div class="chart-wrap"><canvas id="occChart" height="180"></canvas></div>
+      </div>
+
+      <!-- Quick Allocate -->
+      <div class="scard">
+        <div class="scard-hdr">
+          <div class="scard-ico" style="background:rgba(16,185,129,.15);color:#6ee7b7;"><i class="fas fa-user-plus"></i></div>
+          <div class="scard-title">Quick Allocate</div>
+        </div>
+        <div class="scard-body">
+          <div class="alloc-form">
+            <div class="af-row"><label class="af-lbl">Patient Name</label><input type="text" class="af-inp" id="qName" placeholder="Enter full name"></div>
+            <div class="af-row"><label class="af-lbl">Phone</label><input type="text" class="af-inp" id="qPhone" placeholder="01XXX-XXXXXX"></div>
+            <div class="af-row"><label class="af-lbl">Ward</label>
+              <select class="af-sel" id="qWard">
+                <option>General Ward</option><option>ICU</option><option>CCU</option><option>Maternity</option><option>Pediatric</option><option>Emergency</option><option>Private Cabin</option>
+              </select>
+            </div>
+            <div class="af-row"><label class="af-lbl">Condition</label>
+              <select class="af-sel" id="qCond">
+                <option>Stable</option><option>Moderate</option><option>Critical</option><option>Observation</option>
+              </select>
+            </div>
+            <button class="af-btn" onclick="quickAllocate()"><i class="fas fa-bed"></i> Allocate Bed</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical Patients -->
+      <div class="scard">
+        <div class="scard-hdr">
+          <div class="scard-ico" style="background:rgba(244,63,94,.15);color:#fda4af;"><i class="fas fa-heart-pulse"></i></div>
+          <div class="scard-title">Critical Patients</div>
+        </div>
+        <div class="scard-body" id="critList" style="padding-top:.5rem;max-height:280px;overflow-y:auto;"></div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="scard">
+        <div class="scard-hdr">
+          <div class="scard-ico" style="background:rgba(139,92,246,.15);color:#c4b5fd;"><i class="fas fa-clock-rotate-left"></i></div>
+          <div class="scard-title">Recent Activity</div>
+        </div>
+        <div class="scard-body" id="timeline"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BED DETAIL MODAL -->
+<div class="modal-overlay" id="bedModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title"><i class="fas fa-bed" style="color:var(--blue)"></i> Bed Details — <span id="mBedNum"></span></div>
+      <button class="modal-close" onclick="closeModal('bedModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid" id="mGrid"></div>
+      <div id="mPatientInfo"></div>
+      <div class="modal-actions" id="mActions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ALLOCATE MODAL -->
+<div class="modal-overlay" id="allocModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title"><i class="fas fa-user-plus" style="color:var(--emerald)"></i> Allocate Bed</div>
+      <button class="modal-close" onclick="closeModal('allocModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Patient Information</div>
+        <div class="modal-form">
+          <div class="mf-grid">
+            <div class="mf-row"><label class="mf-lbl">Full Name *</label><input type="text" class="mf-inp" id="m_name" placeholder="Patient full name"></div>
+            <div class="mf-row"><label class="mf-lbl">Age</label><input type="number" class="mf-inp" id="m_age" placeholder="Age" min="0" max="120"></div>
+          </div>
+          <div class="mf-grid">
+            <div class="mf-row"><label class="mf-lbl">Phone *</label><input type="text" class="mf-inp" id="m_phone" placeholder="01XXX-XXXXXX"></div>
+            <div class="mf-row"><label class="mf-lbl">NID / Reference</label><input type="text" class="mf-inp" id="m_nid" placeholder="Optional"></div>
+          </div>
+          <div class="mf-row"><label class="mf-lbl">Diagnosis / Reason</label><input type="text" class="mf-inp" id="m_diag" placeholder="e.g. Dengue fever, Post-op care"></div>
+          <div class="mf-grid">
+            <div class="mf-row"><label class="mf-lbl">Ward *</label>
+              <select class="mf-sel" id="m_ward">
+                <option>General Ward</option><option>ICU</option><option>CCU</option><option>Maternity</option><option>Pediatric</option><option>Emergency</option><option>Private Cabin</option>
+              </select>
+            </div>
+            <div class="mf-row"><label class="mf-lbl">Condition *</label>
+              <select class="mf-sel" id="m_cond">
+                <option>Stable</option><option>Moderate</option><option>Critical</option><option>Observation</option>
+              </select>
+            </div>
+          </div>
+          <div class="mf-row"><label class="mf-lbl">Attending Doctor</label>
+            <select class="mf-sel" id="m_doc">
+              <option>Dr. Abdul Karim (Cardiologist)</option>
+              <option>Dr. Fahmida Rahman (Gynecologist)</option>
+              <option>Dr. Arif Hossain (Orthopedic)</option>
+              <option>Dr. Nasrin Islam (Neurologist)</option>
+              <option>Dr. Mizanur Rahman (ENT)</option>
+            </select>
+          </div>
+          <button class="mf-submit" onclick="allocateFull()"><i class="fas fa-bed"></i> Confirm Bed Allocation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://127.0.0.1:8000/api/v1':'/api/v1';
+const WARDS=[
+  {id:'general',  name:'General Ward',  icon:'fa-bed',            color:'#3b82f6', beds:30},
+  {id:'icu',      name:'ICU',           icon:'fa-heart-pulse',    color:'#f43f5e', beds:10},
+  {id:'ccu',      name:'CCU',           icon:'fa-heart',          color:'#ec4899', beds:8},
+  {id:'maternity',name:'Maternity',     icon:'fa-baby',           color:'#8b5cf6', beds:16},
+  {id:'pediatric',name:'Pediatric',     icon:'fa-child',          color:'#14b8a6', beds:20},
+  {id:'emergency',name:'Emergency',     icon:'fa-ambulance',      color:'#f97316', beds:12},
+  {id:'cabin',    name:'Private Cabin', icon:'fa-door-closed',    color:'#10b981', beds:15},
+];
+
+const PATIENTS=[
+  {id:1,name:'Rahim Uddin',age:45,diag:'Dengue fever',ward:'icu',cond:'critical',doc:'Dr. Karim',hrs:48,ph:'01711-111111'},
+  {id:2,name:'Sumaiya Khatun',age:28,diag:'Post-op care',ward:'maternity',cond:'stable',doc:'Dr. Rahman',hrs:24,ph:'01811-222222'},
+  {id:3,name:'Habib Rahman',age:62,diag:'Cardiac monitoring',ward:'ccu',cond:'critical',doc:'Dr. Hossain',hrs:72,ph:'01911-333333'},
+  {id:4,name:'Moriam Begum',age:35,diag:'Typhoid fever',ward:'general',cond:'moderate',doc:'Dr. Islam',hrs:36,ph:'01711-444444'},
+  {id:5,name:'Faruk Hossain',age:18,diag:'Appendectomy',ward:'pediatric',cond:'stable',doc:'Dr. Khatun',hrs:12,ph:'01611-555555'},
+  {id:6,name:'Nasrin Akter',age:55,diag:'Stroke recovery',ward:'icu',cond:'critical',doc:'Dr. Karim',hrs:96,ph:'01711-666666'},
+  {id:7,name:'Karim Uddin',age:40,diag:'Fractured arm',ward:'general',cond:'stable',doc:'Dr. Islam',hrs:8,ph:'01811-777777'},
+  {id:8,name:'Rima Begum',age:32,diag:'Normal delivery',ward:'maternity',cond:'observation',doc:'Dr. Rahman',hrs:6,ph:'01911-888888'},
+  {id:9,name:'Salim Reza',age:70,diag:'Post-CABG',ward:'ccu',cond:'critical',doc:'Dr. Hossain',hrs:120,ph:'01711-999999'},
+];
+
+const ACTIVITY=[
+  {type:'g',icon:'fa-user-plus',text:'<strong>Bed GEN-04</strong> allocated to Moriam Begum',time:'10 min ago'},
+  {type:'r',icon:'fa-heart-pulse',text:'<strong>ICU-02</strong> patient Nasrin Akter — condition critical',time:'25 min ago'},
+  {type:'a',icon:'fa-clock',text:'<strong>Bed MAT-07</strong> reserved for incoming patient',time:'1 hr ago'},
+  {type:'b',icon:'fa-sign-out-alt',text:'<strong>Bed GEN-12</strong> patient discharged — bed available',time:'2 hr ago'},
+  {type:'g',icon:'fa-tools',text:'<strong>CCU-06</strong> maintenance completed — available',time:'3 hr ago'},
+];
+
+let activeWard='general', bedFilter='all', bedData={}, occChart=null;
+
+// GENERATE BEDS
+function genBeds(wardId,count){
+  const wPats=PATIENTS.filter(p=>p.ward===wardId);
+  return Array.from({length:count},(_, i)=>{
+    const num=`${wardId.toUpperCase().slice(0,3)}-${String(i+1).padStart(2,'0')}`;
+    const pat=wPats[i];
+    let status='available';
+    if(pat) status=pat.cond==='critical'?'critical':'occupied';
+    else if(i===2||i===6) status='reserved';
+    else if(i===count-1) status='maintenance';
+    return{num,status,patient:pat||null,ward:wardId};
+  });
+}
+
+function init(){
+  WARDS.forEach(w=>{bedData[w.id]=genBeds(w.id,w.beds);});
+  renderWardTabs();renderBedGrid();updateKPIs();renderCritList();renderTimeline();
+}
+
+// WARD TABS
+function renderWardTabs(){
+  document.getElementById('wardTabs').innerHTML=WARDS.map(w=>{
+    const avail=(bedData[w.id]||[]).filter(b=>b.status==='available').length;
+    const on=w.id===activeWard?'on':'';
+    return`<button class="ward-tab ${on}" onclick="switchWard('${w.id}')"><i class="fas ${w.icon}"></i>${w.name}<span class="wt-count">${avail} free</span></button>`;
+  }).join('');
+}
+
+function switchWard(id){
+  activeWard=id;
+  document.getElementById('activeWardName').textContent=WARDS.find(w=>w.id===id)?.name||id;
+  renderWardTabs();renderBedGrid();
+}
+
+// BED GRID
+function renderBedGrid(){
+  const beds=bedData[activeWard]||[];
+  const filtered=bedFilter==='all'?beds:beds.filter(b=>b.status===bedFilter);
+  const icons={available:'🛏️',occupied:'👤',reserved:'🔶',maintenance:'🔧',critical:'🚨'};
+  const dotCls={available:'g',occupied:'b',reserved:'a',maintenance:'g2',critical:'r'};
+  const stCls={available:'g',occupied:'b',reserved:'a',maintenance:'t3',critical:'r'};
+  const stTxt={available:'Free',occupied:'Occupied',reserved:'Reserved',maintenance:'Maintenance',critical:'CRITICAL'};
+  document.getElementById('bedGrid').innerHTML=filtered.map((b,i)=>`
+    <div class="bcard ${b.status}" onclick="openBedModal('${b.num}','${activeWard}')" style="animation-delay:${i*.025}s">
+      <div class="bdot ${dotCls[b.status]}"></div>
+      <div class="bic">${icons[b.status]}</div>
+      <div class="bnum">${b.num}</div>
+      <div class="bstatus ${stCls[b.status]}">${stTxt[b.status]}</div>
+      ${b.patient?`<div class="bpat">${b.patient.name}</div><div class="bhrs">${b.patient.hrs}h</div>`:'<div class="bpat" style="color:var(--t3)">—</div>'}
+    </div>`).join('');
+}
+
+function setFilter(f,btn){
+  bedFilter=f;
+  document.querySelectorAll('.bf').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderBedGrid();
+}
+
+// KPIs
+function updateKPIs(){
+  const all=Object.values(bedData).flat();
+  const n=all.length,avail=all.filter(b=>b.status==='available').length;
+  const occ=all.filter(b=>b.status==='occupied'||b.status==='critical').length;
+  const res=all.filter(b=>b.status==='reserved').length;
+  const crit=all.filter(b=>b.status==='critical').length;
+  const maint=all.filter(b=>b.status==='maintenance').length;
+  const occR=Math.round(occ/n*100);
+
+  animN('kTotal',n);animN('kAvail',avail);animN('kOccupied',occ);
+  animN('kReserved',res);animN('kCritical',crit);animN('kMaint',maint);
+  document.getElementById('kAvailPct').textContent=Math.round(avail/n*100)+'% free';
+  document.getElementById('kOccRate').textContent=occR+'% occupied';
+  document.getElementById('hselInfo').textContent=`Beds: ${n} total`;
+
+  // Progress bars
+  const pct=v=>Math.round(v/n*100);
+  document.getElementById('occA').style.width=pct(avail)+'%';
+  document.getElementById('occO').style.width=pct(occ)+'%';
+  document.getElementById('occR').style.width=pct(res)+'%';
+  document.getElementById('occC').style.width=pct(crit)+'%';
+  document.getElementById('occAPct').textContent=pct(avail)+'%';
+  document.getElementById('occOPct').textContent=pct(occ)+'%';
+  document.getElementById('occRPct').textContent=pct(res)+'%';
+  document.getElementById('occCPct').textContent=pct(crit)+'%';
+
+  // Donut
+  if(occChart){occChart.data.datasets[0].data=[avail,occ,res,maint,crit];occChart.update();}
+  else{
+    const ctx=document.getElementById('occChart').getContext('2d');
+    occChart=new Chart(ctx,{type:'doughnut',data:{
+      labels:['Available','Occupied','Reserved','Maintenance','Critical'],
+      datasets:[{data:[avail,occ,res,maint,crit],backgroundColor:['rgba(16,185,129,.8)','rgba(59,130,246,.8)','rgba(245,158,11,.8)','rgba(100,116,139,.6)','rgba(244,63,94,.8)'],borderColor:['#10b981','#3b82f6','#f59e0b','#475569','#f43f5e'],borderWidth:2,hoverOffset:8}]},
+      options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:{size:8.5},boxWidth:8,color:'#94a3b8',padding:5}}}}
+    });
+  }
+}
+
+function animN(id,t){const el=document.getElementById(id);if(!el)return;let n=0,s=Math.ceil(t/30);const iv=setInterval(()=>{n=Math.min(n+s,t);el.textContent=n;if(n>=t)clearInterval(iv);},25);}
+
+// CRITICAL LIST
+function renderCritList(){
+  const crits=PATIENTS.filter(p=>p.cond==='critical');
+  const condCls={critical:'pb-crit',stable:'pb-stable',moderate:'pb-obs',observation:'pb-obs'};
+  const avaColors=['rgba(244,63,94,.2)','rgba(245,158,11,.2)','rgba(139,92,246,.2)'];
+  document.getElementById('critList').innerHTML=crits.length?crits.map((p,i)=>`
+    <div class="pat-row">
+      <div class="pat-ava" style="background:${avaColors[i%3]};color:var(--t1)">${p.name.charAt(0)}</div>
+      <div style="flex:1">
+        <div class="pat-name">${p.name} <span style="font-size:.62rem;color:var(--t3)">(${p.age}y)</span></div>
+        <div class="pat-detail"><i class="fas fa-stethoscope" style="color:var(--blue);font-size:.6rem;margin-right:3px"></i>${p.diag}</div>
+        <div class="pat-detail"><i class="fas fa-clock" style="color:var(--amber);font-size:.6rem;margin-right:3px"></i>${p.hrs}h · ${p.ward.toUpperCase()}</div>
+        <span class="pat-badge ${condCls[p.cond]}">${p.cond}</span>
+      </div>
+    </div>`).join(''):'<div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:.82rem">🎉 No critical cases</div>';
+}
+
+// TIMELINE
+function renderTimeline(){
+  document.getElementById('timeline').innerHTML=ACTIVITY.map(a=>`
+    <div class="tl-item">
+      <div class="tl-dot ${a.type}"><i class="fas ${a.icon}"></i></div>
+      <div><div class="tl-text">${a.text}</div><div class="tl-time">${a.time}</div></div>
+    </div>`).join('');
+}
+
+// MODAL
+function openBedModal(bedNum,wardId){
+  const bed=(bedData[wardId]||[]).find(b=>b.num===bedNum);
+  if(!bed)return;
+  const ward=WARDS.find(w=>w.id===wardId);
+  document.getElementById('mBedNum').textContent=bedNum;
+  document.getElementById('mGrid').innerHTML=`
+    <div class="mg-item"><div class="mg-lbl">Bed Number</div><div class="mg-val">${bedNum}</div></div>
+    <div class="mg-item"><div class="mg-lbl">Ward</div><div class="mg-val">${ward.name}</div></div>
+    <div class="mg-item"><div class="mg-lbl">Status</div><div class="mg-val" style="color:${bed.status==='available'?'#6ee7b7':bed.status==='critical'?'#fda4af':'#fcd34d'};text-transform:uppercase">${bed.status}</div></div>
+    <div class="mg-item"><div class="mg-lbl">Bed Type</div><div class="mg-val">${['icu','ccu'].includes(wardId)?'Electric Adjustable':'Standard Hospital'}</div></div>`;
+
+  if(bed.patient){
+    const condCls={critical:'#fda4af',stable:'#6ee7b7',observation:'#fcd34d',moderate:'#fcd34d'};
+    document.getElementById('mPatientInfo').innerHTML=`
+      <div class="modal-section">
+        <div class="modal-section-title">Patient Information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-size:.82rem;">
+          <div style="color:var(--t1);font-weight:700">${bed.patient.name} (${bed.patient.age||'—'}y)</div>
+          <div style="color:${condCls[bed.patient.cond]||'#fcd34d'};font-weight:800;text-transform:uppercase">${bed.patient.cond}</div>
+          <div><i class="fas fa-stethoscope" style="color:var(--blue);margin-right:5px"></i>${bed.patient.diag}</div>
+          <div><i class="fas fa-user-md" style="color:var(--violet);margin-right:5px"></i>${bed.patient.doc}</div>
+          <div><i class="fas fa-clock" style="color:var(--amber);margin-right:5px"></i>Admitted ${bed.patient.hrs}h ago</div>
+          <div><i class="fas fa-phone" style="color:var(--emerald);margin-right:5px"></i>${bed.patient.ph}</div>
+        </div>
+      </div>`;
+    document.getElementById('mActions').innerHTML=`
+      <button class="ma-btn ma-discharge" onclick="discharge('${bedNum}','${wardId}')"><i class="fas fa-right-from-bracket"></i> Discharge</button>
+      <button class="ma-btn ma-transfer" onclick="showToast('Transfer: select target ward','info')"><i class="fas fa-arrows-left-right"></i> Transfer</button>
+      <button class="ma-btn ma-maint" onclick="setBedStatus('${bedNum}','${wardId}','maintenance')"><i class="fas fa-tools"></i> Maint.</button>`;
+  } else {
+    document.getElementById('mPatientInfo').innerHTML=`
+      <div style="text-align:center;padding:1.5rem;color:var(--t3);">
+        <i class="fas fa-bed" style="font-size:2rem;margin-bottom:.75rem;display:block;color:var(--t3)"></i>
+        ${bed.status==='available'?'Bed is ready for allocation':'Bed is '+bed.status}
+      </div>`;
+    document.getElementById('mActions').innerHTML=bed.status==='available'?`
+      <button class="ma-btn ma-alloc" onclick="closeModal('bedModal');document.getElementById('allocModal').classList.add('show');document.getElementById('m_ward').value='${ward.name}';"><i class="fas fa-user-plus"></i> Allocate Patient</button>
+      <button class="ma-btn ma-maint" onclick="setBedStatus('${bedNum}','${wardId}','maintenance')"><i class="fas fa-tools"></i> Set Maintenance</button>
+    `:`<button class="ma-btn ma-available" onclick="setBedStatus('${bedNum}','${wardId}','available')"><i class="fas fa-check"></i> Mark as Available</button>`;
+  }
+  document.getElementById('bedModal').classList.add('show');
+}
+
+function discharge(bedNum,wardId){
+  const bed=(bedData[wardId]||[]).find(b=>b.num===bedNum);
+  if(bed){bed.status='available';bed.patient=null;}
+  addActivity('b','fa-right-from-bracket',`<strong>${bedNum}</strong> patient discharged — available now`);
+  closeModal('bedModal');renderBedGrid();updateKPIs();renderCritList();renderWardTabs();
+  showToast(`Patient discharged from ${bedNum}`,'success');
+}
+
+function setBedStatus(bedNum,wardId,status){
+  const bed=(bedData[wardId]||[]).find(b=>b.num===bedNum);
+  if(bed){bed.status=status;bed.patient=null;}
+  closeModal('bedModal');renderBedGrid();updateKPIs();renderWardTabs();
+  showToast(`${bedNum} set to ${status}`,'info');
+}
+
+function quickAllocate(){
+  const name=document.getElementById('qName').value.trim();
+  const ph=document.getElementById('qPhone').value.trim();
+  if(!name||!ph){showToast('Name and phone required','warning');return;}
+  const wardName=document.getElementById('qWard').value;
+  const cond=document.getElementById('qCond').value.toLowerCase();
+  const ward=WARDS.find(w=>w.name===wardName)||WARDS[0];
+  const avail=bedData[ward.id].find(b=>b.status==='available');
+  if(!avail){showToast('No beds available in '+wardName,'warning');return;}
+  avail.status=cond==='critical'?'critical':'occupied';
+  avail.patient={name,ph,age:'—',diag:'New admission',cond,doc:'To be assigned',hrs:0};
+  document.getElementById('qName').value='';document.getElementById('qPhone').value='';
+  addActivity('g','fa-user-plus',`<strong>${avail.num}</strong> allocated to ${name}`);
+  renderBedGrid();updateKPIs();renderWardTabs();renderCritList();
+  showToast(`Bed ${avail.num} allocated to ${name}`,'success');
+}
+
+function allocateFull(){
+  const name=document.getElementById('m_name').value.trim();
+  const ph=document.getElementById('m_phone').value.trim();
+  if(!name||!ph){showToast('Name and phone are required','warning');return;}
+  const wardName=document.getElementById('m_ward').value;
+  const cond=document.getElementById('m_cond').value.toLowerCase();
+  const ward=WARDS.find(w=>w.name===wardName)||WARDS[0];
+  const avail=bedData[ward.id].find(b=>b.status==='available');
+  if(!avail){showToast('No beds available in '+wardName,'warning');return;}
+  avail.status=cond==='critical'?'critical':'occupied';
+  avail.patient={name,ph,age:document.getElementById('m_age').value||'—',diag:document.getElementById('m_diag').value||'Admission',cond,doc:document.getElementById('m_doc').value,hrs:0};
+  document.getElementById('m_name').value='';document.getElementById('m_phone').value='';
+  document.getElementById('m_age').value='';document.getElementById('m_diag').value='';
+  addActivity('g','fa-user-plus',`<strong>${avail.num}</strong> allocated to ${name} (${wardName})`);
+  closeModal('allocModal');
+  if(activeWard===ward.id)renderBedGrid();
+  updateKPIs();renderWardTabs();renderCritList();
+  showToast(`Bed ${avail.num} allocated to ${name}`,'success');
+}
+
+function addActivity(type,icon,text){
+  ACTIVITY.unshift({type,icon,text,time:'Just now'});
+  if(ACTIVITY.length>10)ACTIVITY.pop();
+  renderTimeline();
+}
+
+function loadHosp(){renderWardTabs();renderBedGrid();updateKPIs();showToast('Hospital data loaded','info');}
+
+async function refreshData(){
+  const ic=document.getElementById('refIc');
+  ic.style.animation='spin .8s linear infinite';
+  try{
+    const r=await fetch(API_BASE+'/hospitals/availability/');
+    if(r.ok)showToast('Live data synced','success');
+  }catch(e){}
+  setTimeout(()=>{
+    ic.style.animation='';
+    document.getElementById('syncTime').textContent=new Date().toLocaleTimeString('en-BD',{hour:'2-digit',minute:'2-digit'});
+    showToast('Bed data refreshed','success');
+  },700);
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+// TOAST
+function showToast(msg,type='info'){
+  const colors={success:'var(--emerald)',error:'var(--rose)',warning:'var(--amber)',info:'var(--blue)'};
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink2);border:1px solid ${colors[type]}40;border-left:3px solid ${colors[type]};color:var(--t1);padding:.75rem 1.25rem;border-radius:12px;font-size:.83rem;font-weight:600;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:fadeUp .3s ease;font-family:'Outfit',sans-serif;`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3000);
+}
+
+const ss=document.createElement('style');
+ss.textContent='@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}';
+document.head.appendChild(ss);
+
+// Click outside modal
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
+
+// INIT
+init();
+setInterval(()=>{document.getElementById('syncTime').textContent=new Date().toLocaleTimeString('en-BD',{hour:'2-digit',minute:'2-digit'});},60000);
+</script>
+</body>
+</html>

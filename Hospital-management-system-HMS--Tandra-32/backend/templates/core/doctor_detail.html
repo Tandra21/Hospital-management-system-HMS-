@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Doctor Details - {{ doctor.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ doctor.name }}</h2>
+    <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+    <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
+    <p><strong>Hospital:</strong> {{ doctor.hospital }}</p>
+    <p><strong>Location:</strong> {{ doctor.location }}</p>
+    <p><strong>Fee:</strong> ৳ {{ doctor.fee }}</p>
+    <a class="button" href="/doctor/{{ doctor._id }}/book/">Book Appointment</a>
+    <a class="button button-outline" href="/doctor-search/">Back to Search</a>
+</div>
+{% endblock %}

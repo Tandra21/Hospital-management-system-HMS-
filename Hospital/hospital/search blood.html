@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Find Blood Donors in Bangladesh - Search verified donors by blood group and district. Emergency blood search 24/7.">
+<title>Blood Donor — MedFind Bangladesh</title>
+<link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --red:#dc2626; --red-d:#b91c1c; --red-l:#fee2e2; --red-m:#fecaca;
+  --bg:#0f172a; --bg2:#1e293b; --bg3:#334155;
+  --pri:#2563eb; --em:#10b981; --warn:#f59e0b;
+  --txt:#f1f5f9; --sub:#94a3b8; --border:rgba(255,255,255,.08);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;}
+
+/* NAV */
+nav{background:rgba(15,23,42,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--txt);}
+.nav-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--red),#ef4444);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.nav-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.nav-links{display:flex;gap:1.5rem;align-items:center;}
+.nav-links a{color:var(--sub);text-decoration:none;font-size:.87rem;font-weight:500;transition:.2s;}
+.nav-links a:hover{color:var(--txt);}
+.nav-cta{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;padding:.45rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:700;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1a0505 60%,#2d0a0a 100%);padding:4rem 2rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(220,38,38,.12) 0%,transparent 70%);top:-200px;left:50%;transform:translateX(-50%);}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#fca5a5;padding:.4rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:600;margin-bottom:1.5rem;}
+.hero-badge .pulse{width:8px;height:8px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;box-shadow:0 0 0 0 rgba(239,68,68,.4);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.2;margin-bottom:1rem;}
+.hero h1 span{background:linear-gradient(135deg,#f87171,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{color:var(--sub);font-size:1rem;max-width:520px;margin:0 auto 2.5rem;line-height:1.7;}
+
+/* EMERGENCY BANNER */
+.emergency-bar{background:linear-gradient(135deg,var(--red),#b91c1c);padding:.75rem 2rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.emergency-bar a{color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:.4rem;}
+.emergency-bar span{color:rgba(255,255,255,.7);font-size:.8rem;}
+
+/* SEARCH BOX */
+.search-wrap{max-width:860px;margin:0 auto;position:relative;z-index:2;}
+.search-card{background:rgba(30,41,59,.9);border:1.5px solid rgba(220,38,38,.25);border-radius:20px;padding:1.75rem;backdrop-filter:blur(20px);}
+.search-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;margin-bottom:1rem;}
+.s-field{display:flex;flex-direction:column;gap:.35rem;}
+.s-label{font-size:.72rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;}
+.s-inp,.s-sel{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:.65rem 1rem;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;width:100%;transition:.2s;}
+.s-inp:focus,.s-sel:focus{border-color:var(--red);background:rgba(220,38,38,.08);}
+.s-sel option{background:#1e293b;}
+.search-btn{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;border:none;border-radius:10px;padding:.65rem 2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;white-space:nowrap;transition:.2s;display:flex;align-items:center;gap:.5rem;align-self:flex-end;}
+.search-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(220,38,38,.4);}
+.location-btn{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--sub);padding:.65rem 1rem;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s;display:flex;align-items:center;gap:.4rem;margin-top:auto;}
+.location-btn:hover{border-color:var(--em);color:var(--em);}
+.urgency-row{display:flex;gap:.5rem;flex-wrap:wrap;}
+.urgency-chip{padding:.3rem .9rem;border-radius:100px;border:1.5px solid;font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;}
+.urgency-chip[data-level="emergency"]{border-color:#ef4444;color:#ef4444;}
+.urgency-chip[data-level="urgent"]{border-color:#f59e0b;color:#f59e0b;}
+.urgency-chip[data-level="normal"]{border-color:#10b981;color:#10b981;}
+.urgency-chip.active[data-level="emergency"]{background:#ef4444;color:#fff;}
+.urgency-chip.active[data-level="urgent"]{background:#f59e0b;color:#fff;}
+.urgency-chip.active[data-level="normal"]{background:#10b981;color:#fff;}
+
+/* REGISTER DONATE */
+.register-bar{max-width:860px;margin:1rem auto 0;text-align:center;}
+.register-bar a{color:#fca5a5;font-size:.84rem;text-decoration:none;font-weight:600;}
+.register-bar a:hover{color:#f87171;}
+
+/* MAIN CONTENT */
+.main{max-width:1100px;margin:2rem auto;padding:0 1.5rem;}
+
+/* BLOOD GROUP QUICK SELECT */
+.bg-select-wrap{margin-bottom:2rem;}
+.bg-select-wrap h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:.75rem;color:var(--sub);}
+.bg-chips{display:flex;gap:.5rem;flex-wrap:wrap;}
+.bg-chip{width:64px;height:64px;border-radius:12px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-weight:700;font-size:.95rem;}
+.bg-chip small{font-size:.6rem;font-weight:500;color:var(--sub);margin-top:1px;}
+.bg-chip:hover,.bg-chip.active{border-color:var(--red);background:rgba(220,38,38,.12);color:#f87171;}
+.bg-chip.active small{color:#fca5a5;}
+
+/* RESULTS */
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.results-count{font-size:.85rem;color:var(--sub);}
+.results-count span{color:var(--txt);font-weight:700;}
+.sort-sel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.35rem .75rem;color:var(--txt);font-size:.82rem;font-family:'DM Sans',sans-serif;}
+
+.donors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:2rem;}
+.donor-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;padding:1.25rem;transition:.2s;position:relative;overflow:hidden;}
+.donor-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),#f87171);}
+.donor-card:hover{border-color:rgba(220,38,38,.4);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.3);}
+.donor-top{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+.donor-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--red),#f87171);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;flex-shrink:0;}
+.donor-name{font-weight:700;font-size:.95rem;margin-bottom:.2rem;}
+.donor-meta{font-size:.78rem;color:var(--sub);}
+.donor-badge{position:absolute;top:.9rem;right:.9rem;}
+.blood-group-badge{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;padding:.25rem .65rem;border-radius:8px;}
+.donor-info{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+.d-tag{display:flex;align-items:center;gap:.3rem;font-size:.75rem;color:var(--sub);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:6px;}
+.d-tag i{font-size:.65rem;}
+.donor-actions{display:flex;gap:.5rem;}
+.d-btn{flex:1;padding:.5rem;border-radius:8px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.3rem;font-family:'DM Sans',sans-serif;}
+.d-btn.call{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;}
+.d-btn.call:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(220,38,38,.4);}
+.d-btn.msg{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--txt);}
+.d-btn.msg:hover{background:rgba(255,255,255,.12);}
+.availability-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+.avail-yes{background:#10b981;}
+.avail-no{background:#ef4444;}
+.avail-maybe{background:#f59e0b;}
+
+/* REGISTER FORM */
+.reg-section{background:linear-gradient(135deg,rgba(220,38,38,.08),rgba(239,68,68,.04));border:1.5px solid rgba(220,38,38,.2);border-radius:20px;padding:2rem;margin-top:2rem;}
+.reg-section h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.4rem;}
+.reg-section p{color:var(--sub);font-size:.88rem;margin-bottom:1.5rem;}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.75rem;}
+.reg-field{display:flex;flex-direction:column;gap:.3rem;}
+.reg-label{font-size:.72rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;}
+.reg-inp,.reg-sel{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:.6rem .9rem;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:.2s;}
+.reg-inp:focus,.reg-sel:focus{border-color:var(--red);}
+.reg-sel option{background:#1e293b;}
+.reg-submit{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;border:none;border-radius:12px;padding:.8rem 2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;width:100%;margin-top:1rem;transition:.2s;}
+.reg-submit:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(220,38,38,.4);}
+
+/* BLOOD FACTS */
+.facts-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem 0;}
+.fact-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem;text-align:center;}
+.fact-icon{font-size:1.8rem;margin-bottom:.6rem;}
+.fact-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;background:linear-gradient(135deg,#f87171,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.fact-lbl{font-size:.78rem;color:var(--sub);margin-top:.2rem;}
+
+/* NEARBY MAP PLACEHOLDER */
+.map-section{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:2rem;margin:1.5rem 0;text-align:center;}
+.map-placeholder{background:rgba(255,255,255,.03);border:1.5px dashed rgba(255,255,255,.1);border-radius:14px;padding:3rem;display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.map-placeholder i{font-size:2.5rem;color:var(--sub);}
+.map-placeholder h3{font-family:'Syne',sans-serif;font-weight:700;}
+.map-placeholder p{color:var(--sub);font-size:.88rem;}
+.enable-location{background:linear-gradient(135deg,var(--em),#059669);color:#fff;border:none;border-radius:10px;padding:.65rem 1.5rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;}
+.enable-location:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,.4);}
+
+/* LOADING & STATES */
+.loading-state{text-align:center;padding:3rem;color:var(--sub);}
+.loading-state i{font-size:2rem;margin-bottom:1rem;color:var(--red);animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:3rem;color:var(--sub);}
+.empty-state i{font-size:2.5rem;margin-bottom:1rem;display:block;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:.75rem 1.25rem;font-size:.85rem;font-weight:600;z-index:9999;display:none;align-items:center;gap:.5rem;box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.toast.show{display:flex;}
+.toast.success{border-color:var(--em);color:var(--em);}
+.toast.error{border-color:var(--red);color:#f87171;}
+.toast.info{border-color:#60a5fa;color:#60a5fa;}
+
+@media(max-width:768px){
+  .search-grid{grid-template-columns:1fr 1fr;}
+  .donors-grid{grid-template-columns:1fr;}
+  .reg-grid{grid-template-columns:1fr 1fr;}
+  .facts-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- EMERGENCY BAR -->
+<div class="emergency-bar">
+  <a href="tel:999"><i class="fas fa-ambulance"></i> Emergency: 999</a>
+  <span>|</span>
+  <a href="tel:01969000911"><i class="fas fa-phone"></i> Ambulance: 01969-000911</a>
+  <span>|</span>
+  <a href="tel:01711-235989"><i class="fas fa-tint"></i> Blood Bank: 01711-235989</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="../../index.html"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+  <div class="nav-links">
+    <a href="../../index.html">Home</a>
+    <a href="../doctors/search.html">Doctors</a>
+    <a href="../symptoms/index.html">Symptom Check</a>
+    <a href="../donate/index.html" style="color:var(--sub);text-decoration:none;font-size:.87rem;font-weight:500;"><i class="fas fa-lungs"></i> Organ Donation</a>
+    <a href="#register" class="nav-cta"><i class="fas fa-heart"></i> Become Donor</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="pulse"></span> Live Donor Network — Bangladesh</div>
+  <h1>Find <span>Blood Donors</span><br>Near You — Right Now</h1>
+  <p>Connect with verified volunteer blood donors across Bangladesh. Every second counts in an emergency.</p>
+
+  <div class="search-wrap">
+    <div class="search-card">
+      <div class="search-grid">
+        <div class="s-field">
+          <label class="s-label">Blood Group</label>
+          <select class="s-sel" id="bloodGroupSel">
+            <option value="">Any Group</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option>
+            <option>O+</option><option>O-</option>
+          </select>
+        </div>
+        <div class="s-field">
+          <label class="s-label">Division</label>
+          <select class="s-sel" id="divisionSel">
+            <option value="">All Divisions</option>
+            <option>Dhaka</option><option>Chattogram</option><option>Rajshahi</option>
+            <option>Khulna</option><option>Sylhet</option><option>Barishal</option>
+            <option>Rangpur</option><option>Mymensingh</option>
+          </select>
+        </div>
+        <div class="s-field">
+          <label class="s-label">District</label>
+          <input type="text" class="s-inp" id="districtInp" placeholder="e.g. Gazipur, Comilla…">
+        </div>
+        <div class="s-field">
+          <button class="location-btn" onclick="useMyLocation()"><i class="fas fa-crosshairs"></i> Near Me</button>
+        </div>
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <div class="s-label" style="margin-bottom:.4rem;">Urgency Level</div>
+        <div class="urgency-row">
+          <div class="urgency-chip active" data-level="emergency" onclick="setUrgency(this)"><i class="fas fa-exclamation-triangle"></i> Emergency (Now)</div>
+          <div class="urgency-chip" data-level="urgent" onclick="setUrgency(this)"><i class="fas fa-clock"></i> Urgent (24h)</div>
+          <div class="urgency-chip" data-level="normal" onclick="setUrgency(this)"><i class="fas fa-calendar"></i> Planned</div>
+        </div>
+      </div>
+      <button class="search-btn" onclick="searchDonors()">
+        <i class="fas fa-search"></i> Find Donors
+      </button>
+    </div>
+    <div class="register-bar">
+      <a href="#register"><i class="fas fa-heart" style="color:#f87171"></i> Want to save lives? Register as a donor →</a>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- BLOOD FACTS -->
+  <div class="facts-row">
+    <div class="fact-card">
+      <div class="fact-icon">🩸</div>
+      <div class="fact-num">1 Unit</div>
+      <div class="fact-lbl">Can save up to 3 lives</div>
+    </div>
+    <div class="fact-card">
+      <div class="fact-icon">⏱️</div>
+      <div class="fact-num">Every 2s</div>
+      <div class="fact-lbl">Someone needs blood in BD</div>
+    </div>
+    <div class="fact-card">
+      <div class="fact-icon">🔄</div>
+      <div class="fact-num">56 Days</div>
+      <div class="fact-lbl">Safe to donate again</div>
+    </div>
+    <div class="fact-card">
+      <div class="fact-icon">💪</div>
+      <div class="fact-num">O-</div>
+      <div class="fact-lbl">Universal donor blood type</div>
+    </div>
+  </div>
+
+  <!-- QUICK BLOOD GROUP SELECT -->
+  <div class="bg-select-wrap">
+    <h3>Quick Filter by Blood Group</h3>
+    <div class="bg-chips">
+      <div class="bg-chip" onclick="quickGroup(this,'A+')">A+<small>Common</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'A-')">A-<small>Rare</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'B+')">B+<small>Common</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'B-')">B-<small>Rare</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'AB+')">AB+<small>Common</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'AB-')">AB-<small>Rarest</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'O+')">O+<small>Most</small></div>
+      <div class="bg-chip" onclick="quickGroup(this,'O-')">O-<small>Universal</small></div>
+    </div>
+  </div>
+
+  <!-- NEARBY MAP -->
+  <div class="map-section">
+    <div class="map-placeholder" id="mapPlaceholder">
+      <i class="fas fa-map-marked-alt"></i>
+      <h3>Enable Location for Nearby Donors</h3>
+      <p>Allow location access to find blood donors within 5–20 km of your current location</p>
+      <button class="enable-location" onclick="useMyLocation()"><i class="fas fa-crosshairs"></i> Enable My Location</button>
+    </div>
+    <div id="nearbyInfo" style="display:none;text-align:left;">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;">
+        <i class="fas fa-map-marker-alt" style="color:var(--red)"></i>
+        <span id="locationText" style="font-size:.88rem;color:var(--sub)">Detecting location…</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsWrap">
+    <div class="results-header">
+      <div class="results-count">Showing <span id="resultCount">0</span> available donors</div>
+      <select class="sort-sel" id="sortSel" onchange="sortDonors()">
+        <option value="distance">Sort: Nearest First</option>
+        <option value="lastDonated">Sort: Last Donated</option>
+        <option value="donations">Sort: Most Donations</option>
+      </select>
+    </div>
+    <div class="donors-grid" id="donorsGrid">
+      <div class="loading-state">
+        <i class="fas fa-circle-notch"></i>
+        <p>Search for donors above</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER AS DONOR -->
+  <div class="reg-section" id="register">
+    <h2><i class="fas fa-heart" style="color:var(--red);margin-right:.4rem"></i> Register as a Blood Donor</h2>
+    <p>Join Bangladesh's largest volunteer blood donor network. Your one donation can save up to 3 lives.</p>
+    <div class="reg-grid">
+      <div class="reg-field">
+        <label class="reg-label">Full Name</label>
+        <input type="text" class="reg-inp" id="regName" placeholder="Your name">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">Phone</label>
+        <input type="tel" class="reg-inp" id="regPhone" placeholder="01XXXXXXXXX">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">Blood Group</label>
+        <select class="reg-sel" id="regGroup">
+          <option value="">Select</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">Division</label>
+        <select class="reg-sel" id="regDiv">
+          <option value="">Select</option>
+          <option>Dhaka</option><option>Chattogram</option><option>Rajshahi</option>
+          <option>Khulna</option><option>Sylhet</option><option>Barishal</option>
+          <option>Rangpur</option><option>Mymensingh</option>
+        </select>
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">District</label>
+        <input type="text" class="reg-inp" id="regDistrict" placeholder="Your district">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">Age</label>
+        <input type="number" class="reg-inp" id="regAge" placeholder="18–60" min="18" max="60">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">Last Donated</label>
+        <input type="date" class="reg-inp" id="regLastDonated">
+      </div>
+      <div class="reg-field">
+        <label class="reg-label">Available Now?</label>
+        <select class="reg-sel" id="regAvail">
+          <option value="yes">Yes — Available</option>
+          <option value="maybe">Within 24h</option>
+          <option value="no">Not Now (Planned)</option>
+        </select>
+      </div>
+    </div>
+    <button class="reg-submit" onclick="registerDonor()">
+      <i class="fas fa-heart"></i> Register as Blood Donor — It's Free
+    </button>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="../../assets/js/config.js"></script>
+  <script>
+// ── API CONFIG ───────────────────────────────────────────────────────────
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://127.0.0.1:8000/api/donate'
+  : '/api/donate';
+
+let filteredDonors = [];
+let selectedGroup = '';
+let selectedUrgency = 'emergency';
+
+function setUrgency(el) {
+  document.querySelectorAll('.urgency-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedUrgency = el.dataset.level;
+}
+
+function quickGroup(el, group) {
+  document.querySelectorAll('.bg-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedGroup = group;
+  document.getElementById('bloodGroupSel').value = group;
+  searchDonors();
+}
+
+async function searchDonors() {
+  const group    = selectedGroup || document.getElementById('bloodGroupSel').value;
+  const division = document.getElementById('divisionSel').value;
+  const district = document.getElementById('districtInp').value.trim();
+
+  const grid = document.getElementById('donorsGrid');
+  grid.innerHTML = '<div class="loading-state"><i class="fas fa-circle-notch"></i><p>Searching donors…</p></div>';
+
+  try {
+    const params = new URLSearchParams();
+    if (group)    params.set('blood_group', group);
+    if (division) params.set('division', division);
+    if (district) params.set('district', district);
+
+    const res  = await fetch(`${API_BASE}/blood-search/?${params}`);
+    const data = await res.json();
+
+    filteredDonors = (data.donors || []).map(d => ({
+      donor_id:    d.donor_id,
+      name:        d.name,
+      initials:    d.initials,
+      group:       d.blood_group,
+      address:     d.address,
+      phone:       d.phone,
+      is_verified: d.is_verified,
+      registered:  d.registered_at ? d.registered_at.slice(0,10) : '—',
+    }));
+
+    document.getElementById('resultCount').textContent = filteredDonors.length;
+    renderDonors(filteredDonors);
+  } catch (err) {
+    // Demo fallback: show sample donors when backend is offline
+    console.warn('Backend offline — showing demo donors');
+    const DEMO_DONORS = [
+      { id:'D001', name:'Md. Rafiqul Islam', blood_group:'A+', district:'Dhaka', division:'Dhaka', phone:'01712345678', last_donated:'2024-11-15', available:'yes', registered:'2024-01-10' },
+      { id:'D002', name:'Farzana Begum', blood_group:'B+', district:'Dhaka', division:'Dhaka', phone:'01812345679', last_donated:'2024-10-20', available:'yes', registered:'2024-02-14' },
+      { id:'D003', name:'Karim Uddin', blood_group:'O+', district:'Chittagong', division:'Chattogram', phone:'01912345680', last_donated:'2024-09-05', available:'yes', registered:'2024-03-05' },
+      { id:'D004', name:'Nasrin Akter', blood_group:'AB+', district:'Rajshahi', division:'Rajshahi', phone:'01612345681', last_donated:'2025-01-10', available:'yes', registered:'2024-04-20' },
+      { id:'D005', name:'Jahirul Haque', blood_group:'A-', district:'Sylhet', division:'Sylhet', phone:'01712345682', last_donated:'2024-12-01', available:'yes', registered:'2024-05-15' },
+      { id:'D006', name:'Shamima Khanam', blood_group:'B-', district:'Khulna', division:'Khulna', phone:'01812345683', last_donated:'2024-08-22', available:'yes', registered:'2024-06-01' },
+      { id:'D007', name:'Tanvir Ahmed', blood_group:'O-', district:'Dhaka', division:'Dhaka', phone:'01512345684', last_donated:'2025-02-10', available:'yes', registered:'2024-07-10' },
+      { id:'D008', name:'Roksana Islam', blood_group:'O+', district:'Mymensingh', division:'Mymensingh', phone:'01612345685', last_donated:'2024-07-15', available:'yes', registered:'2024-08-05' },
+    ];
+    allDonors = DEMO_DONORS;
+    filteredDonors = DEMO_DONORS;
+    document.getElementById('resultCount').textContent = DEMO_DONORS.length;
+    renderDonors(DEMO_DONORS);
+    toast('Demo mode — showing sample donors (backend offline)', 'info');
+  }
+}
+
+function sortDonors() {
+  const by = document.getElementById('sortSel').value;
+  const sorted = [...filteredDonors].sort((a, b) => {
+    if (by === 'lastDonated') return new Date(b.registered) - new Date(a.registered);
+    return a.name.localeCompare(b.name);
+  });
+  renderDonors(sorted);
+}
+
+function renderDonors(donors) {
+  const grid = document.getElementById('donorsGrid');
+  if (!donors.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><p>No donors found. Try a different blood group or division.</p></div>`;
+    return;
+  }
+  grid.innerHTML = donors.map(d => `
+    <div class="donor-card">
+      <div class="donor-badge"><span class="blood-group-badge">${d.group}</span></div>
+      <div class="donor-top">
+        <div class="donor-av">${d.initials}</div>
+        <div>
+          <div class="donor-name">${d.name} ${d.is_verified ? '<i class="fas fa-check-circle" style="color:#10b981;font-size:.75rem;" title="Verified"></i>' : ''}</div>
+          <div class="donor-meta">${d.address ? d.address.substring(0,40) + (d.address.length>40?'…':'') : 'Bangladesh'}</div>
+        </div>
+      </div>
+      <div class="donor-info">
+        <div class="d-tag"><i class="fas fa-id-card"></i> ${d.donor_id}</div>
+        <div class="d-tag"><i class="fas fa-calendar"></i> Joined: ${d.registered}</div>
+        <div class="d-tag">
+          <span class="availability-dot avail-yes"></span>
+          Registered Donor
+        </div>
+      </div>
+      <div class="donor-actions">
+        <button class="d-btn call" onclick="callDonor('${d.name}','${d.phone}')">
+          <i class="fas fa-phone"></i> Contact
+        </button>
+        <button class="d-btn msg" onclick="requestBlood('${d.donor_id}','${d.name}','${d.group}')">
+          <i class="fas fa-envelope"></i> Request
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function callDonor(name, phone) {
+  if (confirm(`Contact ${name}?\n\nPhone: ${phone}\n\nThis will reveal your request to the donor.`)) {
+    toast(`Connecting to ${name}…`, 'success');
+  }
+}
+
+function requestBlood(donor_id, name, group) {
+  const urgency = selectedUrgency;
+  const msg = `Blood request sent to ${name} (${group})\nUrgency: ${urgency.toUpperCase()}\n\nThe donor will be notified.`;
+  if (confirm(msg)) {
+    toast(`Request sent to ${name}!`, 'success');
+  }
+}
+
+async function useMyLocation() {
+  if (!navigator.geolocation) {
+    toast('Geolocation not supported by your browser', 'error');
+    return;
+  }
+  toast('Detecting your location…', 'success');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude, longitude } = pos.coords;
+      document.getElementById('mapPlaceholder').style.display = 'none';
+      document.getElementById('nearbyInfo').style.display = 'block';
+      document.getElementById('locationText').textContent = `Location detected (${latitude.toFixed(4)}, ${longitude.toFixed(4)}) — Showing all registered donors`;
+      searchDonors();
+      toast('Showing donors near you!', 'success');
+    },
+    () => toast('Could not get location. Please allow location access.', 'error')
+  );
+}
+
+async function registerDonor() {
+  const name   = document.getElementById('regName').value.trim();
+  const phone  = document.getElementById('regPhone').value.trim();
+  const group  = document.getElementById('regGroup').value;
+  const div    = document.getElementById('regDiv').value;
+  const age    = document.getElementById('regAge').value;
+
+  if (!name || !phone || !group || !div || !age) {
+    toast('Please fill in all required fields', 'error');
+    return;
+  }
+  if (parseInt(age) < 18 || parseInt(age) > 60) {
+    toast('Donors must be 18–60 years old', 'error');
+    return;
+  }
+
+  // Calculate DOB from age
+  const dob = new Date();
+  dob.setFullYear(dob.getFullYear() - parseInt(age));
+  const dobStr = dob.toISOString().slice(0,10);
+
+  try {
+    const res = await fetch(`${API_BASE}/register/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, phone, blood_group: group,
+        address: (document.getElementById('regDistrict').value.trim() ? document.getElementById('regDistrict').value.trim() + ', ' : '') + div,
+        dob: dobStr,
+        gender: 'male',
+        nid: 'BD-BLOOD-' + phone.replace(/\D/g,'').slice(-6),
+        organs: ['blood'],
+        ec_name: 'Family',
+        ec_relation: 'Family',
+        ec_phone: phone,
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast(`${name} registered as ${group} donor! ID: ${data.donor_id} 🩸`, 'success');
+      document.getElementById('regName').value = '';
+      document.getElementById('regPhone').value = '';
+      document.getElementById('regGroup').value = '';
+      document.getElementById('regAge').value = '';
+      document.getElementById('regDistrict').value = '';
+      document.getElementById('regDiv').value = '';
+      document.getElementById('regAvail').value = 'yes';
+    } else {
+      toast(data.error || 'Registration failed. Please try again.', 'error');
+    }
+  } catch(err) {
+    toast('Could not connect to server. Please try again.', 'error');
+  }
+}
+
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Auto-load from URL params
+window.onload = () => {
+  const params = new URLSearchParams(location.search);
+  const group = params.get('group');
+  const div   = params.get('division');
+  if (group) {
+    document.getElementById('bloodGroupSel').value = group;
+    selectedGroup = group;
+    const chip = [...document.querySelectorAll('.bg-chip')].find(c => c.textContent.includes(group));
+    if (chip) chip.classList.add('active');
+  }
+  if (div) document.getElementById('divisionSel').value = div;
+  if (group || div) searchDonors();
+};
+</script>
+
+<!-- MEDFIND FOOTER -->
+<footer style="background:#0f172a;border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem 1.5rem;margin-top:4rem;">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between;margin-bottom:2rem;">
+      <div>
+        <img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;">
+        <p style="color:#64748b;font-size:.82rem;max-width:260px;line-height:1.6;">Bangladesh's digital healthcare platform. Connecting patients with doctors, donors, and AI health tools.</p>
+      </div>
+      <div style="display:flex;gap:3rem;flex-wrap:wrap;">
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Platform</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="/pages/symptoms/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Symptom Checker</a>
+            <a href="/pages/drugs/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Drug Directory</a>
+            <a href="/pages/treatments/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Treatment Guide</a>
+            <a href="/pages/blood-donor/search.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Blood Donors</a>
+            <a href="/pages/doctors/search.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Find Doctors</a>
+            <a href="/pages/hospital/list.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Hospitals</a>
+          </div>
+        </div>
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Legal</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="/pages/privacy.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Privacy Policy</a>
+            <a href="/pages/terms.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Terms of Service</a>
+            <a href="/pages/medical-disclaimer.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Medical Disclaimer</a>
+            <a href="/pages/consent-forms.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Consent Forms</a>
+            <a href="/pages/data-backup-policy.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Data & Security</a>
+            <a href="/pages/cookies.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Cookie Policy</a>
+          </div>
+        </div>
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Emergency</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="tel:999" style="color:#fca5a5;font-size:.82rem;font-weight:700;text-decoration:none;">🚨 999 — National Emergency</a>
+            <a href="tel:+8801772172829" style="color:#fca5a5;font-size:.82rem;text-decoration:none;">📞 MedFind: 01772-172829</a>
+            <a href="tel:029667722" style="color:#94a3b8;font-size:.82rem;text-decoration:none;">🏥 Dhaka Medical: 02-9667722</a>
+            <a href="mailto:medfindbd2026@gmail.com" style="color:#94a3b8;font-size:.82rem;text-decoration:none;">✉️ medfindbd2026@gmail.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
+      <p style="color:#475569;font-size:.78rem;">© 2026 MedFind Bangladesh. All rights reserved. Not a substitute for professional medical advice.</p>
+      <p style="color:#475569;font-size:.78rem;">🇧🇩 Made for Bangladesh | DGHS Compliant</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

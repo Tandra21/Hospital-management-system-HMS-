@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDFIND - Portal Selection</title>
+    <link rel="stylesheet" href="../assetsCSS/base.css">
+    <link rel="stylesheet" href="../assetsCSS/components.css">
+    <link rel="stylesheet" href="../assetsCSS/layout.css">
+    <link rel="stylesheet" href="../assetsCSS/responsive.css">
+    <style>
+        .portal-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .portal-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .portal-card.patient .portal-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .portal-card.doctor .portal-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .portal-card.admin .portal-icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .portal-card.pharmacy .portal-icon {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .portal-card.lab .portal-icon {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .portal-card.billing .portal-icon {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .portal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .portal-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .portal-button {
+            margin-top: auto;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .portal-button:hover {
+            background: #5568d3;
+        }
+
+        .header-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header-section">
+        <h1>🏥 MEDFIND - Portal Selection</h1>
+        <p>Choose your portal to access the healthcare management system</p>
+    </header>
+
+    <!-- Portal Selection -->
+    <div class="portal-container">
+        <!-- Patient Portal -->
+        <a href="../Patients/patient-deshboard.html" class="portal-card patient">
+            <div class="portal-icon">👤</div>
+            <h3 class="portal-title">Patient Portal</h3>
+            <p class="portal-description">
+                Access your medical records, book appointments, and manage your health
+            </p>
+            <button class="portal-button">Enter Portal</button>
+        </a>
+
+        <!-- Doctor Portal -->
+        <a href="../doctorsss/doctor-schedule.html" class="portal-card doctor">
+            <div class="portal-icon">👨‍⚕️</div>
+            <h3 class="portal-title">Doctor Portal</h3>
+            <p class="portal-description">
+                Manage your schedule, view patient records, and update prescriptions
+            </p>
+            <button class="portal-button">Enter Portal</button>
+        </a>
+
+        <!-- Admin Portal -->
+        <a href="../basics/admin-deshboard.html" class="portal-card admin">
+            <div class="portal-icon">⚙️</div>
+            <h3 class="portal-title">Admin Portal</h3>
+            <p class="portal-description">
+                Manage hospital operations, users, and system settings
+            </p>
+            <button class="portal-button">Enter Portal</button>
+        </a>
+
+        <!-- Pharmacy Portal -->
+        <a href="../doctorsss/pharmacy-deshboard.html" class="portal-card pharmacy">
+            <div class="portal-icon">💊</div>
+            <h3 class="portal-title">Pharmacy Portal</h3>
+            <p class="portal-description">
+                Manage medicine inventory, process prescriptions, and track stock
+            </p>
+            <button class="portal-button">Enter Portal</button>
+        </a>
+
+        <!-- Lab Portal -->
+        <a href="../laboratoryhms/lab-deshboard.html" class="portal-card lab">
+            <div class="portal-icon">🧪</div>
+            <h3 class="portal-title">Lab Portal</h3>
+            <p class="portal-description">
+                Manage lab tests, upload reports, and track test results
+            </p>
+            <button class="portal-button">Enter Portal</button>
+        </a>
+
+        <!-- Billing Portal -->
+        <a href="../billinghms/payment.html" class="portal-card billing">
+            <div class="portal-icon">💰</div>
+            <h3 class="portal-title">Billing Portal</h3>
+            <p class="portal-description">
+                Generate invoices, process payments, and manage billing records
+            </p>
+            <button class="portal-button">Enter Portal</button>
+        </a>
+    </div>
+
+    <script>
+        // Fetch API configuration from backend
+        const API_BASE_URL = 'http://localhost:8000/api';
+
+        // Test API connection
+        async function testAPIConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/hospitals/`);
+                if (response.ok) {
+                    console.log('✅ Backend API is connected!');
+                } else {
+                    console.warn('⚠️ Backend API returned error:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Backend API is not reachable:', error);
+                showNotification('Backend API is not reachable. Please ensure Django server is running on port 8000.', 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: ${type === 'error' ? '#f87171' : '#60a5fa'};
+                color: white;
+                border-radius: 6px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Test connection on page load
+        window.addEventListener('load', testAPIConnection);
+
+        // Add click handlers to portal cards
+        document.querySelectorAll('.portal-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

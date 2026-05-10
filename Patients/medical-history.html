@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical History - MedFind</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--secondary:#0d9488;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--purple:#7c3aed;--white:#fff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--gray-800);}
+        .app-layout{display:flex;min-height:100vh;}
+
+        /* SIDEBAR */
+        .sidebar{width:250px;background:linear-gradient(180deg,#1e3a5f,#1d4ed8);position:fixed;top:0;left:0;bottom:0;z-index:200;overflow-y:auto;}
+        .sidebar-logo{padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid rgba(255,255,255,.1);}
+        .logo-icon{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;}
+        .logo-text{font-size:1.25rem;font-weight:800;color:#fff;}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.25rem;color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;border-left:3px solid transparent;transition:.2s;}
+        .nav-item:hover,.nav-item.active{background:rgba(255,255,255,.1);color:#fff;border-left-color:#fff;}
+        .nav-item i{width:16px;text-align:center;}
+        .nav-group-label{padding:.75rem 1.25rem .25rem;font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);font-weight:600;}
+
+        /* MAIN */
+        .main-content{margin-left:250px;flex:1;}
+        .topbar{background:var(--white);height:64px;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;}
+        .topbar-title h1{font-size:1.2rem;font-weight:700;}
+        .topbar-title p{font-size:.78rem;color:var(--gray-500);}
+        .topbar-actions{display:flex;gap:.75rem;}
+        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:.2s;text-decoration:none;}
+        .btn-primary{background:var(--primary);color:#fff;}
+        .btn-primary:hover{background:var(--primary-dark);}
+        .btn-outline{background:var(--white);color:var(--primary);border:1.5px solid var(--primary);}
+        .btn-outline:hover{background:var(--primary-light);}
+        .btn-success{background:var(--success);color:#fff;}
+
+        /* PATIENT INFO HEADER */
+        .patient-header{background:linear-gradient(135deg,#1e3a5f,#2563eb);margin:1.5rem 2rem;border-radius:20px;padding:2rem;color:#fff;display:flex;align-items:center;gap:2rem;}
+        .patient-avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;border:3px solid rgba(255,255,255,.4);flex-shrink:0;}
+        .patient-main h2{font-size:1.5rem;font-weight:800;margin-bottom:.25rem;}
+        .patient-main p{font-size:.9rem;opacity:.8;margin-bottom:.75rem;}
+        .patient-tags{display:flex;flex-wrap:wrap;gap:.5rem;}
+        .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:.25rem .75rem;border-radius:100px;font-size:.78rem;}
+        .patient-vitals{margin-left:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;min-width:280px;}
+        .vital-mini{background:rgba(255,255,255,.1);border-radius:12px;padding:.75rem 1rem;text-align:center;}
+        .vital-mini .val{font-size:1.4rem;font-weight:800;}
+        .vital-mini .lbl{font-size:.72rem;opacity:.7;margin-top:.2rem;}
+
+        /* TAB NAVIGATION */
+        .tab-nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;gap:0;overflow-x:auto;}
+        .tab-btn{display:flex;align-items:center;gap:.5rem;padding:1rem 1.25rem;border:none;border-bottom:3px solid transparent;background:none;font-size:.875rem;font-weight:500;color:var(--gray-600);cursor:pointer;transition:.2s;white-space:nowrap;}
+        .tab-btn:hover{color:var(--primary);}
+        .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600;}
+        .tab-btn i{font-size:.85rem;}
+
+        /* CONTENT */
+        .page-content{padding:1.5rem 2rem;}
+        .tab-panel{display:none;}
+        .tab-panel.active{display:block;}
+
+        /* SECTION CARDS */
+        .section-card{background:var(--white);border-radius:16px;margin-bottom:1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;}
+        .sc-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-100);}
+        .sc-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.6rem;}
+        .sc-title i{font-size:.95rem;}
+        .sc-body{padding:1.5rem;}
+
+        /* DIAGNOSIS TABLE */
+        .data-table{width:100%;border-collapse:collapse;}
+        .data-table th{background:var(--gray-50);font-size:.78rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;padding:.75rem 1rem;text-align:left;}
+        .data-table td{padding:.85rem 1rem;border-bottom:1px solid var(--gray-50);font-size:.875rem;vertical-align:middle;}
+        .data-table tr:last-child td{border-bottom:none;}
+        .data-table tr:hover td{background:var(--gray-50);}
+        .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .65rem;border-radius:100px;font-size:.75rem;font-weight:600;}
+        .badge-green{background:#d1fae5;color:#065f46;}
+        .badge-blue{background:#dbeafe;color:#1e40af;}
+        .badge-red{background:#fee2e2;color:#991b1b;}
+        .badge-orange{background:#fef3c7;color:#92400e;}
+        .badge-purple{background:#f3e8ff;color:#6b21a8;}
+
+        /* PRESCRIPTION CARDS */
+        .prescription-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+        .rx-card{border:1.5px solid var(--gray-200);border-radius:14px;padding:1.25rem;transition:.2s;}
+        .rx-card:hover{border-color:var(--primary);box-shadow:0 4px 15px rgba(37,99,235,.1);}
+        .rx-top{display:flex;justify-content:space-between;margin-bottom:.75rem;}
+        .rx-name{font-size:.95rem;font-weight:700;color:var(--gray-900);}
+        .rx-dose{font-size:.85rem;color:var(--primary);font-weight:600;}
+        .rx-details{font-size:.8rem;color:var(--gray-600);line-height:1.6;}
+        .rx-footer{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--gray-100);}
+        .rx-doctor{font-size:.78rem;color:var(--gray-500);}
+        .rx-date{font-size:.78rem;color:var(--gray-400);}
+
+        /* LAB REPORTS */
+        .lab-report-card{border:1px solid var(--gray-200);border-radius:14px;padding:1.25rem;margin-bottom:.75rem;}
+        .lab-report-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
+        .lab-report-title{font-size:.95rem;font-weight:700;}
+        .lab-report-meta{font-size:.78rem;color:var(--gray-500);margin-top:.25rem;}
+        .lab-params{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem;}
+        .lab-param{display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;background:var(--gray-50);border-radius:8px;font-size:.8rem;}
+        .param-name{color:var(--gray-700);}
+        .param-val{font-weight:700;}
+        .param-val.normal{color:var(--success);}
+        .param-val.abnormal{color:var(--danger);}
+        .param-val.borderline{color:var(--warning);}
+
+        /* ALLERGIES */
+        .allergy-grid{display:flex;flex-wrap:wrap;gap:.75rem;}
+        .allergy-item{display:flex;align-items:center;gap:.5rem;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:10px;padding:.6rem 1rem;font-size:.85rem;font-weight:600;color:#991b1b;}
+        .no-allergy{display:flex;align-items:center;gap:.5rem;background:#d1fae5;border:1.5px solid #6ee7b7;border-radius:10px;padding:.6rem 1rem;font-size:.85rem;font-weight:600;color:#065f46;}
+
+        /* CHRONIC CONDITIONS */
+        .condition-card{display:flex;align-items:center;gap:1rem;padding:1rem;border:1px solid var(--gray-200);border-radius:12px;margin-bottom:.6rem;}
+        .cond-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+        .cond-info h4{font-size:.9rem;font-weight:600;}
+        .cond-info p{font-size:.8rem;color:var(--gray-500);margin-top:.2rem;}
+
+        /* TIMELINE */
+        .timeline{position:relative;padding-left:2rem;}
+        .timeline::before{content:'';position:absolute;left:.5rem;top:.5rem;bottom:.5rem;width:2px;background:var(--gray-200);}
+        .tl-item{position:relative;margin-bottom:1.5rem;}
+        .tl-dot{position:absolute;left:-1.6rem;top:.2rem;width:12px;height:12px;border-radius:50%;border:2px solid var(--white);z-index:1;}
+        .tl-dot.blue{background:var(--primary);}
+        .tl-dot.green{background:var(--success);}
+        .tl-dot.orange{background:var(--warning);}
+        .tl-dot.red{background:var(--danger);}
+        .tl-content{background:var(--gray-50);border-radius:12px;padding:1rem;border:1px solid var(--gray-200);}
+        .tl-meta{font-size:.78rem;color:var(--gray-500);margin-bottom:.5rem;display:flex;gap:1rem;}
+        .tl-content h4{font-size:.9rem;font-weight:600;margin-bottom:.3rem;}
+        .tl-content p{font-size:.83rem;color:var(--gray-600);line-height:1.5;}
+
+        /* DOCTOR NOTES */
+        .note-card{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;border-radius:12px;padding:1.25rem;margin-bottom:.75rem;position:relative;}
+        .note-card::before{content:'"';font-size:3rem;color:#fde68a;position:absolute;top:-.5rem;left:.75rem;font-family:serif;line-height:1;}
+        .note-text{font-size:.875rem;color:var(--gray-800);line-height:1.6;padding-top:.75rem;}
+        .note-meta{display:flex;justify-content:space-between;margin-top:.75rem;font-size:.78rem;color:var(--gray-500);}
+
+        @media(max-width:768px){.main-content{margin-left:0;}.sidebar{display:none;}.patient-header{flex-direction:column;text-align:center;}.patient-vitals{margin-left:0;width:100%;}.prescription-grid{grid-template-columns:1fr;}}
+    </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
+            <span class="logo-text">MedFind</span>
+        </div>
+        <div style="padding:1rem 0">
+            <div class="nav-group-label">Main</div>
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="appointments.html" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
+            <a href="medical-history.html" class="nav-item active"><i class="fas fa-notes-medical"></i> Medical History</a>
+            <a href="viewmaps.html" class="nav-item"><i class="fas fa-map-marked-alt"></i> Find Hospitals</a>
+            <div class="nav-group-label">Services</div>
+            <a href="../doctors/search.html" class="nav-item"><i class="fas fa-user-md"></i> Search Doctors</a>
+            <a href="../lab/tests.html" class="nav-item"><i class="fas fa-flask"></i> Lab Tests</a>
+            <a href="../billing/pharmacy.html" class="nav-item"><i class="fas fa-pills"></i> Pharmacy</a>
+            <div class="nav-group-label">Account</div>
+            <a href="#" class="nav-item"><i class="fas fa-user-circle"></i> My Profile</a>
+            <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="../login.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1><i class="fas fa-notes-medical" style="color:var(--primary)"></i> Medical History & Health Records</h1>
+                <p>Last updated: April 18, 2025 · Patient ID: MF-2025-1042</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Print Records</button>
+                <button class="btn btn-outline" onclick="exportPDF()"><i class="fas fa-file-pdf" style="color:#ef4444"></i> Download PDF</button>
+                <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Record</button>
+            </div>
+        </div>
+
+        <!-- PATIENT HEADER -->
+        <div class="patient-header">
+            <div class="patient-avatar">RA</div>
+            <div class="patient-main">
+                <h2>Rafiqul Alam</h2>
+                <p>Male · 42 years · DOB: 15 March 1983 · Blood Group: B+</p>
+                <div class="patient-tags">
+                    <span class="tag"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</span>
+                    <span class="tag"><i class="fas fa-phone"></i> +880 1XXX-XXXXXX</span>
+                    <span class="tag"><i class="fas fa-user-shield"></i> Emergency: Fatema Alam (Wife)</span>
+                    <span class="tag"><i class="fas fa-hospital"></i> Primary: BSMMU, Dhaka</span>
+                </div>
+            </div>
+            <div class="patient-vitals">
+                <div class="vital-mini"><div class="val">120/80</div><div class="lbl">Blood Pressure</div></div>
+                <div class="vital-mini"><div class="val">72 bpm</div><div class="lbl">Heart Rate</div></div>
+                <div class="vital-mini"><div class="val">68 kg</div><div class="lbl">Weight</div></div>
+                <div class="vital-mini"><div class="val">170 cm</div><div class="lbl">Height</div></div>
+            </div>
+        </div>
+
+        <!-- TAB NAVIGATION -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('diagnoses', this)"><i class="fas fa-stethoscope"></i> Diagnoses</button>
+            <button class="tab-btn" onclick="switchTab('prescriptions', this)"><i class="fas fa-prescription-bottle-alt"></i> Prescriptions</button>
+            <button class="tab-btn" onclick="switchTab('labreports', this)"><i class="fas fa-flask"></i> Lab Reports</button>
+            <button class="tab-btn" onclick="switchTab('appointments', this)"><i class="fas fa-calendar-alt"></i> Appointment History</button>
+            <button class="tab-btn" onclick="switchTab('allergies', this)"><i class="fas fa-allergies"></i> Allergies</button>
+            <button class="tab-btn" onclick="switchTab('chronic', this)"><i class="fas fa-heartbeat"></i> Chronic Conditions</button>
+            <button class="tab-btn" onclick="switchTab('notes', this)"><i class="fas fa-sticky-note"></i> Doctor Notes</button>
+        </div>
+
+        <!-- PAGE CONTENT -->
+        <div class="page-content">
+
+            <!-- DIAGNOSES -->
+            <div id="tab-diagnoses" class="tab-panel active">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-stethoscope" style="color:var(--primary)"></i> Previous Diagnoses</div>
+                        <button class="btn btn-primary" style="font-size:.8rem;padding:.4rem .9rem"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                    <div class="sc-body" style="padding:0">
+                        <table class="data-table">
+                            <thead><tr><th>Diagnosis</th><th>ICD-10 Code</th><th>Date</th><th>Doctor</th><th>Hospital</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Type 2 Diabetes Mellitus</strong></td><td><code>E11.9</code></td><td>Mar 10, 2024</td><td>Dr. Rahman Kabir</td><td>BSMMU, Dhaka</td><td><span class="badge badge-orange">Ongoing</span></td></tr>
+                                <tr><td><strong>Hypertension (Essential)</strong></td><td><code>I10</code></td><td>Jan 5, 2023</td><td>Dr. Karimul Hasan</td><td>Dhaka Medical College</td><td><span class="badge badge-orange">Managed</span></td></tr>
+                                <tr><td><strong>Acute Gastroenteritis</strong></td><td><code>A09</code></td><td>Nov 12, 2024</td><td>Dr. Fatema Khatun</td><td>Square Hospital</td><td><span class="badge badge-green">Resolved</span></td></tr>
+                                <tr><td><strong>Dengue Fever (DENV-2)</strong></td><td><code>A90</code></td><td>Aug 18, 2023</td><td>Dr. Shah Alam</td><td>BSMMU, Dhaka</td><td><span class="badge badge-green">Recovered</span></td></tr>
+                                <tr><td><strong>Hyperlipidemia</strong></td><td><code>E78.5</code></td><td>Mar 10, 2024</td><td>Dr. Rahman Kabir</td><td>BSMMU, Dhaka</td><td><span class="badge badge-orange">Ongoing</span></td></tr>
+                                <tr><td><strong>Community Acquired Pneumonia</strong></td><td><code>J18.9</code></td><td>Feb 3, 2022</td><td>Dr. Akash Bose</td><td>Popular Diagnostic</td><td><span class="badge badge-green">Resolved</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRESCRIPTIONS -->
+            <div id="tab-prescriptions" class="tab-panel">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-prescription-bottle-alt" style="color:var(--purple)"></i> Active Prescriptions</div>
+                        <a href="../billing/pharmacy.html" class="btn btn-outline" style="font-size:.8rem;padding:.4rem .9rem"><i class="fas fa-pills"></i> Order from Pharmacy</a>
+                    </div>
+                    <div class="sc-body">
+                        <div class="prescription-grid">
+                            <div class="rx-card">
+                                <div class="rx-top"><span class="rx-name">Metformin</span><span class="rx-dose">500mg</span></div>
+                                <div class="rx-details">
+                                    <p><strong>Dosage:</strong> 1 tablet twice daily (after meals)</p>
+                                    <p><strong>Duration:</strong> Ongoing · Refill every 30 days</p>
+                                    <p><strong>For:</strong> Type 2 Diabetes management</p>
+                                    <p><strong>Instructions:</strong> Do not skip doses. Monitor blood sugar daily.</p>
+                                </div>
+                                <div class="rx-footer"><span class="rx-doctor"><i class="fas fa-user-md"></i> Dr. Rahman Kabir</span><span class="rx-date">Mar 10, 2024</span></div>
+                            </div>
+                            <div class="rx-card">
+                                <div class="rx-top"><span class="rx-name">Amlodipine</span><span class="rx-dose">5mg</span></div>
+                                <div class="rx-details">
+                                    <p><strong>Dosage:</strong> 1 tablet daily (morning)</p>
+                                    <p><strong>Duration:</strong> Ongoing — long-term</p>
+                                    <p><strong>For:</strong> Hypertension (Blood Pressure control)</p>
+                                    <p><strong>Instructions:</strong> Do not stop suddenly. Check BP weekly.</p>
+                                </div>
+                                <div class="rx-footer"><span class="rx-doctor"><i class="fas fa-user-md"></i> Dr. Karimul Hasan</span><span class="rx-date">Jan 5, 2023</span></div>
+                            </div>
+                            <div class="rx-card">
+                                <div class="rx-top"><span class="rx-name">Atorvastatin</span><span class="rx-dose">20mg</span></div>
+                                <div class="rx-details">
+                                    <p><strong>Dosage:</strong> 1 tablet at bedtime</p>
+                                    <p><strong>Duration:</strong> Ongoing · 6 months review</p>
+                                    <p><strong>For:</strong> High LDL Cholesterol (Hyperlipidemia)</p>
+                                    <p><strong>Instructions:</strong> Avoid grapefruit juice. Report muscle pain.</p>
+                                </div>
+                                <div class="rx-footer"><span class="rx-doctor"><i class="fas fa-user-md"></i> Dr. Rahman Kabir</span><span class="rx-date">Mar 10, 2024</span></div>
+                            </div>
+                            <div class="rx-card">
+                                <div class="rx-top"><span class="rx-name">Pantoprazole</span><span class="rx-dose">40mg</span></div>
+                                <div class="rx-details">
+                                    <p><strong>Dosage:</strong> 1 tablet 30 min before breakfast</p>
+                                    <p><strong>Duration:</strong> 8 weeks (as needed)</p>
+                                    <p><strong>For:</strong> Acid reflux / Gastritis</p>
+                                    <p><strong>Instructions:</strong> Take on empty stomach. Avoid spicy foods.</p>
+                                </div>
+                                <div class="rx-footer"><span class="rx-doctor"><i class="fas fa-user-md"></i> Dr. Fatema Khatun</span><span class="rx-date">Nov 12, 2024</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAB REPORTS -->
+            <div id="tab-labreports" class="tab-panel">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-flask" style="color:var(--purple)"></i> Lab Reports History</div>
+                        <a href="../lab/tests.html" class="btn btn-primary" style="font-size:.8rem;padding:.4rem .9rem"><i class="fas fa-plus"></i> Book New Test</a>
+                    </div>
+                    <div class="sc-body">
+                        <div class="lab-report-card">
+                            <div class="lab-report-header">
+                                <div><div class="lab-report-title">Complete Blood Count (CBC)</div><div class="lab-report-meta"><i class="fas fa-hospital"></i> Popular Diagnostic · <i class="fas fa-calendar"></i> April 15, 2025</div></div>
+                                <span class="badge badge-green"><i class="fas fa-check-circle"></i> Overall Normal</span>
+                            </div>
+                            <div class="lab-params">
+                                <div class="lab-param"><span class="param-name">Hemoglobin</span><span class="param-val normal">14.2 g/dL</span></div>
+                                <div class="lab-param"><span class="param-name">WBC Count</span><span class="param-val normal">7,200/μL</span></div>
+                                <div class="lab-param"><span class="param-name">Platelet Count</span><span class="param-val normal">2.5 lakh/μL</span></div>
+                                <div class="lab-param"><span class="param-name">Hematocrit (PCV)</span><span class="param-val normal">42%</span></div>
+                                <div class="lab-param"><span class="param-name">MCV</span><span class="param-val normal">87 fL</span></div>
+                                <div class="lab-param"><span class="param-name">Eosinophils</span><span class="param-val borderline">5%</span></div>
+                            </div>
+                        </div>
+                        <div class="lab-report-card">
+                            <div class="lab-report-header">
+                                <div><div class="lab-report-title">Blood Sugar (FBS + HbA1c)</div><div class="lab-report-meta"><i class="fas fa-hospital"></i> Popular Diagnostic · <i class="fas fa-calendar"></i> April 15, 2025</div></div>
+                                <span class="badge badge-orange"><i class="fas fa-exclamation-triangle"></i> Borderline</span>
+                            </div>
+                            <div class="lab-params">
+                                <div class="lab-param"><span class="param-name">Fasting Blood Sugar</span><span class="param-val borderline">108 mg/dL</span></div>
+                                <div class="lab-param"><span class="param-name">HbA1c</span><span class="param-val borderline">6.4%</span></div>
+                                <div class="lab-param"><span class="param-name">Post-Prandial (2hr)</span><span class="param-val normal">145 mg/dL</span></div>
+                            </div>
+                        </div>
+                        <div class="lab-report-card">
+                            <div class="lab-report-header">
+                                <div><div class="lab-report-title">Lipid Profile</div><div class="lab-report-meta"><i class="fas fa-hospital"></i> Labaid Diagnostic · <i class="fas fa-calendar"></i> April 10, 2025</div></div>
+                                <span class="badge badge-red"><i class="fas fa-times-circle"></i> Abnormal — High LDL</span>
+                            </div>
+                            <div class="lab-params">
+                                <div class="lab-param"><span class="param-name">Total Cholesterol</span><span class="param-val abnormal">245 mg/dL</span></div>
+                                <div class="lab-param"><span class="param-name">LDL Cholesterol</span><span class="param-val abnormal">168 mg/dL</span></div>
+                                <div class="lab-param"><span class="param-name">HDL Cholesterol</span><span class="param-val normal">48 mg/dL</span></div>
+                                <div class="lab-param"><span class="param-name">Triglycerides</span><span class="param-val borderline">185 mg/dL</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPOINTMENT HISTORY -->
+            <div id="tab-appointments" class="tab-panel">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-calendar-alt" style="color:var(--success)"></i> Appointment History</div>
+                        <a href="appointments.html" class="btn btn-primary" style="font-size:.8rem;padding:.4rem .9rem"><i class="fas fa-plus"></i> New Appointment</a>
+                    </div>
+                    <div class="sc-body" style="padding:0">
+                        <table class="data-table">
+                            <thead><tr><th>Doctor</th><th>Specialty</th><th>Hospital</th><th>Date & Time</th><th>Type</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Dr. Karimul Hasan</strong></td><td>Cardiology</td><td>BSMMU, Dhaka</td><td>Apr 19, 2025 · 10:30 AM</td><td><span class="badge badge-blue">In-person</span></td><td><span class="badge badge-green">Confirmed</span></td></tr>
+                                <tr><td><strong>Dr. Sultana Begum</strong></td><td>Neurology</td><td>Square Hospital</td><td>Apr 22, 2025 · 3:00 PM</td><td><span class="badge badge-purple">Online</span></td><td><span class="badge badge-green">Confirmed</span></td></tr>
+                                <tr><td><strong>Dr. Rahman Kabir</strong></td><td>Internal Medicine</td><td>BSMMU, Dhaka</td><td>Mar 10, 2025 · 9:00 AM</td><td><span class="badge badge-blue">In-person</span></td><td><span class="badge badge-green">Completed</span></td></tr>
+                                <tr><td><strong>Dr. Fatema Khatun</strong></td><td>Gastroenterology</td><td>Square Hospital</td><td>Nov 12, 2024 · 11:00 AM</td><td><span class="badge badge-blue">In-person</span></td><td><span class="badge badge-green">Completed</span></td></tr>
+                                <tr><td><strong>Dr. Shah Alam</strong></td><td>Infectious Disease</td><td>BSMMU, Dhaka</td><td>Aug 18, 2023 · 10:00 AM</td><td><span class="badge badge-blue">In-person</span></td><td><span class="badge badge-green">Completed</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALLERGIES -->
+            <div id="tab-allergies" class="tab-panel">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-allergies" style="color:var(--danger)"></i> Known Allergies</div>
+                        <button class="btn btn-primary" style="font-size:.8rem;padding:.4rem .9rem"><i class="fas fa-plus"></i> Add Allergy</button>
+                    </div>
+                    <div class="sc-body">
+                        <h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px">Drug Allergies</h4>
+                        <div class="allergy-grid" style="margin-bottom:1.25rem">
+                            <div class="allergy-item"><i class="fas fa-exclamation-triangle"></i> Penicillin — Rash, Hives</div>
+                            <div class="allergy-item"><i class="fas fa-exclamation-triangle"></i> Sulfa Drugs — Severe Skin Reaction</div>
+                        </div>
+                        <h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px">Food Allergies</h4>
+                        <div class="allergy-grid" style="margin-bottom:1.25rem">
+                            <div class="allergy-item"><i class="fas fa-exclamation-triangle"></i> Shellfish — Anaphylaxis risk</div>
+                        </div>
+                        <h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px">Environmental Allergies</h4>
+                        <div class="allergy-grid">
+                            <div class="allergy-item"><i class="fas fa-exclamation-triangle"></i> Dust Mites — Rhinitis</div>
+                            <div class="allergy-item"><i class="fas fa-exclamation-triangle"></i> Pollen — Seasonal Allergy</div>
+                        </div>
+                        <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:1rem;margin-top:1.25rem">
+                            <p style="font-size:.85rem;color:#991b1b;font-weight:600"><i class="fas fa-shield-alt"></i> ⚠️ Alert for Healthcare Providers: Penicillin allergy — please document in all prescriptions. Use alternatives like Azithromycin or Doxycycline for bacterial infections.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHRONIC CONDITIONS -->
+            <div id="tab-chronic" class="tab-panel">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-heartbeat" style="color:var(--danger)"></i> Chronic Disease Records</div>
+                    </div>
+                    <div class="sc-body">
+                        <div class="condition-card">
+                            <div class="cond-icon" style="background:#fef3c7;color:#d97706"><i class="fas fa-tint"></i></div>
+                            <div class="cond-info">
+                                <h4>Type 2 Diabetes Mellitus (T2DM)</h4>
+                                <p>Diagnosed: March 2024 · Managed with Metformin 500mg · Target HbA1c &lt;7% · Last HbA1c: 6.4%</p>
+                            </div>
+                            <span class="badge badge-orange" style="margin-left:auto">Active</span>
+                        </div>
+                        <div class="condition-card">
+                            <div class="cond-icon" style="background:#fee2e2;color:#dc2626"><i class="fas fa-heartbeat"></i></div>
+                            <div class="cond-info">
+                                <h4>Essential Hypertension</h4>
+                                <p>Diagnosed: January 2023 · Managed with Amlodipine 5mg · BP target &lt;130/80 · Current: 120/80</p>
+                            </div>
+                            <span class="badge badge-green" style="margin-left:auto">Controlled</span>
+                        </div>
+                        <div class="condition-card">
+                            <div class="cond-icon" style="background:#dbeafe;color:#2563eb"><i class="fas fa-vial"></i></div>
+                            <div class="cond-info">
+                                <h4>Hyperlipidemia (High Cholesterol)</h4>
+                                <p>Diagnosed: March 2024 · Managed with Atorvastatin 20mg · LDL target &lt;100 · Current LDL: 168</p>
+                            </div>
+                            <span class="badge badge-red" style="margin-left:auto">Needs Attention</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOCTOR NOTES -->
+            <div id="tab-notes" class="tab-panel">
+                <div class="section-card">
+                    <div class="sc-header">
+                        <div class="sc-title"><i class="fas fa-sticky-note" style="color:var(--warning)"></i> Doctor Notes & Clinical Observations</div>
+                    </div>
+                    <div class="sc-body">
+                        <div class="note-card">
+                            <div class="note-text">Patient presents well-controlled hypertension on current medication regimen. Blood pressure today 120/80 mmHg — within target range. Advised to reduce sodium intake, increase physical activity to 30 min/day. Blood sugar remains borderline — intensify dietary control. Lipid profile shows elevated LDL (168). Increased Atorvastatin adherence discussed. Repeat lipid profile in 3 months. Patient counseled on cardiovascular risk factors.</div>
+                            <div class="note-meta"><span><i class="fas fa-user-md"></i> Dr. Karimul Hasan, Cardiologist</span><span><i class="fas fa-calendar"></i> March 10, 2025 · BSMMU, Dhaka</span></div>
+                        </div>
+                        <div class="note-card">
+                            <div class="note-text">Diabetic patient showing stable HbA1c at 6.4%. Continue Metformin 500mg BD. Educated patient on carbohydrate counting and glycemic index. Advised morning walk 30 minutes daily. SMBG (self-monitoring) at least 3x per week. Follow-up in 3 months. Referral to dietitian recommended for medical nutrition therapy.</div>
+                            <div class="note-meta"><span><i class="fas fa-user-md"></i> Dr. Rahman Kabir, Internal Medicine</span><span><i class="fas fa-calendar"></i> March 10, 2025 · BSMMU, Dhaka</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+}
+
+// API call
+async function loadMedicalHistory() {
+    try {
+        // const token = localStorage.getItem('access_token');
+        // const res = await fetch('/api/v1/patients/medical-history/', { headers: { 'Authorization': `Bearer ${token}` } });
+        // const data = await res.json();
+        console.log('API: /api/v1/patients/medical-history/');
+    } catch(e) { console.warn('API not connected'); }
+}
+loadMedicalHistory();
+
+// ── PDF DOWNLOAD ──────────────────────────────────────────────────────────────
+async function exportPDF() {
+    const btn = event.target.closest('button');
+    const origText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF…';
+    btn.disabled = true;
+
+    try {
+        // Try API export first
+        const token = localStorage.getItem('mf_token') || localStorage.getItem('medfind_token');
+        if (token) {
+            const res = await fetch('http://localhost:8000/api/v1/records/export/full/', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'MedFind_Health_Records.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+                if (window.MFC) MFC.toast('Health records PDF downloaded!', 'success');
+                return;
+            }
+        }
+    } catch(e) { /* fallback to client-side */ }
+
+    // ── Client-side PDF using jsPDF ──
+    if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
+        window.print();
+        return;
+    }
+
+    const { jsPDF } = window.jspdf || window;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const user = JSON.parse(localStorage.getItem('mf_user') || localStorage.getItem('medfind_user') || '{}');
+    const name = user.full_name || user.name || 'Patient';
+    const date = new Date().toLocaleDateString('en-BD', { year:'numeric', month:'long', day:'numeric' });
+
+    // Header
+    doc.setFillColor(37, 99, 235);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MedFind Bangladesh', 15, 18);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Health Records Summary', 15, 27);
+    doc.setFontSize(9);
+    doc.text(`Generated: ${date}`, 15, 35);
+
+    // Patient info box
+    doc.setFillColor(239, 246, 255);
+    doc.rect(10, 48, 190, 28, 'F');
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Patient Information', 15, 57);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(`Name: ${name}`, 15, 64);
+    doc.text(`Email: ${user.email || 'N/A'}`, 15, 70);
+    doc.text('Blood Group: A+', 100, 64);
+    doc.text('MedFind ID: MF-001284', 100, 70);
+
+    let y = 90;
+
+    // Diagnoses section
+    const sections = [
+        { title: 'Active Diagnoses', items: [
+            { label: 'Type 2 Diabetes Mellitus', detail: 'Diagnosed Jan 2024 · Controlled with Metformin 500mg' },
+            { label: 'Essential Hypertension', detail: 'Diagnosed Nov 2024 · Amlodipine 5mg daily' },
+        ]},
+        { title: 'Current Medications', items: [
+            { label: 'Metformin 500mg', detail: '1 tab twice daily after meals' },
+            { label: 'Amlodipine 5mg', detail: '1 tab daily morning' },
+            { label: 'Vitamin D3 1000IU', detail: '1 tab daily with food' },
+        ]},
+        { title: 'Recent Lab Results', items: [
+            { label: 'CBC (Jan 10, 2025)', detail: 'Haemoglobin: 13.8 g/dL · WBC: 7,200 · Platelets: 215,000 — Normal' },
+            { label: 'HbA1c (Jan 10, 2025)', detail: '7.2% — High (Target < 7.0%)' },
+            { label: 'Lipid Profile (Nov 22, 2024)', detail: 'Total Cholesterol: 198 · LDL: 128 · HDL: 42 — Normal' },
+        ]},
+        { title: 'Known Allergies', items: [
+            { label: 'Penicillin', detail: 'Severe allergic reaction — Avoid all penicillin-type antibiotics' },
+            { label: 'Sulfa Drugs', detail: 'Skin rash — Avoid sulfonamides' },
+        ]},
+    ];
+
+    sections.forEach(sec => {
+        if (y > 260) { doc.addPage(); y = 20; }
+
+        // Section header
+        doc.setFillColor(37, 99, 235);
+        doc.rect(10, y - 4, 190, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text(sec.title, 15, y + 1);
+        y += 10;
+
+        sec.items.forEach(item => {
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setTextColor(30, 41, 59);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(`• ${item.label}`, 15, y);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            const lines = doc.splitTextToSize(item.detail, 175);
+            doc.text(lines, 20, y + 5);
+            y += 5 + lines.length * 4 + 3;
+        });
+        y += 5;
+    });
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text('MedFind Bangladesh · Digital Health Platform · www.medfind.com.bd', 15, 290);
+        doc.text(`Page ${i} of ${pageCount}`, 185, 290, { align: 'right' });
+    }
+
+    doc.save(`MedFind_Health_Records_${name.replace(' ','_')}.pdf`);
+    if (window.MFC) MFC.toast('PDF downloaded successfully!', 'success', 'Download Complete');
+}
+
+</script>
+<script src="../../assets/js/components.js"></script>
+<script src="../../services/api.js"></script>
+</body>
+</html>

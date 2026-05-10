@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MedFind Bangladesh - Digital Healthcare Platform. Find doctors, hospitals, blood donors and AI health tools.">
+<title>Video Consultation - MedFind Telemedicine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#2563eb;--primary-light:#dbeafe;--secondary:#0d9488;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--purple:#7c3aed;--white:#fff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#0f172a;color:#fff;height:100vh;overflow:hidden;}
+
+        /* AUTH CHECK OVERLAY */
+        .auth-overlay{position:fixed;inset:0;background:rgba(15,23,42,.95);z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+        .auth-card{background:#1e293b;border:1px solid #334155;border-radius:20px;padding:2.5rem;max-width:400px;width:100%;text-align:center;}
+        .auth-card h2{font-size:1.4rem;font-weight:800;margin-bottom:.5rem;}
+        .auth-card p{color:#94a3b8;font-size:.9rem;margin-bottom:1.5rem;}
+        .auth-input{width:100%;padding:.7rem 1rem;background:#0f172a;border:1.5px solid #334155;border-radius:10px;color:#fff;font-size:.9rem;outline:none;margin-bottom:.75rem;}
+        .auth-input::placeholder{color:#475569;}
+        .auth-input:focus{border-color:var(--primary);}
+        .auth-btn{width:100%;padding:.75rem;background:var(--primary);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.2s;}
+        .auth-btn:hover{background:#1d4ed8;}
+        .auth-note{font-size:.78rem;color:#64748b;margin-top:.75rem;}
+
+        /* WAITING ROOM */
+        .waiting-room{position:fixed;inset:0;background:linear-gradient(135deg,#0f172a,#1e293b);z-index:1500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;}
+        .waiting-room.show{display:flex;}
+        .waiting-anim{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:2.5rem;animation:pulse-ring 2s infinite;}
+        @keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 20px rgba(37,99,235,0)}}
+        .waiting-room h2{font-size:1.4rem;font-weight:700;}
+        .waiting-room p{color:#94a3b8;font-size:.9rem;}
+        .waiting-status{display:flex;align-items:center;gap:.5rem;background:rgba(37,99,235,.2);padding:.5rem 1.25rem;border-radius:100px;font-size:.85rem;font-weight:600;color:var(--primary-light);}
+        .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse-dot 1.5s infinite;}
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+        /* VIDEO LAYOUT */
+        .video-layout{display:none;flex-direction:column;height:100vh;}
+        .video-layout.active{display:flex;}
+
+        /* VIDEO AREA */
+        .video-area{flex:1;position:relative;background:#000;overflow:hidden;}
+        .remote-video{width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#1e293b,#0f172a);display:flex;align-items:center;justify-content:center;}
+        .remote-placeholder{display:flex;flex-direction:column;align-items:center;gap:1rem;color:#fff;}
+        .remote-avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:800;border:4px solid rgba(255,255,255,.2);}
+        .remote-name{font-size:1.2rem;font-weight:700;}
+        .remote-status{font-size:.85rem;color:#94a3b8;}
+        
+        /* LOCAL VIDEO (PiP) */
+        .local-video-wrap{position:absolute;bottom:6rem;right:1.5rem;width:200px;height:150px;border-radius:16px;overflow:hidden;border:2px solid rgba(255,255,255,.3);box-shadow:0 8px 30px rgba(0,0,0,.4);cursor:move;}
+        .local-video{width:100%;height:100%;background:linear-gradient(135deg,#1e3a5f,#2563eb);display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.8);}
+        .local-label{position:absolute;bottom:.4rem;left:.5rem;font-size:.7rem;font-weight:600;color:rgba(255,255,255,.8);}
+        .local-muted{position:absolute;bottom:.4rem;right:.5rem;background:rgba(239,68,68,.8);color:#fff;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:.6rem;}
+        
+        /* TOP BAR */
+        .video-topbar{position:absolute;top:0;left:0;right:0;background:linear-gradient(180deg,rgba(0,0,0,.7),transparent);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;z-index:100;}
+        .session-info{display:flex;align-items:center;gap:.75rem;}
+        .session-badge{background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:#10b981;padding:.3rem .9rem;border-radius:100px;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:.4rem;}
+        .session-timer{font-size:1rem;font-weight:700;color:#fff;}
+        .session-secured{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:#94a3b8;}
+        .end-btn{background:rgba(239,68,68,.9);color:#fff;border:none;padding:.55rem 1.25rem;border-radius:100px;font-weight:700;font-size:.875rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:.2s;}
+        .end-btn:hover{background:#dc2626;}
+
+        /* CONTROL BAR */
+        .control-bar{background:#1e293b;padding:1rem 2rem;display:flex;align-items:center;justify-content:center;gap:1rem;position:relative;z-index:100;}
+        .ctrl-btn{width:54px;height:54px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:.2s;position:relative;}
+        .ctrl-btn.active{background:#334155;color:#fff;}
+        .ctrl-btn.active:hover{background:#475569;}
+        .ctrl-btn.danger{background:#ef4444;color:#fff;}
+        .ctrl-btn.danger:hover{background:#dc2626;}
+        .ctrl-btn.muted{background:#334155;color:#ef4444;}
+        .ctrl-btn-label{position:absolute;bottom:-20px;font-size:.65rem;font-weight:600;color:#94a3b8;white-space:nowrap;}
+
+        /* SIDE PANEL */
+        .side-panel{width:320px;background:#1e293b;display:flex;flex-direction:column;border-left:1px solid #334155;transition:.3s;overflow:hidden;}
+        .side-panel.collapsed{width:0;border:none;}
+        .panel-tabs{display:flex;border-bottom:1px solid #334155;}
+        .p-tab{flex:1;padding:.75rem;font-size:.8rem;font-weight:600;text-align:center;cursor:pointer;color:#94a3b8;border-bottom:2px solid transparent;transition:.2s;}
+        .p-tab.active{color:#fff;border-bottom-color:var(--primary);}
+
+        /* CHAT */
+        .chat-area{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem;}
+        .chat-msg{max-width:85%;}
+        .chat-msg.mine{align-self:flex-end;}
+        .chat-msg.theirs{align-self:flex-start;}
+        .msg-bubble{padding:.6rem .9rem;border-radius:12px;font-size:.85rem;line-height:1.5;}
+        .mine .msg-bubble{background:var(--primary);color:#fff;border-radius:12px 12px 0 12px;}
+        .theirs .msg-bubble{background:#334155;color:#e2e8f0;border-radius:12px 12px 12px 0;}
+        .msg-meta{font-size:.68rem;color:#64748b;margin-top:.25rem;text-align:right;}
+        .theirs .msg-meta{text-align:left;}
+        .chat-input-row{padding:.75rem;border-top:1px solid #334155;display:flex;gap:.5rem;}
+        .chat-input{flex:1;background:#0f172a;border:1.5px solid #334155;border-radius:10px;padding:.5rem .75rem;color:#fff;font-size:.85rem;outline:none;}
+        .chat-input::placeholder{color:#475569;}
+        .chat-send{background:var(--primary);color:#fff;border:none;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:.85rem;}
+
+        /* NOTES PANEL */
+        .notes-area{flex:1;padding:1rem;display:flex;flex-direction:column;gap:.75rem;}
+        .notes-title{font-size:.85rem;font-weight:700;color:#e2e8f0;}
+        .notes-textarea{flex:1;background:#0f172a;border:1.5px solid #334155;border-radius:10px;padding:.75rem;color:#e2e8f0;font-size:.85rem;outline:none;resize:none;font-family:'Inter',sans-serif;}
+        .notes-textarea::placeholder{color:#475569;}
+        .notes-save{background:var(--success);color:#fff;border:none;padding:.55rem 1rem;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;align-self:flex-end;}
+
+        /* PRESCRIPTION PAD */
+        .rx-area{flex:1;padding:1rem;overflow-y:auto;}
+        .rx-form{display:flex;flex-direction:column;gap:.75rem;}
+        .rx-input{width:100%;background:#0f172a;border:1.5px solid #334155;border-radius:8px;padding:.55rem .75rem;color:#e2e8f0;font-size:.82rem;outline:none;font-family:'Inter',sans-serif;}
+        .rx-input::placeholder{color:#475569;}
+        .add-rx-btn{background:#334155;color:#e2e8f0;border:none;padding:.5rem .75rem;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;}
+        .rx-list{display:flex;flex-direction:column;gap:.4rem;}
+        .rx-entry{background:#0f172a;border-radius:8px;padding:.5rem .75rem;font-size:.78rem;color:#94a3b8;display:flex;justify-content:space-between;}
+        .send-rx-btn{background:var(--success);color:#fff;border:none;padding:.65rem;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;}
+
+        /* SECURITY BADGE */
+        .security-badge{position:absolute;top:.75rem;left:50%;transform:translateX(-50%);background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);padding:.3rem .9rem;border-radius:100px;font-size:.72rem;font-weight:600;color:#10b981;display:flex;align-items:center;gap:.4rem;}
+
+        /* PERMISSIONS CHECK */
+        .perm-overlay{position:fixed;inset:0;background:rgba(15,23,42,.9);z-index:1800;display:flex;align-items:center;justify-content:center;}
+        .perm-card{background:#1e293b;border-radius:20px;padding:2rem;max-width:380px;text-align:center;}
+        .perm-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;}
+        .perm-card p{color:#94a3b8;font-size:.85rem;margin-bottom:1.5rem;}
+        .perm-icons{display:flex;justify-content:center;gap:2rem;margin-bottom:1.5rem;}
+        .perm-icon-item{display:flex;flex-direction:column;align-items:center;gap:.5rem;font-size:.78rem;color:#94a3b8;}
+        .perm-icon-item i{font-size:1.5rem;color:#e2e8f0;}
+        .allow-btn{background:var(--primary);color:#fff;border:none;padding:.65rem 2rem;border-radius:10px;font-weight:700;cursor:pointer;font-size:.9rem;}
+
+        @media(max-width:768px){.side-panel{display:none;}.local-video-wrap{width:120px;height:90px;}.control-bar{padding:.75rem;gap:.65rem;}.ctrl-btn{width:44px;height:44px;font-size:.95rem;}}
+    </style>
+</head>
+<body>
+
+<!-- PERMISSIONS CHECK -->
+<div class="perm-overlay" id="permOverlay">
+    <div class="perm-card">
+        <h3><i class="fas fa-lock" style="color:var(--primary)"></i> Camera & Microphone Access</h3>
+        <p>MedFind needs access to your camera and microphone for the video consultation. Your session is end-to-end encrypted.</p>
+        <div class="perm-icons">
+            <div class="perm-icon-item"><i class="fas fa-video"></i> Camera</div>
+            <div class="perm-icon-item"><i class="fas fa-microphone"></i> Microphone</div>
+            <div class="perm-icon-item"><i class="fas fa-shield-alt" style="color:var(--success)"></i> Encrypted</div>
+        </div>
+        <button class="allow-btn" onclick="requestPermissions()"><i class="fas fa-check"></i> Allow Access & Join</button>
+    </div>
+</div>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="authOverlay" style="display:none">
+    <div style="font-size:2.5rem;margin-bottom:.5rem">🏥</div>
+    <div class="auth-card">
+        <h2>Secure Video Consultation</h2>
+        <p>Enter your session code to join the telemedicine consultation. This session is private and encrypted.</p>
+        <input type="text" class="auth-input" id="sessionCode" placeholder="Session Code (e.g. MF-2025-XXXX)">
+        <input type="text" class="auth-input" id="patientName" value="Rafiqul Alam" placeholder="Your name">
+        <button class="auth-btn" onclick="joinSession()"><i class="fas fa-video"></i> Join Consultation</button>
+        <p class="auth-note"><i class="fas fa-shield-alt" style="color:var(--success)"></i> End-to-end encrypted · HIPAA compliant · Session auto-expires</p>
+    </div>
+</div>
+
+<!-- WAITING ROOM -->
+<div class="waiting-room" id="waitingRoom">
+    <div class="waiting-anim">👨‍⚕️</div>
+    <h2>Waiting for Doctor...</h2>
+    <p>Dr. Karimul Hasan will join shortly</p>
+    <div class="waiting-status">
+        <span class="pulse-dot"></span>
+        <span>Doctor is preparing for your consultation</span>
+    </div>
+    <div style="color:#64748b;font-size:.8rem">Estimated wait: <strong style="color:#fff">2-3 minutes</strong></div>
+    <button style="background:#334155;color:#e2e8f0;border:none;padding:.5rem 1.25rem;border-radius:8px;cursor:pointer;font-size:.85rem;margin-top:.5rem" onclick="endCall()">
+        <i class="fas fa-times"></i> Cancel
+    </button>
+</div>
+
+<!-- MAIN VIDEO UI -->
+<div class="video-layout" id="videoLayout">
+    <div class="video-area">
+        <!-- REMOTE VIDEO -->
+        <div class="remote-video" id="remoteVideoArea">
+            <div class="remote-placeholder" id="remotePlaceholder">
+                <div class="remote-avatar" id="remoteAvatar">KH</div>
+                <div class="remote-name">Dr. Karimul Hasan</div>
+                <div class="remote-status"><i class="fas fa-video"></i> Connecting video...</div>
+            </div>
+            <video id="remoteVideo" style="display:none;width:100%;height:100%;object-fit:cover"></video>
+        </div>
+
+        <!-- LOCAL VIDEO (PiP) -->
+        <div class="local-video-wrap" id="localVideoWrap">
+            <div class="local-video" id="localVideoPlaceholder">
+                <i class="fas fa-user"></i>
+            </div>
+            <video id="localVideo" style="display:none;width:100%;height:100%;object-fit:cover"></video>
+            <div class="local-label">You</div>
+            <div class="local-muted" id="localMuted"><i class="fas fa-microphone-slash"></i></div>
+        </div>
+
+        <!-- TOP BAR -->
+        <div class="video-topbar">
+            <div class="session-info">
+                <div class="session-badge">
+                    <span class="pulse-dot"></span> LIVE
+                </div>
+                <div class="session-timer" id="sessionTimer">00:00</div>
+                <div class="session-secured"><i class="fas fa-lock"></i> Encrypted</div>
+            </div>
+            <div class="security-badge"><i class="fas fa-shield-alt"></i> Secure Session · MF-2025-7842</div>
+            <button class="end-btn" onclick="confirmEnd()"><i class="fas fa-phone-slash"></i> End Call</button>
+        </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="control-bar">
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" id="micBtn" onclick="toggleMic()"><i class="fas fa-microphone" id="micIcon"></i></button>
+            <span class="ctrl-btn-label">Mic</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" id="camBtn" onclick="toggleCam()"><i class="fas fa-video" id="camIcon"></i></button>
+            <span class="ctrl-btn-label">Camera</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" onclick="toggleSpeaker()"><i class="fas fa-volume-up"></i></button>
+            <span class="ctrl-btn-label">Speaker</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" onclick="toggleScreenShare()"><i class="fas fa-desktop"></i></button>
+            <span class="ctrl-btn-label">Share</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" onclick="togglePanel('chat')"><i class="fas fa-comments"></i></button>
+            <span class="ctrl-btn-label">Chat</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" onclick="togglePanel('notes')"><i class="fas fa-sticky-note"></i></button>
+            <span class="ctrl-btn-label">Notes</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="ctrl-btn active" onclick="togglePanel('rx')"><i class="fas fa-prescription"></i></button>
+            <span class="ctrl-btn-label">Rx</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;margin-left:1rem">
+            <button class="ctrl-btn danger" onclick="confirmEnd()"><i class="fas fa-phone-slash"></i></button>
+            <span class="ctrl-btn-label">End Call</span>
+        </div>
+    </div>
+</div>
+
+<!-- SIDE PANEL would be overlaid on the right, but simplified inline -->
+<div id="sidePanel" style="position:fixed;right:0;top:0;bottom:0;width:320px;background:#1e293b;border-left:1px solid #334155;z-index:200;display:none;flex-direction:column;transform:translateX(100%);transition:.3s">
+    <div class="panel-tabs">
+        <div class="p-tab active" onclick="switchPanelTab('chat',this)">Chat</div>
+        <div class="p-tab" onclick="switchPanelTab('files',this)"><i class="fas fa-file-medical"></i> Files</div>
+        <div class="p-tab" onclick="switchPanelTab('rx',this)">Rx</div>
+        <div class="p-tab" onclick="switchPanelTab('notes',this)">Notes</div>
+        <button onclick="closeSidePanel()" style="background:none;border:none;color:#94a3b8;padding:.5rem .75rem;cursor:pointer;font-size:1rem">×</button>
+    </div>
+
+    <!-- CHAT -->
+    <div id="chatPanel" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+        <div class="chat-area" id="chatMessages">
+            <div class="chat-msg theirs">
+                <div class="msg-bubble">Hello! I can see you clearly. How are you feeling today?</div>
+                <div class="msg-meta">Dr. Karimul Hasan · 10:02 AM</div>
+            </div>
+            <div class="chat-msg mine">
+                <div class="msg-bubble">Good morning Doctor! I have been experiencing chest discomfort for 3 days.</div>
+                <div class="msg-meta">You · 10:03 AM</div>
+            </div>
+        </div>
+        <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMessage()">
+            <button class="chat-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- FILES SHARING PANEL -->
+    <div id="filesPanel" style="display:none;flex:1;flex-direction:column;overflow-y:auto;padding:1rem;gap:.75rem">
+        <div style="font-size:.82rem;font-weight:700;color:#e2e8f0;">📎 Share Medical Files with Doctor</div>
+        <div style="border:2px dashed #334155;border-radius:12px;padding:1.25rem;text-align:center;cursor:pointer" onclick="patientUploadFile()" id="uploadZone">
+            <i class="fas fa-cloud-upload-alt" style="font-size:1.5rem;color:#475569;margin-bottom:.5rem;display:block"></i>
+            <div style="font-size:.82rem;color:#94a3b8">Click to upload test reports, prescriptions, X-rays</div>
+            <div style="font-size:.72rem;color:#475569;margin-top:.25rem">PDF, JPG, PNG · Max 20MB</div>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,image/*" style="display:none" onchange="handleFileUpload(event)">
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#475569;margin-top:.25rem">Your Uploaded Files</div>
+        <div id="uploadedFiles" style="display:flex;flex-direction:column;gap:.5rem">
+            <div style="background:#1e293b;border-radius:10px;padding:.6rem .75rem;display:flex;align-items:center;gap:.6rem">
+                <div style="width:30px;height:30px;border-radius:7px;background:rgba(220,38,38,.2);color:#fca5a5;display:flex;align-items:center;justify-content:center;font-size:.8rem"><i class="fas fa-file-pdf"></i></div>
+                <div style="flex:1"><div style="font-size:.78rem;color:#e2e8f0;font-weight:600">Previous_Prescription.pdf</div><div style="font-size:.67rem;color:#475569">0.8MB · Uploaded 3 days ago</div></div>
+                <span style="font-size:.62rem;font-weight:700;background:rgba(5,150,105,.2);color:#6ee7b7;padding:.1rem .35rem;border-radius:100px">SENT</span>
+            </div>
+        </div>
+        <div style="font-size:.72rem;color:#475569;display:flex;align-items:center;gap:.35rem;margin-top:.25rem">
+            <i class="fas fa-shield-alt" style="color:#10b981"></i>
+            Files are private — only your doctor can access them
+        </div>
+    </div>
+
+    <!-- NOTES -->
+    <div id="notesPanel" style="display:none;flex:1;flex-direction:column">
+        <div class="notes-area">
+            <div class="notes-title">Clinical Notes (Doctor)</div>
+            <textarea class="notes-textarea" rows="10" placeholder="Patient presenting with chest discomfort x 3 days...&#10;BP: 130/85 mmHg&#10;HR: 80 bpm&#10;Impression: ..."></textarea>
+            <button class="notes-save" onclick="saveNotes()"><i class="fas fa-save"></i> Save Notes</button>
+        </div>
+    </div>
+
+    <!-- PRESCRIPTION -->
+    <div id="rxPanel" style="display:none;flex:1;flex-direction:column">
+        <div class="rx-area">
+            <div style="font-size:.85rem;font-weight:700;color:#e2e8f0;margin-bottom:.75rem">Digital Prescription</div>
+            <div class="rx-form">
+                <input type="text" class="rx-input" placeholder="Medicine name (e.g. Amlodipine 5mg)">
+                <input type="text" class="rx-input" placeholder="Dosage (e.g. 1 tab once daily)">
+                <input type="text" class="rx-input" placeholder="Duration (e.g. 30 days)">
+                <input type="text" class="rx-input" placeholder="Special instructions">
+                <button class="add-rx-btn" onclick="addRxItem()"><i class="fas fa-plus"></i> Add Medicine</button>
+            </div>
+            <div class="rx-list" id="rxList" style="margin-top:.75rem"></div>
+            <button class="send-rx-btn" style="margin-top:1rem" onclick="sendPrescription()">
+                <i class="fas fa-paper-plane"></i> Send Prescription to Patient
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// STATE
+let micEnabled = true, camEnabled = true, callDuration = 0;
+let timerInterval = null;
+let activePanelTab = 'chat';
+let rxItems = [];
+const urlParams = new URLSearchParams(window.location.search);
+const doctorId = urlParams.get('doctor') || '1';
+
+// CHECK AUTH
+function init() {
+    const token = localStorage.getItem('mf_token') || localStorage.getItem('medfind_token') || localStorage.getItem('access_token');
+    // In production: verify token via /api/v1/auth/verify-session/
+    document.getElementById('permOverlay').style.display = 'flex';
+}
+
+function requestPermissions() {
+    document.getElementById('permOverlay').style.display = 'none';
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                const localVideo = document.getElementById('localVideo');
+                localVideo.srcObject = stream;
+                localVideo.play();
+                localVideo.style.display = 'block';
+                document.getElementById('localVideoPlaceholder').style.display = 'none';
+                startWaitingRoom();
+            })
+            .catch(err => {
+                console.warn('Media access denied:', err);
+                startWaitingRoom(); // Continue with placeholder
+            });
+    } else {
+        startWaitingRoom();
+    }
+}
+
+function startWaitingRoom() {
+    document.getElementById('waitingRoom').classList.add('show');
+    // Simulate doctor joining after 3 seconds
+    setTimeout(() => {
+        document.getElementById('waitingRoom').classList.remove('show');
+        startCall();
+    }, 3000);
+}
+
+function startCall() {
+    document.getElementById('videoLayout').classList.add('active');
+    // Simulate remote video connected
+    setTimeout(() => {
+        document.getElementById('remotePlaceholder').querySelector('.remote-status').innerHTML = 
+            '<i class="fas fa-check-circle" style="color:#10b981"></i> Connected';
+    }, 2000);
+
+    // START TIMER
+    timerInterval = setInterval(() => {
+        callDuration++;
+        const m = Math.floor(callDuration / 60).toString().padStart(2, '0');
+        const s = (callDuration % 60).toString().padStart(2, '0');
+        document.getElementById('sessionTimer').textContent = `${m}:${s}`;
+    }, 1000);
+
+    // Log session to API
+    logSessionStart();
+}
+
+async function logSessionStart() {
+    const token = localStorage.getItem('mf_token') || localStorage.getItem('medfind_token');
+    if (!token) return;
+    try {
+        await fetch('http://localhost:8000/api/v1/telemedicine/sessions/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({
+                appointment_id: new URLSearchParams(location.search).get('appointment') || '1',
+                doctor_id: doctorId,
+                room_id: 'mf-room-' + Math.random().toString(36).slice(2, 12),
+                started_at: new Date().toISOString()
+            })
+        });
+        console.log('[MedFind] Video session logged to API');
+    } catch(e) {
+        console.log('[MedFind] Session logging (API offline):', e.message);
+    }
+}
+
+function toggleMic() {
+    micEnabled = !micEnabled;
+    document.getElementById('micBtn').className = `ctrl-btn ${micEnabled ? 'active' : 'muted'}`;
+    document.getElementById('micIcon').className = `fas fa-microphone${micEnabled ? '' : '-slash'}`;
+    document.getElementById('localMuted').style.display = micEnabled ? 'none' : 'flex';
+    // Stop/start local audio track
+    const stream = document.getElementById('localVideo').srcObject;
+    if (stream) stream.getAudioTracks().forEach(t => t.enabled = micEnabled);
+}
+
+function toggleCam() {
+    camEnabled = !camEnabled;
+    document.getElementById('camBtn').className = `ctrl-btn ${camEnabled ? 'active' : 'muted'}`;
+    document.getElementById('camIcon').className = `fas fa-video${camEnabled ? '' : '-slash'}`;
+    const stream = document.getElementById('localVideo').srcObject;
+    if (stream) stream.getVideoTracks().forEach(t => t.enabled = camEnabled);
+}
+
+function toggleSpeaker() {
+    const btn = event.currentTarget;
+    btn.classList.toggle('muted');
+}
+
+function toggleScreenShare() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        navigator.mediaDevices.getDisplayMedia({video:true}).then(stream => {
+            const localVideo = document.getElementById('localVideo');
+            localVideo.srcObject = stream;
+            localVideo.play();
+        }).catch(e => { if(window.MFC) MFC.toast('Screen sharing not available in this browser','warning'); });
+    } else {
+        if(window.MFC) MFC.toast('Please use Chrome/Edge for screen sharing','info');
+    }
+}
+
+function togglePanel(panel) {
+    const sp = document.getElementById('sidePanel');
+    if (sp.style.display === 'flex' && activePanelTab === panel) {
+        closeSidePanel();
+    } else {
+        sp.style.display = 'flex';
+        sp.style.transform = 'translateX(0)';
+        switchPanelTab(panel);
+    }
+}
+
+function switchPanelTab(panel, btn) {
+    activePanelTab = panel;
+    ['chatPanel','notesPanel','rxPanel','filesPanel'].forEach(p => {
+        const el = document.getElementById(p);
+        el.style.display = 'none';
+    });
+    document.getElementById(panel + 'Panel').style.display = 'flex';
+    if (btn) {
+        document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+    }
+}
+
+function closeSidePanel() {
+    const sp = document.getElementById('sidePanel');
+    sp.style.transform = 'translateX(100%)';
+    setTimeout(() => sp.style.display = 'none', 300);
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const area = document.getElementById('chatMessages');
+    const now = new Date().toLocaleTimeString('en-BD', {hour:'2-digit',minute:'2-digit'});
+    area.innerHTML += `
+        <div class="chat-msg mine">
+            <div class="msg-bubble">${msg}</div>
+            <div class="msg-meta">You · ${now}</div>
+        </div>
+    `;
+    area.scrollTop = area.scrollHeight;
+    input.value = '';
+    // POST /api/v1/telemedicine/sessions/{id}/messages/
+    console.log(`Chat: POST /api/v1/telemedicine/messages/ → {content: '${msg}'}`);
+}
+
+function saveNotes() {
+    if(window.MFC) MFC.toast('Notes saved to patient record','success');
+}
+
+function addRxItem() {
+    const inputs = document.querySelectorAll('.rx-input');
+    const name = inputs[0].value.trim();
+    if (!name) { inputs[0].focus(); return; }
+    const item = {name, dosage: inputs[1].value, duration: inputs[2].value};
+    rxItems.push(item);
+    document.getElementById('rxList').innerHTML = rxItems.map((r, i) => `
+        <div class="rx-entry">
+            <span>💊 ${r.name} · ${r.dosage} · ${r.duration}</span>
+            <button onclick="rxItems.splice(${i},1);addRxItem()" style="background:none;border:none;color:#ef4444;cursor:pointer">×</button>
+        </div>
+    `).join('');
+    inputs[0].value = ''; inputs[1].value = ''; inputs[2].value = ''; inputs[3].value = '';
+}
+
+function sendPrescription() {
+    if (!rxItems.length) { if(window.MFC) MFC.toast('Add at least one medicine first','warning'); return; }
+    if(window.MFC) MFC.toast('Digital prescription sent! Patient will receive via SMS and email.', 'success', '✅ Prescription Sent', 5000);
+    rxItems = [];
+    document.getElementById('rxList').innerHTML = '';
+}
+
+function confirmEnd() {
+    if (confirm('End this consultation?\n\nThe session recording and notes will be saved automatically.')) {
+        endCall();
+    }
+}
+
+function endCall() {
+    clearInterval(timerInterval);
+    const dur = callDuration;
+    const m = Math.floor(dur / 60);
+    const s = dur % 60;
+    // Stop media streams
+    const localVideo = document.getElementById('localVideo');
+    if (localVideo.srcObject) {
+        localVideo.srcObject.getTracks().forEach(t => t.stop());
+    }
+    // POST /api/v1/telemedicine/sessions/end/
+    console.log(`Session ended: duration=${dur}s`);
+    if(window.MFC) MFC.toast('Consultation ended. Summary sent via email and SMS.', 'success', '📋 Consultation Complete', 6000);
+    window.location.href = 'pages/patients/dashboard.html';
+}
+
+function joinSession() {
+    const code = document.getElementById('sessionCode').value.trim();
+    if (!code) { if(window.MFC) MFC.toast('Please enter your session code','warning'); return; }
+    document.getElementById('authOverlay').style.display = 'none';
+    document.getElementById('permOverlay').style.display = 'flex';
+}
+
+function patientUploadFile() {
+    document.getElementById('fileInput').click();
+}
+
+function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const list = document.getElementById('uploadedFiles');
+    const isImg = file.type.startsWith('image/');
+    const icon = isImg ? 'fas fa-image' : 'fas fa-file-pdf';
+    const color = isImg ? 'rgba(26,86,219,.2)' : 'rgba(220,38,38,.2)';
+    const textColor = isImg ? '#93c5fd' : '#fca5a5';
+    const sizeMB = (file.size / 1048576).toFixed(1);
+    const el = document.createElement('div');
+    el.style.cssText = 'background:#1e293b;border-radius:10px;padding:.6rem .75rem;display:flex;align-items:center;gap:.6rem;animation:fadeIn .3s ease';
+    el.innerHTML = `
+        <div style="width:30px;height:30px;border-radius:7px;background:${color};color:${textColor};display:flex;align-items:center;justify-content:center;font-size:.8rem"><i class="${icon}"></i></div>
+        <div style="flex:1"><div style="font-size:.78rem;color:#e2e8f0;font-weight:600">${file.name}</div><div style="font-size:.67rem;color:#475569">${sizeMB}MB · Just now</div></div>
+        <span style="font-size:.62rem;font-weight:700;background:rgba(26,86,219,.2);color:#93c5fd;padding:.1rem .35rem;border-radius:100px">NEW</span>
+    `;
+    list.prepend(el);
+    if(window.MFC) MFC.toast(`"${file.name}" sent to your doctor securely!`, 'success');
+    // API: POST /api/v1/records/upload/ with FormData
+    console.log(`POST /api/v1/records/upload/ → file: ${file.name}, size: ${file.size}`);
+}
+
+// INIT
+window.onload = init;
+</script>
+<script src="assets/js/components.js"></script>
+<script src="services/api.js"></script>
+</body>
+</html>

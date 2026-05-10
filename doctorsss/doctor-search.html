@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Doctors - MEDFIND</title>
+    <link rel="stylesheet" href="../assetsCSS/base.css">
+    <link rel="stylesheet" href="../assetsCSS/components.css">
+    <link rel="stylesheet" href="../assetsCSS/layout.css">
+    <link rel="stylesheet" href="../assetsCSS/responsive.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            position: relative;
+        }
+
+        .search-input label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .search-input input,
+        .search-input select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input input:focus,
+        .search-input select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .results-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .results-count {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .doctor-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .doctor-card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doctor-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .doctor-card-placeholder {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .specialization-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .doctor-card-content {
+            padding: 1.5rem;
+        }
+
+        .doctor-card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .doctor-card-subtitle {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .doctor-card-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+
+        .reviews-count {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .doctor-card-fee {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .fee-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .fee-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .doctor-card-experience {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .doctor-card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .card-btn {
+            padding: 0.7rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-btn-view {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .card-btn-book {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+
+        .card-btn-book:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-message {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #c33;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-buttons {
+                flex-direction: column;
+            }
+
+            .doctors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doctor-card-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🔍 Search Doctors</h1>
+        <p>Find the best doctors for your healthcare needs</p>
+    </div>
+
+    <div class="container">
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="search-input">
+                    <label for="searchName">Doctor Name</label>
+                    <input type="text" id="searchName" placeholder="Search by name...">
+                </div>
+
+                <div class="search-input">
+                    <label for="searchSpecialization">Specialization</label>
+                    <select id="searchSpecialization">
+                        <option value="">All Specializations</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Oncology">Oncology</option>
+                        <option value="Internal Medicine">Internal Medicine</option>
+                        <option value="Surgery">Surgery</option>
+                        <option value="Gynecology">Gynecology</option>
+                    </select>
+                </div>
+
+                <div class="search-input">
+                    <label for="searchHospital">Hospital</label>
+                    <input type="text" id="searchHospital" placeholder="Search by hospital...">
+                </div>
+            </div>
+
+            <div class="search-buttons">
+                <button class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+                <button class="btn btn-primary" onclick="searchDoctors()">Search</button>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" style="display: none;" class="error-message"></div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading doctors...</p>
+            </div>
+
+            <!-- Results Header -->
+            <div id="resultsHeader" class="results-header" style="display: none;">
+                <span class="results-count" id="resultsCount">0 doctors found</span>
+            </div>
+
+            <!-- Doctors Grid -->
+            <div id="doctorsGrid" class="doctors-grid"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">👨‍⚕️</div>
+                <div class="empty-state-title">No Doctors Found</div>
+                <p class="empty-state-message">Try adjusting your search criteria</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include API Client -->
+    <script src="../JSprogram/api-client.js"></script>
+
+    <script>
+        let allDoctors = [];
+
+        // Load doctors on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllDoctors();
+        });
+
+        // Load all doctors from API
+        async function loadAllDoctors() {
+            showLoading(true);
+            try {
+                allDoctors = await api.getDoctors();
+                displayDoctors(allDoctors);
+                showLoading(false);
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                showError(`Failed to load doctors: ${error.message}`);
+                showLoading(false);
+            }
+        }
+
+        // Search doctors based on filters
+        async function searchDoctors() {
+            const name = document.getElementById('searchName').value.toLowerCase();
+            const specialization = document.getElementById('searchSpecialization').value;
+            const hospital = document.getElementById('searchHospital').value.toLowerCase();
+
+            const filtered = allDoctors.filter(doctor => {
+                const fullName = `${doctor.first_name} ${doctor.last_name}`.toLowerCase();
+                const matches = {
+                    name: !name || fullName.includes(name),
+                    specialization: !specialization || doctor.specialization === specialization,
+                    hospital: !hospital || (doctor.hospital && doctor.hospital.name.toLowerCase().includes(hospital))
+                };
+                return matches.name && matches.specialization && matches.hospital;
+            });
+
+            displayDoctors(filtered);
+        }
+
+        // Display doctors in grid
+        function displayDoctors(doctors) {
+            const grid = document.getElementById('doctorsGrid');
+            const header = document.getElementById('resultsHeader');
+            const empty = document.getElementById('emptyState');
+
+            if (doctors.length === 0) {
+                grid.innerHTML = '';
+                header.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            header.style.display = 'flex';
+            empty.style.display = 'none';
+            document.getElementById('resultsCount').textContent = `${doctors.length} doctor${doctors.length !== 1 ? 's' : ''} found`;
+
+            grid.innerHTML = doctors.map(doctor => createDoctorCard(doctor)).join('');
+        }
+
+        // Create doctor card HTML
+        function createDoctorCard(doctor) {
+            const rating = doctor.rating || 0;
+            const stars = getStarRating(rating);
+            const hospitalName = doctor.hospital?.name || 'Hospital';
+            const hospitalLink = doctor.hospital?.id || '';
+
+            return `
+                <div class="doctor-card">
+                    <div class="doctor-card-image">
+                        ${doctor.profile_image ? 
+                            `<img src="${doctor.profile_image}" alt="Dr. ${doctor.first_name}">` : 
+                            `<div class="doctor-card-placeholder">👨‍⚕️</div>`
+                        }
+                        <div class="specialization-badge">${doctor.specialization}</div>
+                    </div>
+
+                    <div class="doctor-card-content">
+                        <div class="doctor-card-title">Dr. ${doctor.first_name} ${doctor.last_name}</div>
+                        <div class="doctor-card-subtitle">${hospitalName}</div>
+
+                        <div class="doctor-card-info">
+                            <div class="rating">
+                                <span class="stars">${stars}</span>
+                                <span class="reviews-count">(${doctor.review_count || 0})</span>
+                            </div>
+                        </div>
+
+                        <div class="doctor-card-fee">
+                            <span class="fee-label">Consultation:</span>
+                            <span class="fee-amount">$${doctor.consultation_fee || '0'}</span>
+                        </div>
+
+                        <div class="doctor-card-experience">
+                            ⏱️ ${doctor.experience_years || '0'} years experience
+                        </div>
+
+                        <div class="doctor-card-actions">
+                            <button class="card-btn card-btn-view" onclick="viewDoctor('${doctor.id}')">
+                                View Profile
+                            </button>
+                            <button class="card-btn card-btn-book" onclick="bookAppointment('${doctor.id}', '${hospitalLink}')">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get star rating
+        function getStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let stars = '★'.repeat(fullStars);
+            if (hasHalfStar) stars += '½';
+            stars += '☆'.repeat(5 - Math.ceil(rating));
+            return stars;
+        }
+
+        // View doctor profile popup
+        function viewDoctor(doctorId) {
+            window.location.href = `doctor-popup.html?id=${doctorId}`;
+        }
+
+        // Book appointment
+        function bookAppointment(doctorId, hospitalId) {
+            const url = `../Patients/appointment-booking.html?doctor_id=${doctorId}${hospitalId ? `&hospital_id=${hospitalId}` : ''}`;
+            window.location.href = url;
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('searchName').value = '';
+            document.getElementById('searchSpecialization').value = '';
+            document.getElementById('searchHospital').value = '';
+            displayDoctors(allDoctors);
+        }
+
+        // Show/hide loading
+        function showLoading(show) {
+            document.getElementById('loadingState').style.display = show ? 'block' : 'none';
+        }
+
+        // Show error
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Enter key search
+        document.getElementById('searchName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchDoctors();
+        });
+
+        document.getElementById('searchSpecialization').addEventListener('change', searchDoctors);
+    </script>
+</body>
+</html>

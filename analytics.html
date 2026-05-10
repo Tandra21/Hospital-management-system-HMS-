@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MedFind Bangladesh Admin Panel - Platform management and analytics (authorized access only).">
+<title>Analytics — MedFind Super Admin</title>
+<link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="../../assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+  --ink:#07111f;--ink2:#0c1a2e;--ink3:#101f35;
+  --card:#0e1b30;--card2:#132035;
+  --blue:#3b82f6;--violet:#8b5cf6;--teal:#14b8a6;
+  --emerald:#10b981;--rose:#f43f5e;--amber:#f59e0b;
+  --sky:#0ea5e9;--indigo:#6366f1;--pink:#ec4899;
+  --orange:#f97316;
+  --t1:#e2e8f0;--t2:#94a3b8;--t3:#475569;
+  --border:rgba(255,255,255,.06);
+  --bh:rgba(255,255,255,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--t1);display:flex;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px;}
+
+/* ═══ SIDEBAR ══════════════════════════════════════════════════════════ */
+.sb{width:240px;background:var(--ink2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh;overflow-y:auto;}
+.sb-logo{padding:1.2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;}
+.sb-lic{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--violet));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;box-shadow:0 4px 14px rgba(59,130,246,.35);}
+.sb-lname{font-size:.95rem;font-weight:800;background:linear-gradient(90deg,#93c5fd,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sb-ltag{font-size:.6rem;color:var(--t3);display:block;font-weight:500;}
+
+.sb-user{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.65rem;}
+.sb-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;border:2px solid rgba(16,185,129,.35);}
+.sb-uname{font-size:.8rem;font-weight:700;}
+.sb-urole{font-size:.63rem;color:var(--t3);}
+.online-dot{width:8px;height:8px;background:var(--emerald);border-radius:50%;margin-left:auto;box-shadow:0 0 6px var(--emerald);animation:od 2s infinite;}
+@keyframes od{0%,100%{opacity:1}50%{opacity:.3}}
+
+.sb-nav{flex:1;padding:.5rem 0;}
+.sb-sec{padding:.4rem .75rem .15rem;font-size:.6rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:.3rem;}
+.sb-a{display:flex;align-items:center;gap:.65rem;padding:.6rem .75rem;border-radius:9px;margin:.1rem .4rem;color:var(--t2);font-size:.8rem;font-weight:500;cursor:pointer;transition:.2s;text-decoration:none;position:relative;}
+.sb-a:hover{background:rgba(255,255,255,.04);color:var(--t1);}
+.sb-a.on{background:rgba(59,130,246,.12);color:#93c5fd;}
+.sb-a.on::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:linear-gradient(180deg,var(--blue),var(--violet));border-radius:3px;}
+.sb-a i{width:15px;text-align:center;font-size:.82rem;}
+.sb-badge{margin-left:auto;background:var(--rose);color:#fff;font-size:.58rem;padding:.15rem .4rem;border-radius:20px;font-weight:700;}
+.sb-badge.g{background:var(--emerald);}
+.sb-badge.b{background:var(--blue);}
+.sb-footer{padding:.875rem 1rem;border-top:1px solid var(--border);}
+.sb-out{display:flex;align-items:center;gap:.6rem;color:var(--t3);font-size:.78rem;cursor:pointer;padding:.4rem .5rem;border-radius:8px;transition:.2s;text-decoration:none;}
+.sb-out:hover{color:var(--rose);background:rgba(244,63,94,.07);}
+
+/* ═══ MAIN ══════════════════════════════════════════════════════════════ */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+.topbar{height:58px;background:var(--ink2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.875rem;flex-shrink:0;}
+.tb-left{flex:1;}
+.tb-title{font-weight:800;font-size:.95rem;color:var(--t1);display:flex;align-items:center;gap:.6rem;}
+.tb-py-badge{font-size:.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.04);border:1px solid var(--border);padding:.15rem .5rem;border-radius:6px;}
+.tb-time{font-size:.7rem;color:var(--t3);margin-top:.15rem;font-family:'JetBrains Mono',monospace;}
+.live{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:700;color:var(--emerald);background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);padding:.28rem .7rem;border-radius:20px;}
+.live::before{content:'';width:6px;height:6px;background:var(--emerald);border-radius:50%;animation:od 1.5s infinite;box-shadow:0 0 6px var(--emerald);}
+.period-tabs{display:flex;background:var(--ink3);border-radius:9px;padding:3px;gap:2px;border:1px solid var(--border);}
+.pt{padding:.32rem .75rem;border-radius:7px;font-size:.73rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--t2);transition:.2s;font-family:'Outfit',sans-serif;}
+.pt.on{background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;box-shadow:0 2px 10px rgba(59,130,246,.3);}
+.pt:hover:not(.on){color:var(--t1);}
+.tb-icon-btn{width:32px;height:32px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--t2);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:.2s;flex-shrink:0;}
+.tb-icon-btn:hover{color:var(--blue);border-color:rgba(59,130,246,.3);}
+
+.content{flex:1;overflow-y:auto;padding:1.2rem 1.4rem 2rem;}
+
+/* ═══ SECTION HEADER ══════════════════════════════════════════════════ */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;}
+.sec-title{font-size:.82rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;display:flex;align-items:center;gap:.5rem;}
+.sec-title::before{content:'';width:3px;height:14px;border-radius:2px;}
+.sec-title.blue::before{background:var(--blue);}
+.sec-title.green::before{background:var(--emerald);}
+.sec-title.amber::before{background:var(--amber);}
+.sec-title.violet::before{background:var(--violet);}
+.sec-badge{font-size:.65rem;font-weight:700;padding:.18rem .55rem;border-radius:20px;background:rgba(59,130,246,.12);color:#93c5fd;}
+
+/* ═══ KPI GRID ═══════════════════════════════════════════════════════ */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:.875rem;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.2rem;position:relative;overflow:hidden;transition:.25s;cursor:default;}
+.kpi:hover{border-color:var(--bh);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.25);}
+.kpi::after{content:'';position:absolute;right:-16px;top:-16px;width:72px;height:72px;border-radius:50%;opacity:.07;}
+.kpi.blue::after{background:var(--blue);} .kpi.violet::after{background:var(--violet);} .kpi.green::after{background:var(--emerald);} .kpi.amber::after{background:var(--amber);} .kpi.rose::after{background:var(--rose);} .kpi.teal::after{background:var(--teal);} .kpi.sky::after{background:var(--sky);} .kpi.pink::after{background:var(--pink);}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem;}
+.kic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.kic.blue{background:rgba(59,130,246,.15);color:#93c5fd;} .kic.violet{background:rgba(139,92,246,.15);color:#c4b5fd;} .kic.green{background:rgba(16,185,129,.15);color:#6ee7b7;} .kic.amber{background:rgba(245,158,11,.15);color:#fcd34d;} .kic.rose{background:rgba(244,63,94,.15);color:#fda4af;} .kic.teal{background:rgba(20,184,166,.15);color:#5eead4;} .kic.sky{background:rgba(14,165,233,.15);color:#7dd3fc;} .kic.pink{background:rgba(236,72,153,.15);color:#f9a8d4;}
+.kpi-trend{font-size:.67rem;font-weight:700;padding:.18rem .5rem;border-radius:20px;}
+.up{background:rgba(16,185,129,.12);color:#6ee7b7;} .dn{background:rgba(244,63,94,.12);color:#fda4af;} .nu{background:rgba(245,158,11,.12);color:#fcd34d;}
+.kpi-val{font-size:1.85rem;font-weight:800;line-height:1;margin-bottom:.2rem;font-family:'Outfit',sans-serif;letter-spacing:-.02em;}
+.kpi-lbl{font-size:.73rem;color:var(--t2);font-weight:500;}
+.kpi-sub{font-size:.65rem;color:var(--t3);margin-top:.2rem;}
+.kpi-bar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:.7rem;overflow:hidden;}
+.kpi-bar-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+
+/* ═══ STAT BADGES ROW ═════════════════════════════════════════════════ */
+.stat-badges{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1.1rem;}
+.sbadge{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;display:flex;align-items:center;gap:.875rem;}
+.sbadge-ic{font-size:1.5rem;}
+.sbadge-val{font-size:1.1rem;font-weight:800;font-family:'Outfit',sans-serif;}
+.sbadge-lbl{font-size:.67rem;color:var(--t2);}
+.sbadge-note{font-size:.58rem;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:.1rem;}
+
+/* ═══ REVENUE BANNER ══════════════════════════════════════════════════ */
+.rev-banner{background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(139,92,246,.1));border:1px solid rgba(99,102,241,.2);border-radius:16px;padding:1.1rem 1.4rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:1.75rem;flex-wrap:wrap;}
+.rbi .rv{font-size:1.55rem;font-weight:800;font-family:'Outfit',sans-serif;}
+.rbi .rl{font-size:.68rem;color:var(--t2);margin-top:.1rem;}
+.rb-div{width:1px;height:36px;background:var(--border);}
+.rb-tag{display:flex;align-items:center;gap:.45rem;padding:.55rem .9rem;border-radius:10px;font-size:.75rem;font-weight:700;}
+.rb-tag.g{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.18);color:#6ee7b7;}
+.rb-tag.a{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.18);color:#fcd34d;}
+.rb-tag.v{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.18);color:#c4b5fd;}
+
+/* ═══ CHARTS ═══════════════════════════════════════════════════════════ */
+.charts-2{display:grid;grid-template-columns:2fr 1fr;gap:.875rem;margin-bottom:.875rem;}
+.charts-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.875rem;margin-bottom:.875rem;}
+.charts-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.875rem;margin-bottom:.875rem;}
+.ccard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.2s;}
+.ccard:hover{border-color:var(--bh);}
+.ccard-head{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ccard-title{font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:.45rem;color:var(--t1);}
+.ccard-body{padding:1rem;}
+.ch-sm{height:180px;position:relative;}
+.ch-md{height:220px;position:relative;}
+.ch-lg{height:260px;position:relative;}
+
+/* ═══ TABLE CARD ════════════════════════════════════════════════════════ */
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:.875rem;}
+.tcard-head{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.tcard-title{font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:.45rem;}
+.search-inp{background:var(--ink3);border:1px solid var(--border);border-radius:8px;padding:.35rem .75rem .35rem 2rem;color:var(--t1);font-size:.75rem;font-family:'Outfit',sans-serif;outline:none;width:180px;transition:.2s;position:relative;}
+.search-inp:focus{border-color:rgba(59,130,246,.4);}
+.search-wrap{position:relative;}
+.search-wrap::before{content:'\f002';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;left:.65rem;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--t3);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--ink3);font-size:.67rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;padding:.6rem 1rem;text-align:left;}
+td{padding:.68rem 1rem;border-bottom:1px solid rgba(255,255,255,.035);font-size:.78rem;color:var(--t2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.015);}
+.pill{display:inline-flex;align-items:center;gap:.22rem;padding:.18rem .55rem;border-radius:20px;font-size:.67rem;font-weight:700;}
+.pg{background:rgba(16,185,129,.12);color:#6ee7b7;} .pa{background:rgba(245,158,11,.12);color:#fcd34d;} .pr{background:rgba(244,63,94,.12);color:#fda4af;} .pb{background:rgba(59,130,246,.12);color:#93c5fd;} .pt-pill{background:rgba(20,184,166,.12);color:#5eead4;} .pv{background:rgba(139,92,246,.12);color:#c4b5fd;}
+
+/* ═══ DOCTOR TABLE ═════════════════════════════════════════════════════ */
+.doc-avatar{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+
+/* ═══ AD GRID ═══════════════════════════════════════════════════════════ */
+.ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;}
+.acard{background:var(--ink3);border:1px solid var(--border);border-radius:12px;padding:.9rem;transition:.2s;}
+.acard:hover{border-color:var(--bh);}
+.acard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+.acard-name{font-size:.83rem;font-weight:700;}
+.acard-type{font-size:.62rem;font-weight:700;padding:.15rem .5rem;border-radius:20px;background:rgba(245,158,11,.12);color:#fcd34d;}
+.acard-stats{display:flex;gap:.875rem;font-size:.7rem;color:var(--t2);margin-bottom:.75rem;flex-wrap:wrap;}
+.acard-bar-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:.35rem;}
+.acard-bar{height:100%;border-radius:2px;}
+.acard-meta{display:flex;justify-content:space-between;font-size:.65rem;color:var(--t3);}
+
+/* ═══ GEOGRAPHIC GRID ════════════════════════════════════════════════ */
+.geo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;padding:.5rem 1rem 1rem;}
+.geo-item{background:var(--ink3);border:1px solid var(--border);border-radius:9px;padding:.7rem .875rem;}
+.geo-div{font-size:.75rem;font-weight:700;color:var(--t1);}
+.geo-pat{font-size:1.05rem;font-weight:800;font-family:'Outfit',sans-serif;}
+.geo-bar{height:3px;border-radius:2px;margin:.4rem 0 .2rem;}
+.geo-lbl{font-size:.62rem;color:var(--t3);}
+
+/* ═══ ANIMATIONS ════════════════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.kpi{animation:fadeUp .4s ease both;}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}
+
+@media(max-width:1280px){.kpi-row{grid-template-columns:repeat(2,1fr)}.charts-2,.charts-3,.charts-4{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.kpi-row{grid-template-columns:1fr 1fr}.sb{display:none}.charts-2,.charts-3,.charts-4{grid-template-columns:1fr}.stat-badges{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body data-admin-page="analytics">
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <img src="../../assets/medfind-logo.svg" alt="MedFind" style="width:38px;height:38px;object-fit:contain;border-radius:8px;filter:drop-shadow(0 2px 8px rgba(13,148,136,.4))">
+    <div><div class="sb-lname">MedFind</div><div class="sb-ltag">Super Admin Panel</div></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-ava">SA</div>
+    <div><div class="sb-uname" id="sbUserName">Super Admin</div><div class="sb-urole">Platform Owner</div></div>
+    <div class="online-dot"></div>
+  </div>
+  <nav class="sb-nav">
+  <a class="nav-brand" href="../../index.html"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+    <div class="sb-sec">Overview</div>
+    <a href="dashboard.html" class="sb-a"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="analytics.html" class="sb-a on"><i class="fas fa-chart-line"></i> Analytics</a>
+    <div class="sb-sec">Healthcare</div>
+    <a href="../hospital/list.html" class="sb-a"><i class="fas fa-hospital"></i> Hospitals</a>
+    <a href="../doctors/search.html" class="sb-a"><i class="fas fa-stethoscope"></i> Doctors</a>
+    <a href="../patients/dashboard.html" class="sb-a"><i class="fas fa-users"></i> Patients</a>
+    <a href="../patients/appointments.html" class="sb-a"><i class="fas fa-calendar-check"></i> Appointments<span class="sb-badge">12</span></a>
+    <a href="../hospital/bed-management.html" class="sb-a"><i class="fas fa-bed"></i> Bed Management</a>
+    <div class="sb-sec">Revenue</div>
+    <a href="#" class="sb-a"><i class="fas fa-percentage"></i> Commissions<span class="sb-badge g">5%</span></a>
+    <a href="#" class="sb-a"><i class="fas fa-bullhorn"></i> Advertisements</a>
+    <a href="#" class="sb-a"><i class="fas fa-credit-card"></i> Subscriptions</a>
+    <div class="sb-sec">Services</div>
+    <a href="../billing/pharmacy.html" class="sb-a"><i class="fas fa-pills"></i> Pharmacy</a>
+    <a href="../lab/tests.html" class="sb-a"><i class="fas fa-flask"></i> Lab Tests</a>
+    <a href="../../telemedicine.html" class="sb-a"><i class="fas fa-video"></i> Telemedicine</a>
+    <div class="sb-sec">System</div>
+    <a href="#" class="sb-a"><i class="fas fa-shield-halved"></i> Security</a>
+    <a href="settings.html" class="sb-a"><i class="fas fa-gear"></i> Settings</a>
+    <a href="#" class="sb-a"><i class="fas fa-download"></i> Export Reports</a>
+  </nav>
+  <div class="sb-footer">
+    <a href="#" onclick="ADMIN_AUTH.logout(); return false;" class="sb-out" onclick="localStorage.clear()"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">
+        <i class="fas fa-chart-line" style="color:var(--blue)"></i>
+        Platform Analytics
+        <span class="tb-py-badge">Pandas + NumPy</span>
+      </div>
+      <div class="tb-time" id="TS">Loading...</div>
+    </div>
+    <div class="live">LIVE DATA</div>
+    <div class="period-tabs">
+      <button class="pt" onclick="setPeriod(7,this)">7D</button>
+      <button class="pt on" onclick="setPeriod(30,this)">30D</button>
+      <button class="pt" onclick="setPeriod(90,this)">90D</button>
+      <button class="pt" onclick="setPeriod(365,this)">1Y</button>
+    </div>
+    <div class="tb-icon-btn" onclick="refreshAll()" title="Refresh"><i class="fas fa-arrows-rotate" id="refIc"></i></div>
+    <div class="tb-icon-btn" title="Export"><i class="fas fa-file-export"></i></div>
+    <div class="tb-icon-btn" title="Fullscreen"><i class="fas fa-expand"></i></div>
+  </div>
+
+  <div class="content">
+
+    <!-- PANDAS STATS -->
+    <div class="sec-hdr"><div class="sec-title blue"><i class="fas fa-code"></i> Statistical Engine Output</div><span class="sec-badge">NumPy + Pandas</span></div>
+    <div class="stat-badges">
+      <div class="sbadge"><div class="sbadge-ic">📊</div><div><div class="sbadge-val" id="NP1">৳--</div><div class="sbadge-lbl">Avg. Appointment Fee</div><div class="sbadge-note">np.mean(fees)</div></div></div>
+      <div class="sbadge"><div class="sbadge-ic">📈</div><div><div class="sbadge-val" id="NP2">--%</div><div class="sbadge-lbl">Completion Rate</div><div class="sbadge-note">df[status=='completed'].count()</div></div></div>
+      <div class="sbadge"><div class="sbadge-ic">🔄</div><div><div class="sbadge-val" id="NP3">--</div><div class="sbadge-lbl">7-Day Rolling Average</div><div class="sbadge-note">rolling(window=7).mean()</div></div></div>
+      <div class="sbadge"><div class="sbadge-ic">📉</div><div><div class="sbadge-val" id="NP4">--</div><div class="sbadge-lbl">Std Deviation (Fee)</div><div class="sbadge-note">np.std(fee_array)</div></div></div>
+      <div class="sbadge"><div class="sbadge-ic">⚡</div><div><div class="sbadge-val" id="NP5">--</div><div class="sbadge-lbl">Cancellation Rate</div><div class="sbadge-note">df.groupby('status').pct()</div></div></div>
+    </div>
+
+    <!-- KPI ROW 1 -->
+    <div class="sec-hdr" style="margin-top:.25rem"><div class="sec-title green"><i class="fas fa-chart-bar"></i> Core Platform KPIs</div></div>
+    <div class="kpi-row">
+      <div class="kpi blue">
+        <div class="kpi-top"><div class="kic blue"><i class="fas fa-users"></i></div><span class="kpi-trend up">↑ 8.2%</span></div>
+        <div class="kpi-val" id="KPI_PAT">--</div>
+        <div class="kpi-lbl">Total Registered Patients</div>
+        <div class="kpi-sub" id="KSUB_PAT">+284 new this week</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--blue);width:72%"></div></div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-top"><div class="kic green"><i class="fas fa-calendar-check"></i></div><span class="kpi-trend up">↑ 12.4%</span></div>
+        <div class="kpi-val" id="KPI_APPT">--</div>
+        <div class="kpi-lbl">Today's Appointments</div>
+        <div class="kpi-sub">1,840 this month</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--emerald);width:84%"></div></div>
+      </div>
+      <div class="kpi violet">
+        <div class="kpi-top"><div class="kic violet"><i class="fas fa-hospital"></i></div><span class="kpi-trend up">↑ 3 new</span></div>
+        <div class="kpi-val" id="KPI_HOSP">--</div>
+        <div class="kpi-lbl">Partner Hospitals</div>
+        <div class="kpi-sub">All 8 divisions covered</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--violet);width:65%"></div></div>
+      </div>
+      <div class="kpi teal">
+        <div class="kpi-top"><div class="kic teal"><i class="fas fa-stethoscope"></i></div><span class="kpi-trend up">↑ Verified</span></div>
+        <div class="kpi-val" id="KPI_DOC">--</div>
+        <div class="kpi-lbl">Active BMDC Doctors</div>
+        <div class="kpi-sub">48 pending approval</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--teal);width:88%"></div></div>
+      </div>
+    </div>
+
+    <!-- KPI ROW 2 — Revenue -->
+    <div class="sec-hdr"><div class="sec-title amber"><i class="fas fa-bangladeshi-taka-sign"></i> Revenue KPIs</div></div>
+    <div class="kpi-row">
+      <div class="kpi amber">
+        <div class="kpi-top"><div class="kic amber"><i class="fas fa-percentage"></i></div><span class="kpi-trend up">↑ 18.5%</span></div>
+        <div class="kpi-val" id="KPI_COMM">৳--</div>
+        <div class="kpi-lbl">Commission Revenue (5%)</div>
+        <div class="kpi-sub">৳60 per ৳1,200 booking</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--amber);width:45%"></div></div>
+      </div>
+      <div class="kpi rose">
+        <div class="kpi-top"><div class="kic rose"><i class="fas fa-bullhorn"></i></div><span class="kpi-trend nu">Active</span></div>
+        <div class="kpi-val" id="KPI_AD">৳--</div>
+        <div class="kpi-lbl">Advertisement Revenue</div>
+        <div class="kpi-sub" id="KSUB_AD">0 active campaigns</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--rose);width:35%"></div></div>
+      </div>
+      <div class="kpi pink">
+        <div class="kpi-top"><div class="kic pink"><i class="fas fa-pills"></i></div><span class="kpi-trend up">↑ Orders</span></div>
+        <div class="kpi-val" id="KPI_PHARM">৳--</div>
+        <div class="kpi-lbl">Pharmacy Commission</div>
+        <div class="kpi-sub">5% of pharmacy orders</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--pink);width:28%"></div></div>
+      </div>
+      <div class="kpi sky">
+        <div class="kpi-top"><div class="kic sky"><i class="fas fa-chart-line"></i></div><span class="kpi-trend up">↑ Total</span></div>
+        <div class="kpi-val" id="KPI_REV">৳--</div>
+        <div class="kpi-lbl">Total Platform Revenue</div>
+        <div class="kpi-sub">Commission + Ads + Subs</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--sky);width:58%"></div></div>
+      </div>
+    </div>
+
+    <!-- REVENUE BANNER -->
+    <div class="rev-banner">
+      <div class="rbi"><div class="rv" style="background:linear-gradient(135deg,#93c5fd,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent" id="RB_TOTAL">৳--</div><div class="rl">Total Platform Revenue</div></div>
+      <div class="rb-div"></div>
+      <div class="rbi"><div class="rv" style="color:var(--emerald)" id="RB_COMM">৳--</div><div class="rl">Commission (5%+)</div></div>
+      <div class="rb-div"></div>
+      <div class="rbi"><div class="rv" style="color:var(--amber)" id="RB_AD">৳--</div><div class="rl">Ad Revenue</div></div>
+      <div class="rb-div"></div>
+      <div class="rbi"><div class="rv" style="color:var(--sky)" id="RB_SUB">৳--</div><div class="rl">Subscriptions</div></div>
+      <div class="rb-div"></div>
+      <div class="rb-tag g"><i class="fas fa-percentage"></i> 5% auto-deducted per booking</div>
+      <div class="rb-tag a"><i class="fas fa-bullhorn"></i> CPM + flat-rate ad campaigns</div>
+      <div class="rb-tag v"><i class="fas fa-crown"></i> Premium hospital subscriptions</div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="charts-2">
+      <div class="ccard">
+        <div class="ccard-head">
+          <div class="ccard-title"><i class="fas fa-chart-area" style="color:var(--blue)"></i> Appointments Trend <span style="font-size:.65rem;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-left:.4rem">rolling(7).mean()</span></div>
+          <span style="font-size:.7rem;color:var(--t3)">Last 30 days</span>
+        </div>
+        <div class="ccard-body"><div class="ch-lg"><canvas id="C_APPT"></canvas></div></div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-chart-pie" style="color:var(--amber)"></i> Revenue Breakdown</div></div>
+        <div class="ccard-body"><div class="ch-lg"><canvas id="C_REV"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div class="charts-3">
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-hospital" style="color:var(--teal)"></i> Hospital Occupancy</div></div>
+        <div class="ccard-body"><div class="ch-md"><canvas id="C_HOSP"></canvas></div></div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-user-plus" style="color:var(--sky)"></i> Patient Growth</div></div>
+        <div class="ccard-body"><div class="ch-md"><canvas id="C_PAT"></canvas></div></div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-percentage" style="color:var(--emerald)"></i> Commission Breakdown</div></div>
+        <div class="ccard-body"><div class="ch-md"><canvas id="C_COMM"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 3 -->
+    <div class="charts-4">
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-video" style="color:var(--violet)"></i> Telemedicine</div></div>
+        <div class="ccard-body"><div class="ch-sm"><canvas id="C_TELE"></canvas></div></div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-flask" style="color:var(--blue)"></i> Lab Tests</div></div>
+        <div class="ccard-body"><div class="ch-sm"><canvas id="C_LAB"></canvas></div></div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-star" style="color:var(--amber)"></i> Avg Doctor Rating</div></div>
+        <div class="ccard-body"><div class="ch-sm"><canvas id="C_RATE"></canvas></div></div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head"><div class="ccard-title"><i class="fas fa-clock" style="color:var(--rose)"></i> Response Time (min)</div></div>
+        <div class="ccard-body"><div class="ch-sm"><canvas id="C_RESP"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- COMMISSION TABLE -->
+    <div class="sec-hdr"><div class="sec-title green"><i class="fas fa-money-bill-wave"></i> Commission Transactions</div></div>
+    <div class="tcard">
+      <div class="tcard-head">
+        <div class="tcard-title"><i class="fas fa-receipt" style="color:var(--emerald)"></i> Recent Platform Revenue Events</div>
+        <div class="search-wrap"><input type="text" class="search-inp" placeholder="Search transactions..." id="commSearch" oninput="filterComm()"></div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Hospital / Entity</th><th>Service Type</th><th>Gross Amount</th><th>Commission (5%)</th><th>Hospital Payout</th><th>Status</th><th>Doctor</th><th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="COMM_TABLE"></tbody>
+      </table>
+    </div>
+
+    <!-- TOP DOCTORS TABLE -->
+    <div class="sec-hdr"><div class="sec-title violet"><i class="fas fa-stethoscope"></i> Top Performing Doctors</div></div>
+    <div class="tcard">
+      <div class="tcard-head">
+        <div class="tcard-title"><i class="fas fa-trophy" style="color:var(--amber)"></i> Revenue Leaders This Month</div>
+        <span style="font-size:.72rem;color:var(--t3)">Sorted by appointment count</span>
+      </div>
+      <table>
+        <thead><tr><th>Doctor</th><th>Specialty</th><th>Hospital</th><th>Appointments</th><th>Revenue</th><th>Commission</th><th>Avg Rating</th><th>Status</th></tr></thead>
+        <tbody id="DOC_TABLE"></tbody>
+      </table>
+    </div>
+
+    <!-- GEOGRAPHIC DISTRIBUTION -->
+    <div class="sec-hdr"><div class="sec-title blue"><i class="fas fa-map-location-dot"></i> Patient Distribution by Division</div></div>
+    <div class="ccard" style="margin-bottom:.875rem">
+      <div class="ccard-head"><div class="ccard-title"><i class="fas fa-map" style="color:var(--blue)"></i> Bangladesh Division Breakdown</div><span style="font-size:.7rem;color:var(--t3)">All 8 Divisions</span></div>
+      <div class="geo-grid" id="GEO_GRID"></div>
+    </div>
+
+    <!-- AD CAMPAIGNS -->
+    <div class="sec-hdr"><div class="sec-title amber"><i class="fas fa-bullhorn"></i> Advertisement Campaigns</div><button onclick="newAdCampaign()" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#fcd34d;padding:.35rem .9rem;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;"><i class="fas fa-plus"></i> New Campaign</button></div>
+    <div class="ccard" style="margin-bottom:1.5rem">
+      <div class="ccard-head"><div class="ccard-title"><i class="fas fa-rectangle-ad" style="color:var(--amber)"></i> Active Revenue Campaigns</div></div>
+      <div class="ccard-body">
+        <div class="ad-grid" id="AD_GRID"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+const API_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://127.0.0.1:8000/api/v1':'/api/v1';
+const API=API_BASE;
+const TOKEN=localStorage.getItem('mf_token')||'';
+const HDR={'Content-Type':'application/json','Authorization':'Bearer '+TOKEN};
+let period=30;
+
+// Load user name
+try{const u=JSON.parse(localStorage.getItem('mf_user')||'{}');if(u.full_name)document.getElementById('sbUserName').textContent=u.full_name;}catch(e){}
+
+// Clock
+function tick(){const n=new Date();document.getElementById('TS').textContent=n.toLocaleDateString('en-BD',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · '+n.toLocaleTimeString('en-BD',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+tick();setInterval(tick,1000);
+
+Chart.defaults.color='#64748b';
+Chart.defaults.borderColor='rgba(255,255,255,.05)';
+const charts={};
+
+function gDays(n){const a=[];for(let i=n-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push(d.toLocaleDateString('en-BD',{month:'short',day:'numeric'}));}return a;}
+function gRand(n,mn,mx){return Array.from({length:n},()=>Math.floor(Math.random()*(mx-mn)+mn));}
+function fmt(n){if(!n)return '৳0';n=parseFloat(n);if(n>=1000000)return '৳'+(n/1000000).toFixed(1)+'M';if(n>=100000)return '৳'+(n/100000).toFixed(1)+'L';if(n>=1000)return '৳'+n.toLocaleString();return '৳'+n;}
+function animNum(el,t,pre=''){let c=0,s=t/40;const iv=setInterval(()=>{c+=s;if(c>=t){el.textContent=pre+Math.round(t).toLocaleString();clearInterval(iv);}else el.textContent=pre+Math.round(c).toLocaleString();},30);}
+
+function initCharts(){
+  // Appointment trend
+  const c1=document.getElementById('C_APPT').getContext('2d');
+  const g1=c1.createLinearGradient(0,0,0,260);g1.addColorStop(0,'rgba(59,130,246,.25)');g1.addColorStop(1,'rgba(59,130,246,.01)');
+  charts.appt=new Chart(c1,{type:'line',data:{labels:gDays(30),datasets:[
+    {label:'Daily Appts',data:gRand(30,80,320),borderColor:'#3b82f6',backgroundColor:g1,fill:true,tension:.4,pointRadius:0,borderWidth:2},
+    {label:'7-Day Avg',data:gRand(30,100,260),borderColor:'#10b981',borderDash:[5,4],fill:false,tension:.4,pointRadius:0,borderWidth:1.5},
+    {label:'Revenue ÷100',data:gRand(30,80,240),borderColor:'#f59e0b',fill:false,tension:.4,pointRadius:0,borderWidth:1.5}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{size:10},boxWidth:10,color:'#94a3b8',padding:12}}},scales:{x:{ticks:{font:{size:9},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
+  // Revenue pie
+  const c2=document.getElementById('C_REV').getContext('2d');
+  charts.rev=new Chart(c2,{type:'doughnut',data:{labels:['Appt Commission','Ad Revenue','Pharmacy','Lab','Subscriptions'],datasets:[{data:[45,22,14,12,7],backgroundColor:['rgba(59,130,246,.85)','rgba(245,158,11,.85)','rgba(236,72,153,.85)','rgba(14,165,233,.85)','rgba(139,92,246,.85)'],borderColor:['#3b82f6','#f59e0b','#ec4899','#0ea5e9','#8b5cf6'],borderWidth:2,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{font:{size:9.5},boxWidth:10,color:'#94a3b8',padding:7}},tooltip:{callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.parsed}%`}}}}});
+
+  // Hospital bar
+  const c3=document.getElementById('C_HOSP').getContext('2d');
+  charts.hosp=new Chart(c3,{type:'bar',data:{labels:['DMCH','BSMMU','Square','Evercare','Popular','CMC','NHI','BIRDEM'],datasets:[{label:'Occupancy %',data:[87,92,78,84,71,88,65,79],backgroundColor:'rgba(20,184,166,.7)',borderColor:'#14b8a6',borderWidth:1.5,borderRadius:5},{label:'Beds Available',data:[45,28,62,38,55,22,70,41],backgroundColor:'rgba(59,130,246,.5)',borderColor:'#3b82f6',borderWidth:1.5,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9},boxWidth:8,color:'#94a3b8'}}},scales:{x:{ticks:{font:{size:8},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
+  // Patient growth line
+  const c4=document.getElementById('C_PAT').getContext('2d');
+  const g4=c4.createLinearGradient(0,0,0,200);g4.addColorStop(0,'rgba(14,165,233,.2)');g4.addColorStop(1,'rgba(14,165,233,.01)');
+  charts.pat=new Chart(c4,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],datasets:[{label:'New Patients',data:[820,1100,1380,1680,2100,2640,3200,3840],borderColor:'#0ea5e9',backgroundColor:g4,fill:true,tension:.4,pointBackgroundColor:'#0ea5e9',pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
+  // Commission doughnut
+  const c5=document.getElementById('C_COMM').getContext('2d');
+  charts.comm=new Chart(c5,{type:'doughnut',data:{labels:['Appointment (5%)','Lab Booking (5%)','Pharmacy (5%)','Telemedicine (5%)'],datasets:[{data:[55,24,13,8],backgroundColor:['rgba(16,185,129,.85)','rgba(59,130,246,.85)','rgba(236,72,153,.85)','rgba(139,92,246,.85)'],borderColor:['#10b981','#3b82f6','#ec4899','#8b5cf6'],borderWidth:2,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{size:9},boxWidth:9,color:'#94a3b8',padding:5}}}}});
+
+  // Telemedicine bar
+  const c6=document.getElementById('C_TELE').getContext('2d');
+  charts.tele=new Chart(c6,{type:'bar',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Consultations',data:[28,35,42,38,50,62,45],backgroundColor:'rgba(139,92,246,.7)',borderColor:'#8b5cf6',borderWidth:1.5,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
+  // Lab tests
+  const c7=document.getElementById('C_LAB').getContext('2d');
+  charts.lab=new Chart(c7,{type:'bar',data:{labels:['CBC','Lipid','Blood Sugar','Thyroid','LFT','KFT'],datasets:[{label:'Tests',data:[142,98,175,64,88,72],backgroundColor:'rgba(59,130,246,.7)',borderColor:'#3b82f6',borderWidth:1.5,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
+  // Doctor rating
+  const c8=document.getElementById('C_RATE').getContext('2d');
+  charts.rate=new Chart(c8,{type:'bar',data:{labels:['5★','4★','3★','2★','1★'],datasets:[{label:'Reviews',data:[1240,480,145,42,18],backgroundColor:['rgba(16,185,129,.8)','rgba(59,130,246,.7)','rgba(245,158,11,.7)','rgba(249,115,22,.7)','rgba(244,63,94,.7)'],borderWidth:0,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
+  // Response time
+  const c9=document.getElementById('C_RESP').getContext('2d');
+  const g9=c9.createLinearGradient(0,0,0,180);g9.addColorStop(0,'rgba(244,63,94,.2)');g9.addColorStop(1,'rgba(244,63,94,.01)');
+  charts.resp=new Chart(c9,{type:'line',data:{labels:gDays(14),datasets:[{label:'Avg Response (min)',data:gRand(14,12,35),borderColor:'#f43f5e',backgroundColor:g9,fill:true,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8},color:'#475569'},grid:{display:false}},y:{ticks:{font:{size:9},color:'#475569'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+}
+
+// COMMISSION TABLE DATA
+const commDemo=[
+  ['001','Dhaka Medical College Hospital','appointment','৳1,200','৳60.00','৳1,140.00','collected','Dr. Karim','Today'],
+  ['002','Square Hospitals Ltd.','appointment','৳1,500','৳75.00','৳1,425.00','collected','Dr. Rahman','Today'],
+  ['003','Popular Diagnostic Centre','lab_booking','৳800','৳40.00','৳760.00','pending','—','Today'],
+  ['004','BSMMU Hospital','appointment','৳1,000','৳50.00','৳950.00','pending','Dr. Hossain','Yesterday'],
+  ['005','Evercare Hospital','lab_booking','৳2,200','৳110.00','৳2,090.00','collected','—','Yesterday'],
+  ['006','National Heart Foundation','appointment','৳2,500','৳125.00','৳2,375.00','collected','Dr. Islam','2d ago'],
+  ['007','Labaid Specialized Hospital','pharmacy','৳3,400','৳170.00','৳3,230.00','collected','—','2d ago'],
+  ['008','Ibn Sina Hospital','telemedicine','৳600','৳30.00','৳570.00','failed','Dr. Uddin','3d ago'],
+];
+const statusCls={'collected':'pg','pending':'pa','failed':'pr'};
+
+function renderComm(data){
+  document.getElementById('COMM_TABLE').innerHTML=data.map(r=>`
+    <tr>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t3)">#${r[0]}</span></td>
+      <td style="font-weight:600;color:var(--t1)">${r[1]}</td>
+      <td><span class="pill pb">${r[2]}</span></td>
+      <td style="font-weight:700;color:var(--t1)">${r[3]}</td>
+      <td style="font-weight:800;color:#6ee7b7">${r[4]} <span style="font-size:.62rem;color:var(--t3)">(5%)</span></td>
+      <td>${r[5]}</td>
+      <td><span class="pill ${statusCls[r[6]]||'pa'}">${r[6]}</span></td>
+      <td style="color:var(--t2)">${r[7]}</td>
+      <td style="color:var(--t3);font-size:.72rem">${r[8]}</td>
+    </tr>`).join('');
+}
+renderComm(commDemo);
+
+function filterComm(){
+  const q=document.getElementById('commSearch').value.toLowerCase();
+  renderComm(commDemo.filter(r=>r.join(' ').toLowerCase().includes(q)));
+}
+
+// DOCTOR TABLE
+const docDemo=[
+  ['Dr. Abdul Karim','Cardiologist','DMCH','142','৳2,13,000','৳10,650','4.9'],
+  ['Dr. Fahmida Rahman','Gynecologist','Square','128','৳1,92,000','৳9,600','4.8'],
+  ['Dr. Arif Hossain','Orthopedic','BSMMU','115','৳1,72,500','৳8,625','4.7'],
+  ['Dr. Nasrin Islam','Neurologist','Evercare','98','৳1,96,000','৳9,800','4.9'],
+  ['Dr. Mizanur Rahman','ENT Specialist','Popular','87','৳1,04,400','৳5,220','4.6'],
+  ['Dr. Tania Khatun','Dermatologist','NHI','76','৳91,200','৳4,560','4.8'],
+];
+const avatarColors=['rgba(59,130,246,.2)','rgba(16,185,129,.2)','rgba(245,158,11,.2)','rgba(139,92,246,.2)','rgba(244,63,94,.2)','rgba(20,184,166,.2)'];
+document.getElementById('DOC_TABLE').innerHTML=docDemo.map((d,i)=>`
+  <tr>
+    <td><div style="display:flex;align-items:center;gap:.75rem"><div class="doc-avatar" style="background:${avatarColors[i]};color:var(--t1)">${d[0].split(' ').map(x=>x[0]).slice(0,2).join('')}</div><span style="font-weight:600;color:var(--t1)">${d[0]}</span></div></td>
+    <td><span class="pill pv">${d[1]}</span></td>
+    <td style="color:var(--t2)">${d[2]}</td>
+    <td style="font-weight:700;color:var(--t1)">${d[3]}</td>
+    <td style="font-weight:700;color:#6ee7b7">${d[4]}</td>
+    <td style="color:#fcd34d;font-weight:700">${d[5]}</td>
+    <td><span style="color:var(--amber)">★ ${d[6]}</span></td>
+    <td><span class="pill pg">Active</span></td>
+  </tr>`).join('');
+
+// GEOGRAPHIC GRID
+const divs=[['Dhaka','28,400',92],['Chittagong','9,200',78],['Rajshahi','4,100',56],['Sylhet','3,800',52],['Khulna','2,900',44],['Barisal','2,400',38],['Rangpur','1,800',32],['Mymensingh','1,600',28]];
+const geoColors=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#f43f5e','#14b8a6','#ec4899','#0ea5e9'];
+document.getElementById('GEO_GRID').innerHTML=divs.map((d,i)=>`
+  <div class="geo-item">
+    <div class="geo-div">${d[0]}</div>
+    <div class="geo-pat" style="color:${geoColors[i]}">${d[1]}</div>
+    <div class="geo-bar" style="background:${geoColors[i]};width:${d[2]}%;opacity:.7;height:3px;border-radius:2px;margin:.4rem 0 .2rem"></div>
+    <div class="geo-lbl">${d[2]}% coverage</div>
+  </div>`).join('');
+
+// AD CAMPAIGNS
+const adCampaigns=[
+  {name:'Evercare Hospital',type:'Featured Listing',budget:'৳15,000',spent:'৳8,400',clicks:'1,248',impr:'24,800',days:12,pct:56},
+  {name:'Square Hospital',type:'Homepage Banner',budget:'৳22,500',spent:'৳13,200',clicks:'2,840',impr:'48,200',days:8,pct:58},
+  {name:'Popular Diagnostic',type:'Search Boost',budget:'৳8,000',spent:'৳3,200',clicks:'680',impr:'12,400',days:18,pct:40},
+];
+document.getElementById('AD_GRID').innerHTML=adCampaigns.map(a=>`
+  <div class="acard">
+    <div class="acard-top"><div class="acard-name">${a.name}</div><span class="acard-type">${a.type}</span></div>
+    <div class="acard-stats">
+      <span><b style="color:var(--t1)">${a.clicks}</b> clicks</span>
+      <span><b style="color:var(--t1)">${a.impr}</b> impressions</span>
+      <span><b style="color:#6ee7b7">${a.days}d</b> remaining</span>
+    </div>
+    <div class="acard-bar-wrap"><div class="acard-bar" style="width:${a.pct}%;background:linear-gradient(90deg,var(--amber),#fbbf24)"></div></div>
+    <div class="acard-meta"><span style="color:var(--t3)">Budget: ${a.budget}</span><span style="color:#fcd34d">Spent: ${a.spent} (${a.pct}%)</span></div>
+  </div>`).join('');
+
+// KPI LOAD
+async function loadKPIs(){
+  try{
+    const r=await fetch(API+'/analytics/kpis/',{headers:HDR});
+    const d=await r.json();
+    if(d.success){
+      const o=d.data.overview,rv=d.data.revenue,an=d.data.analytics||{};
+      animNum(document.getElementById('KPI_PAT'),o.total_patients);
+      animNum(document.getElementById('KPI_APPT'),o.appointments_today);
+      animNum(document.getElementById('KPI_HOSP'),o.total_hospitals);
+      animNum(document.getElementById('KPI_DOC'),o.total_doctors);
+      document.getElementById('KPI_COMM').textContent=fmt(rv.total_commission);
+      document.getElementById('KPI_AD').textContent=fmt(rv.ad_revenue);
+      document.getElementById('KSUB_AD').textContent=(rv.active_ads||0)+' active campaigns';
+      document.getElementById('KPI_PHARM').textContent=fmt(rv.pharmacy_revenue*.05);
+      document.getElementById('KPI_REV').textContent=fmt(rv.total_platform_revenue);
+      document.getElementById('RB_TOTAL').textContent=fmt(rv.total_platform_revenue);
+      document.getElementById('RB_COMM').textContent=fmt(rv.total_commission);
+      document.getElementById('RB_AD').textContent=fmt(rv.ad_revenue);
+      document.getElementById('RB_SUB').textContent=fmt(rv.subscription_revenue||0);
+      if(an.avg_fee)document.getElementById('NP1').textContent=fmt(an.avg_fee);
+      if(an.completion_rate)document.getElementById('NP2').textContent=an.completion_rate+'%';
+      if(an.rolling_7d_avg)document.getElementById('NP3').textContent=Math.round(an.rolling_7d_avg)+'/day';
+      if(an.std_fee)document.getElementById('NP4').textContent='±'+Math.round(an.std_fee);
+      if(an.cancellation_rate)document.getElementById('NP5').textContent=an.cancellation_rate+'%';
+      return;
+    }
+  }catch(e){}
+  // Demo fallback
+  animNum(document.getElementById('KPI_PAT'),52840);animNum(document.getElementById('KPI_APPT'),284);
+  animNum(document.getElementById('KPI_HOSP'),8);animNum(document.getElementById('KPI_DOC'),2400);
+  document.getElementById('KPI_COMM').textContent='৳48,000';document.getElementById('KPI_AD').textContent='৳22,500';
+  document.getElementById('KPI_PHARM').textContent='৳12,400';document.getElementById('KPI_REV').textContent='৳82,900';
+  document.getElementById('KSUB_AD').textContent='3 active campaigns';
+  document.getElementById('RB_TOTAL').textContent='৳82,900';document.getElementById('RB_COMM').textContent='৳48,000';
+  document.getElementById('RB_AD').textContent='৳22,500';document.getElementById('RB_SUB').textContent='৳12,400';
+  document.getElementById('NP1').textContent='৳1,150';document.getElementById('NP2').textContent='76.4%';
+  document.getElementById('NP3').textContent='284/day';document.getElementById('NP4').textContent='±৳380';
+  document.getElementById('NP5').textContent='8.2%';
+}
+
+function setPeriod(d,btn){period=d;document.querySelectorAll('.pt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');refreshAll();}
+function refreshAll(){const ic=document.getElementById('refIc');ic.style.animation='spin 1s linear infinite';setTimeout(()=>ic.style.animation='',1000);loadKPIs();}
+function newAdCampaign(){alert('New Advertisement Campaign\n\nPackages:\n• Featured Listing — ৳500/day\n• Homepage Banner — ৳1,500/day\n• Search Boost — ৳800/day\n• Category Sponsor — ৳1,200/day\n\nContact: ads@medfind.com');}
+
+const ss=document.createElement('style');ss.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(ss);
+
+window.addEventListener('DOMContentLoaded',()=>{
+  initCharts();loadKPIs();
+  setInterval(loadKPIs,30000);
+});
+</script>
+<script src="../../assets/js/admin-auth.js"></script>
+</body>
+</html>

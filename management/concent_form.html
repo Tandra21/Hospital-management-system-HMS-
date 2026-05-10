@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="MedFind Bangladesh patient consent forms. Sign general, telemedicine, data, and blood donor consent forms online."><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consent Forms — MedFind Bangladesh</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0f1a;--bg2:#111827;--bg3:#1e293b;--pri:#2563eb;--teal:#0ea5e9;--em:#10b981;--warn:#f59e0b;--txt:#f8fafc;--sub:#94a3b8;--border:rgba(255,255,255,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;}
+nav{background:rgba(10,15,26,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-brand img{height:42px;width:auto;object-fit:contain;}
+.nav-back{color:var(--sub);text-decoration:none;font-size:.875rem;display:flex;align-items:center;gap:.4rem;}
+.nav-back:hover{color:var(--txt);}
+.hero{background:linear-gradient(135deg,rgba(16,185,129,.06) 0%,transparent 60%);border-bottom:1px solid var(--border);padding:3rem 2rem;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;padding:.35rem 1rem;border-radius:100px;font-size:.78rem;font-weight:600;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.05em;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:.75rem;}
+.hero p{color:var(--sub);font-size:.95rem;max-width:600px;margin:0 auto;}
+.container{max-width:900px;margin:0 auto;padding:3rem 2rem 5rem;}
+.consent-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:3rem;}
+.consent-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:1.5rem;transition:.2s;cursor:pointer;}
+.consent-card:hover{border-color:rgba(37,99,235,.3);transform:translateY(-2px);}
+.cc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem;}
+.ic-blue{background:rgba(37,99,235,.12);color:#93c5fd;}
+.ic-green{background:rgba(16,185,129,.12);color:#6ee7b7;}
+.ic-amber{background:rgba(245,158,11,.12);color:#fcd34d;}
+.ic-red{background:rgba(220,38,38,.12);color:#fca5a5;}
+.ic-purple{background:rgba(139,92,246,.12);color:#c4b5fd;}
+.ic-teal{background:rgba(14,165,233,.12);color:#7dd3fc;}
+.consent-card h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem;}
+.consent-card p{font-size:.82rem;color:var(--sub);line-height:1.5;margin-bottom:1rem;}
+.cc-btn{display:inline-flex;align-items:center;gap:.4rem;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);color:#93c5fd;padding:.35rem .9rem;border-radius:100px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;}
+.cc-btn:hover{background:rgba(37,99,235,.2);}
+.consent-form-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2rem;display:none;}
+.consent-form-wrap.active{display:block;}
+.cf-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.cf-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.cf-title{font-size:1.1rem;font-weight:800;}
+.cf-sub{font-size:.82rem;color:var(--sub);margin-top:.25rem;}
+.cf-body{color:var(--sub);font-size:.88rem;line-height:1.7;margin-bottom:1.5rem;}
+.cf-body h4{color:var(--txt);font-size:.92rem;font-weight:700;margin:1rem 0 .4rem;}
+.cf-body ul{padding-left:1.25rem;margin-bottom:.75rem;}
+.cf-body li{margin-bottom:.3rem;}
+.cf-body li::marker{color:var(--pri);}
+.sign-section{background:var(--bg3);border-radius:14px;padding:1.25rem;margin-top:1.5rem;}
+.sign-title{font-size:.78rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;}
+.sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.s-field{display:flex;flex-direction:column;gap:.3rem;}
+.s-label{font-size:.72rem;font-weight:600;color:var(--sub);}
+.s-inp{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;padding:.6rem .9rem;color:var(--txt);font-family:'Inter',sans-serif;font-size:.875rem;outline:none;transition:.2s;}
+.s-inp:focus{border-color:var(--pri);}
+.check-row{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem;}
+.check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--em);cursor:pointer;flex-shrink:0;margin-top:2px;}
+.check-row label{font-size:.83rem;color:var(--sub);cursor:pointer;line-height:1.5;}
+.check-row label a{color:#93c5fd;text-decoration:none;}
+.sign-btn{background:linear-gradient(135deg,var(--em),#059669);color:#fff;border:none;border-radius:12px;padding:.75rem 2rem;font-family:'Inter',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.5rem;}
+.sign-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(16,185,129,.3);}
+.success-msg{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:1rem;text-align:center;display:none;}
+.success-msg.show{display:block;}
+.success-msg .check{font-size:2rem;margin-bottom:.5rem;}
+.success-msg p{color:#6ee7b7;font-size:.9rem;font-weight:600;}
+.info-box{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:12px;padding:1rem 1.25rem;margin:1.5rem 0;}
+.info-box p{color:var(--sub);font-size:.85rem;margin:0;}
+.divider{height:1px;background:var(--border);margin:2rem 0;}
+@media(max-width:640px){.consent-grid{grid-template-columns:1fr;}.sign-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="../../index.html"><img src="../assets/medfind-logo.png" alt="MedFind Bangladesh"></a>
+  <a class="nav-back" href="../../index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+</nav>
+<div class="hero">
+  <div class="hero-badge"><i class="fas fa-file-signature"></i> Patient Rights</div>
+  <h1>Consent Forms</h1>
+  <p>Review and sign required consent forms for MedFind services. Your informed consent is essential for your care.</p>
+</div>
+<div class="container">
+  <div class="info-box">
+    <p><strong>ℹ️ About Consent:</strong> Informed consent is your right as a patient. These forms explain what you're agreeing to when using specific MedFind services. You may withdraw consent at any time by contacting us. Signed consent forms are stored securely in your account.</p>
+  </div>
+
+  <div class="consent-grid">
+    <div class="consent-card" onclick="showForm('general')">
+      <div class="cc-icon ic-blue"><i class="fas fa-hospital-user"></i></div>
+      <h3>General Platform Use Consent</h3>
+      <p>Agreement to use MedFind's digital healthcare services, data collection, and platform terms.</p>
+      <div class="cc-btn"><i class="fas fa-eye"></i> View & Sign</div>
+    </div>
+    <div class="consent-card" onclick="showForm('telemedicine')">
+      <div class="cc-icon ic-green"><i class="fas fa-video"></i></div>
+      <h3>Telemedicine Consent</h3>
+      <p>Consent for video consultations, remote diagnosis, electronic prescriptions, and digital health records.</p>
+      <div class="cc-btn"><i class="fas fa-eye"></i> View & Sign</div>
+    </div>
+    <div class="consent-card" onclick="showForm('data')">
+      <div class="cc-icon ic-amber"><i class="fas fa-database"></i></div>
+      <h3>Medical Data Processing Consent</h3>
+      <p>Authorization for collection, storage, processing, and sharing of your personal health information.</p>
+      <div class="cc-btn"><i class="fas fa-eye"></i> View & Sign</div>
+    </div>
+    <div class="consent-card" onclick="showForm('blood')">
+      <div class="cc-icon ic-red"><i class="fas fa-tint"></i></div>
+      <h3>Blood Donor Consent</h3>
+      <p>Consent for blood donor registration, contact sharing with patients, and voluntary donation terms.</p>
+      <div class="cc-btn"><i class="fas fa-eye"></i> View & Sign</div>
+    </div>
+    <div class="consent-card" onclick="showForm('research')">
+      <div class="cc-icon ic-purple"><i class="fas fa-flask"></i></div>
+      <h3>Anonymized Research Consent</h3>
+      <p>Optional consent to use anonymized, de-identified health data to improve Bangladesh healthcare research.</p>
+      <div class="cc-btn"><i class="fas fa-eye"></i> View & Sign</div>
+    </div>
+    <div class="consent-card" onclick="showForm('minor')">
+      <div class="cc-icon ic-teal"><i class="fas fa-child"></i></div>
+      <h3>Minor Patient Guardian Consent</h3>
+      <p>Parental/guardian authorization for healthcare services and data management for patients under 18.</p>
+      <div class="cc-btn"><i class="fas fa-eye"></i> View & Sign</div>
+    </div>
+  </div>
+
+  <!-- GENERAL CONSENT FORM -->
+  <div class="consent-form-wrap" id="form-general">
+    <div class="cf-header">
+      <div class="cf-icon ic-blue"><i class="fas fa-hospital-user"></i></div>
+      <div><div class="cf-title">General Platform Use Consent</div><div class="cf-sub">MedFind Bangladesh — Version 2.0 | April 2026</div></div>
+    </div>
+    <div class="cf-body">
+      <h4>1. Acknowledgment of Non-Medical Nature</h4>
+      <p>I understand that MedFind Bangladesh is a digital platform connecting patients with healthcare providers. MedFind itself does not provide medical advice, diagnosis, or treatment.</p>
+      <h4>2. Voluntary Participation</h4>
+      <p>I voluntarily choose to use MedFind services. I understand I can discontinue use and delete my account at any time without penalty.</p>
+      <h4>3. Accuracy of Information</h4>
+      <p>I agree to provide accurate, complete, and current personal and medical information. I understand that providing false information may result in inappropriate healthcare recommendations.</p>
+      <h4>4. Emergency Situations</h4>
+      <p>I understand that in a medical emergency, I should call 999 or go to the nearest hospital immediately, and NOT rely on MedFind for emergency care.</p>
+      <h4>5. Platform Terms</h4>
+      <p>I have read and agree to MedFind's <a href="terms.html" style="color:#93c5fd">Terms of Service</a> and <a href="privacy.html" style="color:#93c5fd">Privacy Policy</a>.</p>
+    </div>
+    <div class="sign-section">
+      <div class="sign-title">Sign This Consent</div>
+      <div class="sign-grid">
+        <div class="s-field"><label class="s-label">Full Name *</label><input class="s-inp" type="text" id="gen-name" placeholder="Your full legal name"></div>
+        <div class="s-field"><label class="s-label">Date *</label><input class="s-inp" type="date" id="gen-date"></div>
+      </div>
+      <div class="check-row"><input type="checkbox" id="gen-c1"><label for="gen-c1">I have read and understood this General Platform Use Consent form.</label></div>
+      <div class="check-row"><input type="checkbox" id="gen-c2"><label for="gen-c2">I voluntarily consent to use MedFind Bangladesh services subject to the Terms of Service and Privacy Policy.</label></div>
+      <div class="success-msg" id="gen-success"><div class="check">✅</div><p>Consent signed successfully. A copy has been saved to your account.</p></div>
+      <button class="sign-btn" onclick="signConsent('general')"><i class="fas fa-signature"></i> Sign Consent Form</button>
+    </div>
+  </div>
+
+  <!-- TELEMEDICINE CONSENT FORM -->
+  <div class="consent-form-wrap" id="form-telemedicine">
+    <div class="cf-header">
+      <div class="cf-icon ic-green"><i class="fas fa-video"></i></div>
+      <div><div class="cf-title">Telemedicine Consent Form</div><div class="cf-sub">MedFind Bangladesh — Version 2.0 | April 2026</div></div>
+    </div>
+    <div class="cf-body">
+      <h4>1. Nature of Telemedicine</h4>
+      <p>Telemedicine involves the delivery of healthcare services using electronic communications. I understand that telemedicine is not appropriate for all medical conditions and may have different outcomes than in-person care.</p>
+      <h4>2. Technology Limitations</h4>
+      <p>I understand that telemedicine consultations have technical limitations including potential connection issues, inability to perform physical examinations, and possible transmission interruptions. These may affect the quality of care.</p>
+      <h4>3. Confidentiality & Security</h4>
+      <p>I understand that while MedFind uses encryption and security measures, electronic communication carries inherent risks. I consent to my consultation being conducted via video/audio despite these risks.</p>
+      <h4>4. Session Recording</h4>
+      <p>Telemedicine sessions are NOT recorded by MedFind. Any recording by either party requires mutual consent and may be subject to legal restrictions.</p>
+      <h4>5. Prescription Limitations</h4>
+      <p>Electronic prescriptions issued via telemedicine are valid under Bangladesh telemedicine guidelines. However, controlled substances may not be prescribed via telemedicine.</p>
+      <h4>6. Right to Discontinue</h4>
+      <p>I may discontinue a telemedicine consultation at any time. I understand that doing so may affect the quality of care received.</p>
+      <ul>
+        <li>I can request an in-person referral at any time</li>
+        <li>Emergency situations require immediate in-person care (call 999)</li>
+        <li>Follow-up appointments may be recommended</li>
+      </ul>
+    </div>
+    <div class="sign-section">
+      <div class="sign-title">Sign This Consent</div>
+      <div class="sign-grid">
+        <div class="s-field"><label class="s-label">Full Name *</label><input class="s-inp" type="text" id="tele-name" placeholder="Your full legal name"></div>
+        <div class="s-field"><label class="s-label">Date *</label><input class="s-inp" type="date" id="tele-date"></div>
+      </div>
+      <div class="check-row"><input type="checkbox" id="tele-c1"><label for="tele-c1">I understand and accept the limitations of telemedicine as described above.</label></div>
+      <div class="check-row"><input type="checkbox" id="tele-c2"><label for="tele-c2">I consent to receive healthcare services via telemedicine through MedFind Bangladesh.</label></div>
+      <div class="success-msg" id="tele-success"><div class="check">✅</div><p>Telemedicine consent signed successfully.</p></div>
+      <button class="sign-btn" onclick="signConsent('tele')"><i class="fas fa-signature"></i> Sign Consent Form</button>
+    </div>
+  </div>
+
+  <!-- DATA CONSENT FORM -->
+  <div class="consent-form-wrap" id="form-data">
+    <div class="cf-header">
+      <div class="cf-icon ic-amber"><i class="fas fa-database"></i></div>
+      <div><div class="cf-title">Medical Data Processing Consent</div><div class="cf-sub">MedFind Bangladesh — Version 2.0 | April 2026</div></div>
+    </div>
+    <div class="cf-body">
+      <h4>1. Data We Collect</h4>
+      <ul>
+        <li>Personal identification: name, age, gender, contact information</li>
+        <li>Medical history: diagnoses, medications, allergies, lab results</li>
+        <li>Appointment records and consultation notes</li>
+        <li>Platform usage data and device information</li>
+      </ul>
+      <h4>2. How We Use Your Data</h4>
+      <ul>
+        <li>To connect you with appropriate healthcare providers</li>
+        <li>To maintain your electronic health records</li>
+        <li>To process payments and maintain billing records</li>
+        <li>To send appointment reminders and health notifications</li>
+      </ul>
+      <h4>3. Data Sharing</h4>
+      <p>Your data is shared only with your treating healthcare providers, when required by law, or with your explicit consent. We never sell your medical data.</p>
+      <h4>4. Your Rights</h4>
+      <p>You have the right to access, correct, export, and delete your data. See our <a href="privacy.html" style="color:#93c5fd">Privacy Policy</a> for full details on exercising these rights.</p>
+    </div>
+    <div class="sign-section">
+      <div class="sign-title">Sign This Consent</div>
+      <div class="sign-grid">
+        <div class="s-field"><label class="s-label">Full Name *</label><input class="s-inp" type="text" id="data-name" placeholder="Your full legal name"></div>
+        <div class="s-field"><label class="s-label">Date *</label><input class="s-inp" type="date" id="data-date"></div>
+      </div>
+      <div class="check-row"><input type="checkbox" id="data-c1"><label for="data-c1">I consent to MedFind collecting and processing my personal and medical data as described.</label></div>
+      <div class="check-row"><input type="checkbox" id="data-c2"><label for="data-c2">I understand I can withdraw this consent at any time by contacting medfindbd2026@gmail.com.</label></div>
+      <div class="success-msg" id="data-success"><div class="check">✅</div><p>Data processing consent signed successfully.</p></div>
+      <button class="sign-btn" onclick="signConsent('data')"><i class="fas fa-signature"></i> Sign Consent Form</button>
+    </div>
+  </div>
+
+  <!-- BLOOD DONOR CONSENT -->
+  <div class="consent-form-wrap" id="form-blood">
+    <div class="cf-header">
+      <div class="cf-icon ic-red"><i class="fas fa-tint"></i></div>
+      <div><div class="cf-title">Blood Donor Registration Consent</div><div class="cf-sub">MedFind Bangladesh — Version 2.0 | April 2026</div></div>
+    </div>
+    <div class="cf-body">
+      <h4>1. Voluntary Registration</h4>
+      <p>I voluntarily register as a blood donor on MedFind Bangladesh. I understand this is a civic service and I am not compensated for donations arranged through the platform.</p>
+      <h4>2. Information Sharing</h4>
+      <p>I consent to my name, blood group, district, and contact information being visible to verified patients who need blood matching my type. I understand my information will NOT be sold or shared for commercial purposes.</p>
+      <h4>3. Eligibility Self-Declaration</h4>
+      <p>I declare that at the time of donation I will:</p>
+      <ul>
+        <li>Be between 18 and 65 years of age</li>
+        <li>Weigh at least 50 kilograms</li>
+        <li>Be in good general health with no active illness</li>
+        <li>Not have donated blood in the past 90 days</li>
+        <li>Not be taking medications that contraindicate donation</li>
+      </ul>
+      <h4>4. MedFind's Role</h4>
+      <p>MedFind facilitates the connection between donors and patients. The actual donation must occur at a licensed blood bank or hospital. MedFind is not responsible for any medical outcomes of the donation.</p>
+      <h4>5. Opt-Out Rights</h4>
+      <p>I can remove my registration at any time by contacting medfindbd2026@gmail.com or through my account settings.</p>
+    </div>
+    <div class="sign-section">
+      <div class="sign-title">Sign This Consent</div>
+      <div class="sign-grid">
+        <div class="s-field"><label class="s-label">Full Name *</label><input class="s-inp" type="text" id="blood-name" placeholder="Your full legal name"></div>
+        <div class="s-field"><label class="s-label">Blood Group *</label>
+          <select class="s-inp" id="blood-bg"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+        <div class="s-field"><label class="s-label">Date *</label><input class="s-inp" type="date" id="blood-date"></div>
+      </div>
+      <div class="check-row"><input type="checkbox" id="blood-c1"><label for="blood-c1">I voluntarily consent to register as a blood donor and have my information shared with verified patients in need.</label></div>
+      <div class="check-row"><input type="checkbox" id="blood-c2"><label for="blood-c2">I confirm I meet the basic eligibility criteria for blood donation and will ensure I am medically eligible before donating.</label></div>
+      <div class="success-msg" id="blood-success"><div class="check">✅</div><p>Blood donor consent signed. Thank you for potentially saving lives!</p></div>
+      <button class="sign-btn" onclick="signConsent('blood')"><i class="fas fa-signature"></i> Sign Consent Form</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p style="color:#64748b;font-size:.8rem;text-align:center">All signed consent forms are stored securely in your account. For questions about consent: <a href="mailto:medfindbd2026@gmail.com" style="color:#93c5fd">medfindbd2026@gmail.com</a></p>
+</div>
+
+<script>
+function showForm(type) {
+  // Hide all forms
+  document.querySelectorAll('.consent-form-wrap').forEach(f => f.classList.remove('active'));
+  const form = document.getElementById('form-' + type);
+  if (form) {
+    form.classList.add('active');
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Set today's date
+    const dateField = form.querySelector('input[type="date"]');
+    if (dateField) dateField.value = new Date().toISOString().split('T')[0];
+  }
+}
+
+function signConsent(prefix) {
+  const nameField = document.getElementById(prefix + '-name') || document.getElementById('gen-name');
+  const checks = document.querySelectorAll(`#form-${prefix === 'gen' ? 'general' : prefix === 'tele' ? 'telemedicine' : prefix === 'data' ? 'data' : prefix === 'blood' ? 'blood' : prefix} input[type="checkbox"]`);
+  
+  const nameVal = nameField ? nameField.value.trim() : '';
+  if (!nameVal) { alert('Please enter your full name.'); return; }
+  
+  let allChecked = true;
+  checks.forEach(c => { if (!c.checked) allChecked = false; });
+  if (!allChecked) { alert('Please check all required consent boxes.'); return; }
+  
+  const successId = prefix === 'gen' ? 'gen' : prefix === 'tele' ? 'tele' : prefix;
+  const msg = document.getElementById(successId + '-success');
+  if (msg) msg.classList.add('show');
+  
+  // Save to localStorage (would normally go to backend)
+  const consents = JSON.parse(localStorage.getItem('mf_consents') || '{}');
+  consents[prefix] = { name: nameVal, date: new Date().toISOString(), signed: true };
+  localStorage.setItem('mf_consents', JSON.stringify(consents));
+}
+
+// Auto-set today's date on load
+document.querySelectorAll('input[type="date"]').forEach(d => {
+  d.value = new Date().toISOString().split('T')[0];
+});
+</script>
+<script src="../assets/js/components.js"></script>
+</body>
+</html>

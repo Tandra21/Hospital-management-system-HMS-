@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDFIND — ডাক্তার খুঁজুন</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --teal-mid: #99f6e4;
+    --teal-dark: #0f766e;
+    --teal-deeper: #134e4a;
+    --bg: #f0fdf9;
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(13,148,136,0.12);
+    --shadow-lg: 0 8px 32px rgba(13,148,136,0.16);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Hind Siliguri', sans-serif;
+    background: var(--bg);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--teal-dark);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--teal); }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { font-size: 13px; color: var(--gray-600); text-decoration: none; }
+  .nav-btn {
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--teal-deeper) 0%, var(--teal-dark) 60%, var(--teal) 100%);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    top: -100px; right: -100px;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -80px; left: -80px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    color: white;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero p {
+    color: var(--teal-mid);
+    font-size: 15px;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SEARCH BOX */
+  .search-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .search-box {
+    display: flex;
+    background: white;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 16px 24px;
+    font-size: 15px;
+    font-family: 'Hind Siliguri', sans-serif;
+    color: var(--gray-800);
+    background: transparent;
+  }
+  .search-box input::placeholder { color: var(--gray-400); }
+  .search-btn {
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 14px;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .2s;
+  }
+  .search-btn:hover { background: var(--teal-dark); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 20px; font-weight: 700; color: var(--teal-dark); }
+  .stat-label { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+  /* MAIN CONTENT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* FILTERS */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+  .filter-label { font-size: 13px; color: var(--gray-600); margin-right: 4px; }
+  .chip {
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Hind Siliguri', sans-serif;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .chip:hover { border-color: var(--teal); color: var(--teal-dark); }
+  .chip.active { background: var(--teal); border-color: var(--teal); color: white; font-weight: 600; }
+
+  /* RESULTS ROW */
+  .results-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .results-count { font-size: 13px; color: var(--gray-600); }
+  .sort-select {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: 'Hind Siliguri', sans-serif;
+    color: var(--gray-600);
+    background: white;
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* DOCTOR CARDS GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+
+  .doc-card {
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    animation: fadeUp .3s ease both;
+  }
+  .doc-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--teal-mid);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top { display: flex; gap: 14px; margin-bottom: 12px; }
+  .avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
+  .doc-spec { font-size: 12px; font-weight: 600; color: var(--teal-dark); margin-bottom: 2px; }
+  .doc-hosp { font-size: 12px; color: var(--gray-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .rating-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .stars { color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
+  .rating-num { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .rating-reviews { font-size: 12px; color: var(--gray-400); }
+
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .tag-avail { background: #dcfce7; color: #166534; }
+  .tag-busy { background: #fee2e2; color: #991b1b; }
+  .tag-exp { background: var(--teal-light); color: var(--teal-deeper); }
+  .tag-fee { background: var(--gray-100); color: var(--gray-600); }
+
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray-100);
+  }
+  .fee-text { font-size: 16px; font-weight: 700; color: var(--teal-dark); }
+  .fee-sub { font-size: 11px; color: var(--gray-400); }
+  .profile-btn {
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .profile-btn:hover { background: var(--teal-dark); transform: scale(1.03); }
+
+  .no-results {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--gray-400);
+    font-size: 16px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--teal-deeper);
+    color: var(--teal-mid);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 13px;
+    margin-top: 3rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Doctor<span>Popup</span></div>
+  <div class="nav-links">
+    <a href="#">হোম</a>
+    <a href="#">হাসপাতাল</a>
+    <a href="#">সেবা</a>
+    <button class="nav-btn">লগইন করুন</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>সেরা ডাক্তার খুঁজুন</h1>
+  <p>বিশেষজ্ঞ ডাক্তার খুঁজুন এবং সহজেই অ্যাপয়েন্টমেন্ট নিন</p>
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="ডাক্তারের নাম, বিশেষজ্ঞতা বা হাসপাতাল..." oninput="filterDoctors()" />
+      <button class="search-btn" onclick="filterDoctors()">খুঁজুন</button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">৫০০+</div><div class="stat-label">বিশেষজ্ঞ ডাক্তার</div></div>
+  <div class="stat"><div class="stat-num">৫০+</div><div class="stat-label">হাসপাতাল</div></div>
+  <div class="stat"><div class="stat-num">১ লক্ষ+</div><div class="stat-label">রোগী সেবা</div></div>
+  <div class="stat"><div class="stat-num">২৪/৭</div><div class="stat-label">অনলাইন বুকিং</div></div>
+</div>
+
+<div class="container">
+  <div class="filter-row">
+    <span class="filter-label">বিভাগ:</span>
+    <button class="chip active" onclick="setFilter(this,'all')">সব</button>
+    <button class="chip" onclick="setFilter(this,'হৃদরোগ')">হৃদরোগ</button>
+    <button class="chip" onclick="setFilter(this,'শিশু')">শিশু বিভাগ</button>
+    <button class="chip" onclick="setFilter(this,'চর্ম')">চর্মরোগ</button>
+    <button class="chip" onclick="setFilter(this,'অর্থো')">অর্থোপেডিক</button>
+    <button class="chip" onclick="setFilter(this,'নিউরো')">নিউরোলজি</button>
+    <button class="chip" onclick="setFilter(this,'চক্ষু')">চক্ষু বিভাগ</button>
+  </div>
+
+  <div class="results-row">
+    <div class="results-count" id="resultsCount">৬ জন ডাক্তার পাওয়া গেছে</div>
+    <select class="sort-select" onchange="sortDoctors(this.value)">
+      <option value="rating">রেটিং অনুযায়ী</option>
+      <option value="fee-low">ফি (কম থেকে বেশি)</option>
+      <option value="fee-high">ফি (বেশি থেকে কম)</option>
+      <option value="exp">অভিজ্ঞতা অনুযায়ী</option>
+    </select>
+  </div>
+
+  <div class="grid" id="doctorGrid"></div>
+</div>
+
+<footer>© ২০২৪ DoctorPopup — সেরা স্বাস্থ্যসেবা আপনার হাতের মুঠোয়</footer>
+
+<script>
+const doctors = [
+  {id:1,name:"ডা. রাহেলা বেগম",spec:"হৃদরোগ বিশেষজ্ঞ",tag:"হৃদরোগ",hospital:"ঢাকা মেডিকেল কলেজ হাসপাতাল",expYears:18,exp:"১৮ বছর",rating:4.9,reviews:312,fee:800,feeText:"৮০০",avail:true,edu:"MBBS, MD (Cardiology), FCPS",slots:["সকাল ৯টা","সকাল ১০টা","দুপুর ১২টা","বিকেল ৪টা","বিকেল ৫টা"],bg:"#ccfbf1",fg:"#134e4a",initials:"রা",patients:"৮,৫০০+",lang:"বাংলা, ইংরেজি",reviews_list:[{n:"করিম সাহেব",r:5,t:"অনেক ভালো ডাক্তার, সময় দিয়ে শুনলেন এবং ভালো পরামর্শ দিলেন।"},{n:"নাসরিন আক্তার",r:5,t:"খুবই দক্ষ এবং রোগীবান্ধব। চেম্বারে বেশি অপেক্ষা করতে হয় না।"},{n:"মামুন রশিদ",r:4,t:"চিকিৎসা সেবায় সম্পূর্ণ সন্তুষ্ট। পুনরায় যাব।"}]},
+  {id:2,name:"ডা. আহমেদ হোসেন",spec:"শিশু বিশেষজ্ঞ",tag:"শিশু",hospital:"বঙ্গবন্ধু শেখ মুজিব মেডিকেল",expYears:12,exp:"১২ বছর",rating:4.8,reviews:245,fee:600,feeText:"৬০০",avail:true,edu:"MBBS, DCH, MD (Paediatrics)",slots:["সকাল ১০টা","সকাল ১১টা","বিকেল ৩টা","বিকেল ৫টা"],bg:"#d1fae5",fg:"#064e3b",initials:"আ",patients:"৬,২০০+",lang:"বাংলা",reviews_list:[{n:"রুবিনা পারভীন",r:5,t:"আমার ছেলের জন্য অনেক ভালো চিকিৎসা দিয়েছেন। খুব ধৈর্যশীল ডাক্তার।"},{n:"জহির রায়হান",r:5,t:"শিশুদের সাথে অনেক ভালো ব্যবহার করেন, বাচ্চারা ভয় পায় না।"}]},
+  {id:3,name:"ডা. সুমাইয়া ইসলাম",spec:"চর্মরোগ বিশেষজ্ঞ",tag:"চর্ম",hospital:"স্কয়ার হাসপাতাল, ঢাকা",expYears:9,exp:"৯ বছর",rating:4.7,reviews:189,fee:1000,feeText:"১,০০০",avail:false,edu:"MBBS, DDV (Dermatology)",slots:["দুপুর ২টা","বিকেল ৪টা","সন্ধ্যা ৬টা"],bg:"#fce7f3",fg:"#831843",initials:"সু",patients:"৪,৮০০+",lang:"বাংলা, ইংরেজি",reviews_list:[{n:"শাহিদা বেগম",r:5,t:"ত্বকের সমস্যায় অনেক উপকার পেয়েছি। নিয়মিত ফলোআপ করেন।"},{n:"তানভীর আহমেদ",r:4,t:"খুব কার্যকর চিকিৎসা দিয়েছেন, দ্রুত সুস্থ হয়েছি।"}]},
+  {id:4,name:"ডা. মুহাম্মদ কামাল",spec:"অর্থোপেডিক সার্জন",tag:"অর্থো",hospital:"ন্যাশনাল ইনস্টিটিউট অব ট্রমাটোলজি",expYears:22,exp:"২২ বছর",rating:4.9,reviews:410,fee:1200,feeText:"১,২০০",avail:true,edu:"MBBS, MS (Ortho), FRCS",slots:["সকাল ৮টা","সকাল ৯টা","দুপুর ১টা"],bg:"#fef3c7",fg:"#78350f",initials:"কা",patients:"১২,০০০+",lang:"বাংলা, ইংরেজি, উর্দু",reviews_list:[{n:"মোশাররফ হোসেন",r:5,t:"হাঁটুর অপারেশন করেছেন, এখন সম্পূর্ণ সুস্থ। দুর্দান্ত সার্জন।"},{n:"কুলসুম বানু",r:5,t:"বয়স্ক রোগীদের প্রতি অনেক মনোযোগী এবং বিশ্বস্ত ডাক্তার।"},{n:"সালমান খান",r:5,t:"বাংলাদেশের সেরা অর্থোপেডিক সার্জনদের মধ্যে একজন।"}]},
+  {id:5,name:"ডা. নাফিসা খানম",spec:"নিউরোলজিস্ট",tag:"নিউরো",hospital:"ইউনাইটেড হাসপাতাল, গুলশান",expYears:15,exp:"১৫ বছর",rating:4.6,reviews:167,fee:1500,feeText:"১,৫০০",avail:true,edu:"MBBS, MD (Neurology), PhD",slots:["সকাল ১১টা","দুপুর ১২টা","বিকেল ৪টা","বিকেল ৬টা"],bg:"#ede9fe",fg:"#3730a3",initials:"না",patients:"৫,৫০০+",lang:"বাংলা, ইংরেজি",reviews_list:[{n:"আরিফুল ইসলাম",r:5,t:"মাইগ্রেনের সমস্যা থেকে মুক্তি পেয়েছি। অনেক অভিজ্ঞ এবং দক্ষ।"},{n:"পারুল বেগম",r:4,t:"মাথার সমস্যায় অনেক উপকার করেছেন, ধন্যবাদ।"}]},
+  {id:6,name:"ডা. শফিকুল আলম",spec:"চক্ষু বিশেষজ্ঞ",tag:"চক্ষু",hospital:"ইসলামী আই হাসপাতাল, ঢাকা",expYears:14,exp:"১৪ বছর",rating:4.8,reviews:298,fee:700,feeText:"৭০০",avail:false,edu:"MBBS, DO, MS (Ophthalmology)",slots:["সকাল ৯টা","দুপুর ১২টা","বিকেল ৩টা","বিকেল ৫টা"],bg:"#cffafe",fg:"#164e63",initials:"শ",patients:"৭,৩০০+",lang:"বাংলা",reviews_list:[{n:"জামিলা খাতুন",r:5,t:"চোখের অপারেশন অনেক সফলভাবে করেছেন, দৃষ্টিশক্তি ফিরে পেয়েছি।"},{n:"রফিকুল ইসলাম",r:5,t:"ছানি অপারেশনের পর থেকে চোখ অনেক ভালো। বিশ্বস্ত ডাক্তার।"}]}
+];
+
+// Save all doctors to localStorage so profile page can read them
+localStorage.setItem('dp_doctors', JSON.stringify(doctors));
+
+let currentFilter = 'all';
+let currentSort = 'rating';
+let filtered = [...doctors];
+
+function stars(r) {
+  return '★'.repeat(Math.floor(r)) + (r % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(r));
+}
+
+function renderCards(list) {
+  const grid = document.getElementById('doctorGrid');
+  const count = document.getElementById('resultsCount');
+  count.textContent = list.length + ' জন ডাক্তার পাওয়া গেছে';
+  if (!list.length) {
+    grid.innerHTML = '<div class="no-results">কোনো ডাক্তার পাওয়া যায়নি 😔<br><small>অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন</small></div>';
+    return;
+  }
+  grid.innerHTML = list.map((d, i) => `
+    <div class="doc-card" style="animation-delay:${i * 0.05}s">
+      <div class="card-top">
+        <div class="avatar" style="background:${d.bg};color:${d.fg}">${d.initials}</div>
+        <div class="doc-info">
+          <div class="doc-name">${d.name}</div>
+          <div class="doc-spec">${d.spec}</div>
+          <div class="doc-hosp">🏥 ${d.hospital}</div>
+        </div>
+      </div>
+      <div class="rating-row">
+        <span class="stars">${'★'.repeat(Math.floor(d.rating))}</span>
+        <span class="rating-num">${d.rating}</span>
+        <span class="rating-reviews">(${d.reviews} রিভিউ)</span>
+      </div>
+      <div class="card-tags">
+        <span class="tag ${d.avail ? 'tag-avail' : 'tag-busy'}">${d.avail ? '● আজ উপলব্ধ' : '● আজ ব্যস্ত'}</span>
+        <span class="tag tag-exp">⏱ ${d.exp} অভিজ্ঞতা</span>
+        <span class="tag tag-fee">👥 ${d.patients} রোগী</span>
+      </div>
+      <div class="card-bottom">
+        <div>
+          <div class="fee-text">৳${d.feeText}</div>
+          <div class="fee-sub">পরামর্শ ফি</div>
+        </div>
+        <a class="profile-btn" href="doctor-profile.html?id=${d.id}">প্রোফাইল দেখুন →</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterDoctors() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  filtered = doctors.filter(d => {
+    const matchFilter = currentFilter === 'all' || d.tag === currentFilter;
+    const matchQ = !q || d.name.toLowerCase().includes(q) || d.spec.toLowerCase().includes(q) || d.hospital.toLowerCase().includes(q);
+    return matchFilter && matchQ;
+  });
+  sortAndRender();
+}
+
+function setFilter(btn, tag) {
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = tag;
+  filterDoctors();
+}
+
+function sortDoctors(val) {
+  currentSort = val;
+  sortAndRender();
+}
+
+function sortAndRender() {
+  const sorted = [...filtered];
+  if (currentSort === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+  else if (currentSort === 'fee-low') sorted.sort((a, b) => a.fee - b.fee);
+  else if (currentSort === 'fee-high') sorted.sort((a, b) => b.fee - a.fee);
+  else if (currentSort === 'exp') sorted.sort((a, b) => b.expYears - a.expYears);
+  renderCards(sorted);
+}
+
+sortAndRender();
+</script>
+</body>
+</html>

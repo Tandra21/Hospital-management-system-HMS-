@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedFind - Admission & Discharge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2c7be5;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c7be5;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            background: #2c7be5;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1a5fd0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    MedFind - Admission & Discharge
+</header>
+
+<div class="container">
+
+    <!-- Admission Section -->
+    <div class="card">
+        <h2>Patient Admission</h2>
+
+        <form>
+            <label>Patient Name</label>
+            <input type="text" placeholder="Enter patient name">
+
+            <label>Age</label>
+            <input type="number" placeholder="Enter age">
+
+            <label>Gender</label>
+            <select>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+
+            <label>Contact Number</label>
+            <input type="text" placeholder="Enter phone number">
+
+            <label>Admission Date</label>
+            <input type="date">
+
+            <label>Doctor Assigned</label>
+            <input type="text" placeholder="Doctor name">
+
+            <label>Reason</label>
+            <textarea placeholder="Reason for admission"></textarea>
+
+            <button type="submit">Admit Patient</button>
+        </form>
+    </div>
+
+    <!-- Discharge Section -->
+    <div class="card">
+        <h2>Patient Discharge</h2>
+
+        <form>
+            <label>Patient ID</label>
+            <input type="text" placeholder="Enter patient ID">
+
+            <label>Patient Name</label>
+            <input type="text" placeholder="Enter patient name">
+
+            <label>Discharge Date</label>
+            <input type="date">
+
+            <label>Final Diagnosis</label>
+            <textarea placeholder="Diagnosis details"></textarea>
+
+            <label>Total Bill</label>
+            <input type="number" placeholder="Enter amount">
+
+            <label>Payment Status</label>
+            <select>
+                <option>Paid</option>
+                <option>Unpaid</option>
+            </select>
+
+            <button type="submit">Discharge Patient</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

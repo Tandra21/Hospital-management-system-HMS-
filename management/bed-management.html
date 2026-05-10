@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bed Management - MedFind</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal-50:  #E1F5EE;
+      --teal-100: #9FE1CB;
+      --teal-200: #5DCAA5;
+      --teal-400: #1D9E75;
+      --teal-600: #0F6E56;
+      --teal-800: #085041;
+      --blue-50:  #E6F1FB;
+      --blue-100: #B5D4F4;
+      --blue-400: #378ADD;
+      --blue-600: #185FA5;
+      --blue-800: #0C447C;
+      --amber-50: #FAEEDA;
+      --amber-100:#FAC775;
+      --amber-400:#BA7517;
+      --amber-600:#854F0B;
+      --red-50:   #FCEBEB;
+      --red-100:  #F7C1C1;
+      --red-400:  #E24B4A;
+      --red-600:  #A32D2D;
+      --purple-50:#EEEDFE;
+      --purple-100:#CECBF6;
+      --purple-400:#7F77DD;
+      --purple-600:#534AB7;
+      --coral-50: #FAECE7;
+      --coral-100:#F5C4B3;
+      --coral-400:#D85A30;
+      --coral-600:#993C1D;
+      --green-50: #EAF3DE;
+      --green-100:#C0DD97;
+      --green-400:#639922;
+      --green-600:#3B6D11;
+      --gray-50:  #F1EFE8;
+      --gray-100: #D3D1C7;
+      --gray-200: #B4B2A9;
+      --gray-400: #888780;
+      --gray-600: #5F5E5A;
+      --gray-800: #444441;
+      --bg:       #F4F7F5;
+      --card:     #FFFFFF;
+      --text:     #1a2e25;
+      --text-muted: #5a7067;
+      --border:   rgba(15,110,86,0.13);
+      --radius:   12px;
+      --radius-sm: 8px;
+      --shadow:   0 2px 12px rgba(15,110,86,0.08);
+      --shadow-hover: 0 8px 28px rgba(15,110,86,0.15);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 8px rgba(15,110,86,0.07);
+    }
+    .navbar-inner {
+      max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .navbar-brand {
+      font-family: 'Sora', sans-serif; font-size: 1.4rem; font-weight: 700;
+      color: var(--teal-600); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .navbar-brand i { color: var(--teal-400); }
+    .navbar-links { display: flex; align-items: center; gap: 0.25rem; }
+    .navbar-links a {
+      padding: 0.45rem 0.9rem; border-radius: var(--radius-sm);
+      color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .navbar-links a:hover { color: var(--teal-600); background: var(--teal-50); }
+    .navbar-links a.active { color: var(--teal-600); background: var(--teal-50); }
+    .navbar-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--red-400); color: white; border-radius: 20px;
+      font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; margin-left: 0.3rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.6rem 1.1rem; border-radius: var(--radius-sm);
+      font-size: 0.82rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all 0.18s; border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--teal-400); color: #fff; border-color: var(--teal-400); }
+    .btn-primary:hover { background: var(--teal-600); }
+    .btn-outline { background: transparent; color: var(--teal-600); border-color: var(--teal-200); }
+    .btn-outline:hover { background: var(--teal-50); }
+    .btn-sm { padding: 0.38rem 0.75rem; font-size: 0.75rem; }
+    .navbar-toggler {
+      display: none; background: none; border: none; font-size: 1.2rem;
+      color: var(--text-muted); cursor: pointer; padding: 0.4rem;
+    }
+
+    /* ── PAGE WRAP ── */
+    .page { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .page-title {
+      font-family: 'Sora', sans-serif; font-size: 1.9rem; font-weight: 700;
+      color: var(--teal-600); letter-spacing: -0.4px; margin-bottom: 0.3rem;
+    }
+    .page-subtitle { color: var(--text-muted); font-size: 0.9rem; }
+    .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .last-updated {
+      font-size: 0.75rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green-400);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.5; transform:scale(1.3); }
+    }
+
+    /* ── HOSPITAL SELECTOR ── */
+    .hospital-selector-section {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .selector-label {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--teal-600); margin-bottom: 0.9rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .hospital-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem;
+    }
+    .hospital-option {
+      padding: 0.9rem 1rem; background: var(--gray-50);
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; transition: all 0.18s;
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    .hospital-option:hover { background: var(--teal-50); border-color: var(--teal-200); }
+    .hospital-option.selected {
+      background: var(--teal-50); border-color: var(--teal-400);
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+    }
+    .hospital-option-icon {
+      width: 38px; height: 38px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+      background: var(--teal-100); color: var(--teal-600);
+    }
+    .hospital-option.selected .hospital-option-icon { background: var(--teal-400); color: #fff; }
+    .hosp-opt-name { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 0.15rem; line-height: 1.3; }
+    .hosp-opt-meta { font-size: 0.72rem; color: var(--text-muted); }
+    .hosp-opt-status {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.68rem; font-weight: 600; margin-top: 0.3rem;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    /* ── SUMMARY STATS ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 0.3rem;
+      transition: all 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .stat-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 700; line-height: 1;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+    .stat-sub { font-size: 0.7rem; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── SECTION TITLE ── */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.1rem; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .section-title {
+      font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700;
+      color: var(--text); display: flex; align-items: center; gap: 0.5rem;
+    }
+    .section-title i { font-size: 0.95rem; }
+
+    /* ── BED CATEGORY CARDS ── */
+    .categories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+      gap: 1.25rem; margin-bottom: 2.5rem;
+    }
+    .category-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      overflow: hidden; transition: all 0.25s;
+    }
+    .category-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+    .category-header {
+      padding: 1.1rem 1.25rem 0.9rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .category-left { display: flex; align-items: center; gap: 0.75rem; }
+    .cat-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center; font-size: 1.15rem;
+    }
+    .cat-name { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .cat-code { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .cat-total-badge {
+      font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 700;
+      line-height: 1; text-align: right;
+    }
+    .cat-total-label { font-size: 0.68rem; color: var(--text-muted); text-align: right; margin-top: 0.15rem; }
+
+    /* progress bar */
+    .progress-wrap { padding: 0 1.25rem 0.75rem; }
+    .progress-bar-bg {
+      height: 8px; border-radius: 20px; overflow: hidden;
+      background: var(--gray-100); margin-bottom: 0.5rem;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 20px; transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+    .progress-labels {
+      display: flex; justify-content: space-between; font-size: 0.72rem;
+    }
+
+    /* bed grid */
+    .bed-counts {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border);
+    }
+    .bed-count-cell {
+      padding: 0.85rem 0.75rem; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .bed-count-cell:last-child { border-right: none; }
+    .bed-count-num {
+      font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 700; line-height: 1;
+    }
+    .bed-count-lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* footer actions */
+    .cat-actions {
+      padding: 0.75rem 1.25rem; background: var(--gray-50);
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--border);
+    }
+    .ward-tag {
+      font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.55rem;
+      border-radius: 20px; display: inline-flex; align-items: center; gap: 0.25rem;
+    }
+
+    /* ── BED GRID VIEW ── */
+    .bed-grid-section { margin-bottom: 2.5rem; }
+    .bed-grid-filters {
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .filter-chip {
+      padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; border: 1.5px solid var(--border); background: var(--card);
+      color: var(--text-muted); transition: all 0.15s;
+    }
+    .filter-chip:hover { border-color: var(--teal-200); color: var(--teal-600); }
+    .filter-chip.active { background: var(--teal-400); color: white; border-color: var(--teal-400); }
+
+    .beds-visual-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(70px,1fr));
+      gap: 0.6rem;
+    }
+    .bed-cell {
+      aspect-ratio: 1; border-radius: var(--radius-sm);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 600; cursor: pointer;
+      border: 1.5px solid transparent; transition: all 0.15s;
+      position: relative; gap: 0.2rem;
+    }
+    .bed-cell i { font-size: 1.1rem; }
+    .bed-cell:hover { transform: scale(1.06); z-index: 2; }
+    .bed-cell.available   { background: var(--green-50);  border-color: var(--green-100);  color: var(--green-600); }
+    .bed-cell.occupied    { background: var(--red-50);    border-color: var(--red-100);    color: var(--red-600); }
+    .bed-cell.reserved    { background: var(--amber-50);  border-color: var(--amber-100);  color: var(--amber-600); }
+    .bed-cell.maintenance { background: var(--gray-50);   border-color: var(--gray-100);   color: var(--gray-600); }
+
+    /* ── TOOLTIP ── */
+    .bed-tooltip {
+      display: none; position: fixed; z-index: 999;
+      background: var(--gray-800); color: white; border-radius: var(--radius-sm);
+      padding: 0.6rem 0.85rem; font-size: 0.75rem; line-height: 1.5;
+      pointer-events: none; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .bed-tooltip.show { display: block; }
+
+    /* ── RECENT ACTIVITY ── */
+    .activity-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .activity-list { max-height: 320px; overflow-y: auto; }
+    .activity-item {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: var(--gray-50); }
+    .activity-icon {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; flex-shrink: 0;
+    }
+    .activity-text { flex: 1; }
+    .activity-title { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+    .activity-sub { font-size: 0.72rem; color: var(--text-muted); }
+    .activity-time { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+
+    /* ── BOTTOM GRID ── */
+    .bottom-grid {
+      display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; margin-bottom: 2rem;
+    }
+
+    /* ── QUICK ACTIONS ── */
+    .quick-actions-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow); padding: 1.25rem;
+    }
+    .quick-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.9rem; }
+    .quick-action-btn {
+      padding: 0.85rem 0.75rem; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); background: var(--gray-50);
+      cursor: pointer; text-align: center; transition: all 0.18s; font-family: 'DM Sans', sans-serif;
+    }
+    .quick-action-btn:hover { background: var(--teal-50); border-color: var(--teal-200); }
+    .quick-action-btn i { font-size: 1.2rem; display: block; margin-bottom: 0.4rem; }
+    .quick-action-btn span { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+
+    /* ── OCCUPANCY CHART ── */
+    .chart-bars {
+      display: flex; align-items: flex-end; gap: 0.5rem;
+      height: 120px; margin-top: 1rem; padding: 0 0.25rem;
+    }
+    .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+    .chart-bar {
+      width: 100%; border-radius: 4px 4px 0 0; transition: height 0.6s ease;
+      min-height: 4px;
+    }
+    .chart-bar-label { font-size: 0.65rem; color: var(--text-muted); font-weight: 500; }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 500; align-items: center; justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--card); border-radius: var(--radius);
+      padding: 1.75rem; width: 100%; max-width: 480px; margin: 1rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeUp 0.2s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .modal-title { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { font-size: 0.78rem; font-weight: 600; color: var(--teal-600); margin-bottom: 0.4rem; display: block; letter-spacing: 0.04em; text-transform: uppercase; }
+    .form-control {
+      width: 100%; padding: 0.65rem 0.9rem; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 0.875rem; font-family: 'DM Sans', sans-serif;
+      background: var(--gray-50); color: var(--text); transition: border 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus { outline: none; border-color: var(--teal-400); box-shadow: 0 0 0 3px rgba(29,158,117,0.12); background: #fff; }
+    .modal-footer { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1.25rem; }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: var(--teal-800); color: rgba(255,255,255,0.75);
+      padding: 2rem 1.5rem; margin-top: 2rem;
+    }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-brand { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.4rem; }
+    .footer-text { font-size: 0.78rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem; color: var(--text-muted);
+    }
+    .empty-state i { font-size: 3rem; color: var(--gray-200); display: block; margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .bottom-grid { grid-template-columns: 1fr; }
+      .navbar-links { display: none; }
+      .navbar-links.show { display: flex; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--card); padding: 1rem; border-bottom: 1px solid var(--border); z-index: 99; }
+      .navbar-toggler { display: block; }
+      .navbar { position: relative; }
+    }
+    @media (max-width: 600px) {
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .categories-grid { grid-template-columns: 1fr; }
+      .page-title { font-size: 1.5rem; }
+      .beds-visual-grid { grid-template-columns: repeat(auto-fill, minmax(58px,1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand"><i class="fas fa-heartbeat"></i> MedFind</a>
+    <div class="navbar-links" id="navbarMenu">
+      <a href="index.html">Home</a>
+      <a href="doctor-search.html">Find Doctors</a>
+      <a href="hospital-search.html">Hospitals</a>
+      <a href="bed-management.html" class="active">Bed Management</a>
+      <a href="#">Appointments</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.6rem;">
+      <button class="btn btn-outline btn-sm" onclick="openModal('admitModal')"><i class="fas fa-plus"></i> Admit Patient</button>
+      <button class="btn btn-primary btn-sm" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+      <button class="navbar-toggler" id="navbarToggler"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title"><i class="fas fa-bed" style="color:var(--teal-200);font-size:1.6rem;vertical-align:middle;margin-right:0.4rem;"></i>Bed Management</h1>
+        <p class="page-subtitle">Real-time bed availability across all wards and units</p>
+      </div>
+      <div class="header-actions">
+        <div class="last-updated"><span class="live-dot"></span> Live · Updated just now</div>
+        <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
+      </div>
+    </div>
+
+    <!-- Hospital Selector -->
+    <div class="hospital-selector-section">
+      <div class="selector-label"><i class="fas fa-hospital"></i> Select Hospital</div>
+      <div class="hospital-grid" id="hospitalGrid"></div>
+    </div>
+
+    <!-- Main content (hidden until hospital selected) -->
+    <div id="mainContent" style="display:none;">
+
+      <!-- Summary Stats -->
+      <div class="stats-row" id="statsRow"></div>
+
+      <!-- Bed Categories -->
+      <div class="section-head">
+        <div class="section-title"><i class="fas fa-layer-group" style="color:var(--teal-400);"></i> Bed Categories</div>
+        <button class="btn btn-outline btn-sm" onclick="openModal('addBedModal')"><i class="fas fa-plus"></i> Add Beds</button>
+      </div>
+      <div class="categories-grid" id="categoriesGrid"></div>
+
+      <!-- Bed Visual Grid -->
+      <div class="bed-grid-section">
+        <div class="section-head">
+          <div class="section-title"><i class="fas fa-th" style="color:var(--teal-400);"></i> Bed Layout View</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);" id="bedGridTitle"></div>
+        </div>
+        <div class="bed-grid-filters" id="bedFilters">
+          <span class="filter-chip active" data-cat="all">All Beds</span>
+        </div>
+        <div class="beds-visual-grid" id="bedsVisualGrid"></div>
+      </div>
+
+      <!-- Bottom Grid -->
+      <div class="bottom-grid">
+
+        <!-- Recent Activity -->
+        <div class="activity-card">
+          <div style="padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div class="section-title"><i class="fas fa-history" style="color:var(--teal-400);font-size:0.95rem;"></i> Recent Activity</div>
+            <button class="btn btn-outline btn-sm">View All</button>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+        </div>
+
+        <!-- Quick Actions + Chart -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          <div class="quick-actions-card">
+            <div class="section-title"><i class="fas fa-bolt" style="color:var(--amber-400);font-size:0.95rem;"></i> Quick Actions</div>
+            <div class="quick-actions-grid">
+              <button class="quick-action-btn" onclick="openModal('admitModal')">
+                <i class="fas fa-user-plus" style="color:var(--teal-400);"></i>
+                <span>Admit Patient</span>
+              </button>
+              <button class="quick-action-btn" onclick="openModal('dischargeModal')">
+                <i class="fas fa-user-minus" style="color:var(--coral-400);"></i>
+                <span>Discharge</span>
+              </button>
+              <button class="quick-action-btn" onclick="openModal('transferModal')">
+                <i class="fas fa-exchange-alt" style="color:var(--blue-400);"></i>
+                <span>Transfer Bed</span>
+              </button>
+              <button class="quick-action-btn" onclick="openModal('maintenanceModal')">
+                <i class="fas fa-tools" style="color:var(--amber-400);"></i>
+                <span>Maintenance</span>
+              </button>
+              <button class="quick-action-btn" onclick="openModal('reserveModal')">
+                <i class="fas fa-bookmark" style="color:var(--purple-400);"></i>
+                <span>Reserve Bed</span>
+              </button>
+              <button class="quick-action-btn">
+                <i class="fas fa-file-alt" style="color:var(--green-400);"></i>
+                <span>Export CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Occupancy Chart -->
+          <div class="quick-actions-card">
+            <div class="section-title"><i class="fas fa-chart-bar" style="color:var(--blue-400);font-size:0.95rem;"></i> 7-Day Occupancy</div>
+            <div class="chart-bars" id="occupancyChart"></div>
+          </div>
+        </div>
+
+      </div><!-- /bottom-grid -->
+
+    </div><!-- /mainContent -->
+
+    <!-- Empty state when no hospital selected -->
+    <div id="emptyState" class="empty-state">
+      <i class="fas fa-hospital-alt"></i>
+      <h3>Select a Hospital Above</h3>
+      <p style="font-size:0.85rem;">Choose a hospital to view real-time bed availability and management options.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><i class="fas fa-heartbeat" style="color:var(--teal-200);"></i> MedFind</div>
+    <div class="footer-text">© 2025 MedFind Bangladesh · Bed Management System v2.1</div>
+  </div>
+</footer>
+
+<!-- BED TOOLTIP -->
+<div class="bed-tooltip" id="bedTooltip"></div>
+
+<!-- ADMIT MODAL -->
+<div class="modal-backdrop" id="admitModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-user-plus" style="color:var(--teal-400);margin-right:0.5rem;"></i>Admit Patient</div>
+    <div class="form-group">
+      <label class="form-label">Patient Name</label>
+      <input type="text" class="form-control" placeholder="Full name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Patient ID / NID</label>
+      <input type="text" class="form-control" placeholder="e.g. PT-2025-0043">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+      <div class="form-group">
+        <label class="form-label">Age</label>
+        <input type="number" class="form-control" placeholder="Age">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gender</label>
+        <select class="form-control"><option>Male</option><option>Female</option><option>Other</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ward / Bed Type</label>
+      <select class="form-control" id="admitBedType">
+        <option value="">-- Select ward --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Admitting Doctor</label>
+      <input type="text" class="form-control" placeholder="Doctor name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Diagnosis / Reason</label>
+      <textarea class="form-control" rows="2" placeholder="Primary diagnosis or admission reason"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('admitModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="handleAdmit()"><i class="fas fa-check"></i> Confirm Admit</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISCHARGE MODAL -->
+<div class="modal-backdrop" id="dischargeModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-user-minus" style="color:var(--coral-400);margin-right:0.5rem;"></i>Discharge Patient</div>
+    <div class="form-group">
+      <label class="form-label">Bed Number / Patient ID</label>
+      <input type="text" class="form-control" placeholder="e.g. ICU-03 or PT-2025-0043">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Discharge Reason</label>
+      <select class="form-control">
+        <option>Recovered</option><option>Transferred</option><option>DAMA (Against Medical Advice)</option><option>Deceased</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Discharge Notes</label>
+      <textarea class="form-control" rows="2" placeholder="Optional notes..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('dischargeModal')">Cancel</button>
+      <button class="btn btn-primary" style="background:var(--coral-400);border-color:var(--coral-400);" onclick="handleDischarge()"><i class="fas fa-check"></i> Confirm Discharge</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFER MODAL -->
+<div class="modal-backdrop" id="transferModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-exchange-alt" style="color:var(--blue-400);margin-right:0.5rem;"></i>Transfer Patient</div>
+    <div class="form-group">
+      <label class="form-label">Patient Name / ID</label>
+      <input type="text" class="form-control" placeholder="Patient name or ID">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Current Bed</label>
+      <input type="text" class="form-control" placeholder="e.g. General-12">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Transfer To</label>
+      <select class="form-control" id="transferTo">
+        <option value="">-- Select ward --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reason for Transfer</label>
+      <textarea class="form-control" rows="2" placeholder="Clinical reason..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('transferModal')">Cancel</button>
+      <button class="btn btn-primary" style="background:var(--blue-400);border-color:var(--blue-400);" onclick="closeModal('transferModal')"><i class="fas fa-check"></i> Confirm Transfer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAINTENANCE MODAL -->
+<div class="modal-backdrop" id="maintenanceModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-tools" style="color:var(--amber-400);margin-right:0.5rem;"></i>Mark Bed for Maintenance</div>
+    <div class="form-group">
+      <label class="form-label">Bed Number</label>
+      <input type="text" class="form-control" placeholder="e.g. ICU-04">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Issue Type</label>
+      <select class="form-control">
+        <option>Equipment fault</option><option>Deep cleaning</option><option>Structural repair</option><option>Inspection</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Estimated Duration</label>
+      <select class="form-control">
+        <option>A few hours</option><option>1 day</option><option>2–3 days</option><option>More than 3 days</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('maintenanceModal')">Cancel</button>
+      <button class="btn btn-primary" style="background:var(--amber-400);border-color:var(--amber-400);" onclick="closeModal('maintenanceModal')"><i class="fas fa-check"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESERVE MODAL -->
+<div class="modal-backdrop" id="reserveModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-bookmark" style="color:var(--purple-400);margin-right:0.5rem;"></i>Reserve a Bed</div>
+    <div class="form-group">
+      <label class="form-label">Patient Name</label>
+      <input type="text" class="form-control" placeholder="Incoming patient name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ward / Bed Type</label>
+      <select class="form-control">
+        <option value="">-- Select ward --</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+      <div class="form-group">
+        <label class="form-label">Expected Date</label>
+        <input type="date" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expected Time</label>
+        <input type="time" class="form-control">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('reserveModal')">Cancel</button>
+      <button class="btn btn-primary" style="background:var(--purple-400);border-color:var(--purple-400);" onclick="closeModal('reserveModal')"><i class="fas fa-check"></i> Reserve</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD BEDS MODAL -->
+<div class="modal-backdrop" id="addBedModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-plus-circle" style="color:var(--teal-400);margin-right:0.5rem;"></i>Add / Update Beds</div>
+    <div class="form-group">
+      <label class="form-label">Ward Type</label>
+      <select class="form-control" id="addBedType">
+        <option value="">-- Select ward --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Number of Beds to Add</label>
+      <input type="number" class="form-control" min="1" max="100" placeholder="e.g. 10">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addBedModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addBedModal')"><i class="fas fa-check"></i> Add Beds</button>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────── JS ──────────── -->
+<script>
+
+// ── DATA ─────────────────────────────────────────────────────
+const hospitals = [
+  { id:'united',    name:'United Hospital Ltd.',      location:'Gulshan-2, Dhaka',         type:'private', beds:450 },
+  { id:'square',    name:'Square Hospitals Ltd.',     location:'Panthapath, Dhaka',         type:'private', beds:380 },
+  { id:'apollo',    name:'Apollo Hospitals Dhaka',    location:'Bashundhara R/A, Dhaka',    type:'private', beds:500 },
+  { id:'cmch',      name:'Chittagong Medical College',location:'Pahartali, Chittagong',      type:'govt',    beds:1200 },
+  { id:'rmch',      name:'Rajshahi Medical College',  location:'Laxmipur, Rajshahi',         type:'govt',    beds:1000 },
+  { id:'dmch',      name:'Dhaka Medical College',     location:'Bakshibazar, Dhaka',         type:'govt',    beds:2200 },
+];
+
+const bedCategories = [
+  {
+    id:'icu', name:'ICU', fullName:'Intensive Care Unit',
+    icon:'fas fa-heartbeat', color:'red',
+    iconBg:'var(--red-50)', iconColor:'var(--red-600)',
+    badgeColor:'var(--red-400)', badgeTextColor:'white',
+    barColor:'var(--red-400)',
+    wards: ['ICU-A','ICU-B'],
+    description:'Critical life support'
+  },
+  {
+    id:'ccu', name:'CCU', fullName:'Cardiac Care Unit',
+    icon:'fas fa-heart', color:'purple',
+    iconBg:'var(--purple-50)', iconColor:'var(--purple-600)',
+    badgeColor:'var(--purple-400)', badgeTextColor:'white',
+    barColor:'var(--purple-400)',
+    wards: ['CCU'],
+    description:'Cardiac monitoring'
+  },
+  {
+    id:'nicu', name:'NICU', fullName:'Neonatal ICU',
+    icon:'fas fa-baby', color:'coral',
+    iconBg:'var(--coral-50)', iconColor:'var(--coral-600)',
+    badgeColor:'var(--coral-400)', badgeTextColor:'white',
+    barColor:'var(--coral-400)',
+    wards: ['NICU'],
+    description:'Newborn intensive care'
+  },
+  {
+    id:'hdu', name:'HDU', fullName:'High Dependency Unit',
+    icon:'fas fa-procedures', color:'amber',
+    iconBg:'var(--amber-50)', iconColor:'var(--amber-600)',
+    badgeColor:'var(--amber-400)', badgeTextColor:'white',
+    barColor:'var(--amber-400)',
+    wards: ['HDU-1','HDU-2'],
+    description:'Step-down from ICU'
+  },
+  {
+    id:'general', name:'General', fullName:'General Ward',
+    icon:'fas fa-bed', color:'teal',
+    iconBg:'var(--teal-50)', iconColor:'var(--teal-600)',
+    badgeColor:'var(--teal-400)', badgeTextColor:'white',
+    barColor:'var(--teal-400)',
+    wards: ['Ward-1','Ward-2','Ward-3','Ward-4'],
+    description:'Standard inpatient care'
+  },
+  {
+    id:'private', name:'Private', fullName:'Private Cabin',
+    icon:'fas fa-door-closed', color:'blue',
+    iconBg:'var(--blue-50)', iconColor:'var(--blue-600)',
+    badgeColor:'var(--blue-400)', badgeTextColor:'white',
+    barColor:'var(--blue-400)',
+    wards: ['Cabin-A','Cabin-B','Cabin-C'],
+    description:'Private rooms'
+  },
+  {
+    id:'maternity', name:'Maternity', fullName:'Maternity Ward',
+    icon:'fas fa-venus', color:'coral',
+    iconBg:'var(--coral-50)', iconColor:'var(--coral-600)',
+    badgeColor:'var(--coral-400)', badgeTextColor:'white',
+    barColor:'var(--coral-400)',
+    wards: ['Maternity-1','Maternity-2'],
+    description:'Labour & delivery'
+  },
+  {
+    id:'paediatric', name:'Paediatric', fullName:'Paediatric Ward',
+    icon:'fas fa-child', color:'green',
+    iconBg:'var(--green-50)', iconColor:'var(--green-600)',
+    badgeColor:'var(--green-400)', badgeTextColor:'white',
+    barColor:'var(--green-400)',
+    wards: ['Paed-1','Paed-2'],
+    description:'Children 0–18 years'
+  },
+  {
+    id:'ortho', name:'Orthopaedic', fullName:'Orthopaedic Ward',
+    icon:'fas fa-bone', color:'amber',
+    iconBg:'var(--amber-50)', iconColor:'var(--amber-600)',
+    badgeColor:'var(--amber-400)', badgeTextColor:'white',
+    barColor:'var(--amber-400)',
+    wards: ['Ortho-1','Ortho-2'],
+    description:'Bone & joint care'
+  },
+  {
+    id:'oncology', name:'Oncology', fullName:'Oncology Ward',
+    icon:'fas fa-ribbon', color:'purple',
+    iconBg:'var(--purple-50)', iconColor:'var(--purple-600)',
+    badgeColor:'var(--purple-400)', badgeTextColor:'white',
+    barColor:'var(--purple-400)',
+    wards: ['Onco-1'],
+    description:'Cancer treatment'
+  },
+  {
+    id:'surgical', name:'Surgical', fullName:'Surgical Ward',
+    icon:'fas fa-cut', color:'teal',
+    iconBg:'var(--teal-50)', iconColor:'var(--teal-600)',
+    badgeColor:'var(--teal-400)', badgeTextColor:'white',
+    barColor:'var(--teal-400)',
+    wards: ['Surgical-1','Surgical-2'],
+    description:'Pre/post-operative'
+  },
+  {
+    id:'isolation', name:'Isolation', fullName:'Isolation Ward',
+    icon:'fas fa-shield-alt', color:'red',
+    iconBg:'var(--red-50)', iconColor:'var(--red-600)',
+    badgeColor:'var(--red-400)', badgeTextColor:'white',
+    barColor:'var(--red-400)',
+    wards: ['Iso-1','Iso-2'],
+    description:'Infectious disease'
+  },
+];
+
+// Per-hospital bed counts (seed)
+const hospitalBedSeeds = {
+  united:  { icu:12, ccu:8,  nicu:6,  hdu:10, general:140, private:60, maternity:30, paediatric:40, ortho:35, oncology:20, surgical:60, isolation:20 },
+  square:  { icu:10, ccu:6,  nicu:4,  hdu:8,  general:120, private:55, maternity:28, paediatric:35, ortho:30, oncology:15, surgical:50, isolation:18 },
+  apollo:  { icu:20, ccu:12, nicu:10, hdu:15, general:160, private:80, maternity:35, paediatric:50, ortho:40, oncology:30, surgical:70, isolation:25 },
+  cmch:    { icu:30, ccu:20, nicu:15, hdu:25, general:500, private:30, maternity:80, paediatric:100,ortho:80, oncology:40, surgical:150,isolation:50 },
+  rmch:    { icu:20, ccu:15, nicu:10, hdu:20, general:400, private:25, maternity:70, paediatric:90, ortho:70, oncology:30, surgical:130,isolation:40 },
+  dmch:    { icu:50, ccu:30, nicu:20, hdu:40, general:900, private:50, maternity:150,paediatric:200,ortho:150,oncology:70, surgical:300,isolation:100 },
+};
+
+// Runtime state
+const bedState = {}; // hospitalId -> catId -> { total, occupied, reserved, maintenance }
+
+function seedState(hospId) {
+  if (bedState[hospId]) return;
+  bedState[hospId] = {};
+  const seeds = hospitalBedSeeds[hospId];
+  bedCategories.forEach(cat => {
+    const total = seeds[cat.id] || 20;
+    const occ   = Math.round(total * (0.45 + Math.random() * 0.4));
+    const res   = Math.min(Math.round(total * (0.03 + Math.random() * 0.07)), total - occ);
+    const maint = Math.min(Math.floor(Math.random() * 3), total - occ - res);
+    bedState[hospId][cat.id] = { total, occupied: occ, reserved: res, maintenance: maint };
+  });
+}
+
+// Activity log
+const activities = [
+  { type:'admit',       icon:'fas fa-user-plus',   bg:'var(--teal-50)',   ic:'var(--teal-600)',   title:'Patient admitted to ICU-03',           sub:'Md. Raihan Hossain · Cardiac arrest',       time:'2 min ago' },
+  { type:'discharge',   icon:'fas fa-user-minus',  bg:'var(--coral-50)',  ic:'var(--coral-600)',  title:'Discharge from General Ward-2 Bed 14', sub:'Fatema Begum · Recovered',                  time:'18 min ago' },
+  { type:'transfer',    icon:'fas fa-exchange-alt', bg:'var(--blue-50)',  ic:'var(--blue-600)',   title:'Transfer: HDU → ICU',                  sub:'Md. Karim · Condition deteriorated',        time:'34 min ago' },
+  { type:'maintenance', icon:'fas fa-tools',        bg:'var(--amber-50)', ic:'var(--amber-600)',  title:'Bed CCU-05 under maintenance',          sub:'Equipment fault reported',                  time:'1 hr ago' },
+  { type:'reserve',     icon:'fas fa-bookmark',     bg:'var(--purple-50)',ic:'var(--purple-600)', title:'Private Cabin-B reserved',              sub:'Nasrin Akter · Elective surgery (tomorrow)','time':'1 hr ago' },
+  { type:'admit',       icon:'fas fa-user-plus',   bg:'var(--teal-50)',   ic:'var(--teal-600)',   title:'Patient admitted to Maternity-1',       sub:'Roksana Khanam · Labour',                   time:'2 hr ago' },
+  { type:'discharge',   icon:'fas fa-user-minus',  bg:'var(--coral-50)',  ic:'var(--coral-600)',  title:'Discharge from Paediatric Ward',        sub:'Arif, 8 yrs · Pneumonia resolved',          time:'3 hr ago' },
+  { type:'transfer',    icon:'fas fa-exchange-alt', bg:'var(--blue-50)',  ic:'var(--blue-600)',   title:'Transfer: ICU → General Ward',          sub:'Jasim Uddin · Stabilised',                  time:'4 hr ago' },
+];
+
+// ── SELECTED HOSPITAL ──────────────────────────────────────
+let selectedHospital = null;
+let activeCatFilter  = 'all';
+
+// ── RENDER HOSPITALS ──────────────────────────────────────
+function renderHospitals() {
+  const g = document.getElementById('hospitalGrid');
+  g.innerHTML = '';
+  hospitals.forEach(h => {
+    const card = document.createElement('div');
+    card.className = 'hospital-option';
+    card.innerHTML = `
+      <div class="hospital-option-icon"><i class="fas fa-hospital-alt"></i></div>
+      <div style="flex:1;min-width:0;">
+        <div class="hosp-opt-name">${h.name}</div>
+        <div class="hosp-opt-meta">${h.location}</div>
+        <div class="hosp-opt-status">
+          <span class="status-dot" style="background:${h.type==='govt'?'var(--blue-400)':'var(--teal-400)'};"></span>
+          <span style="color:${h.type==='govt'?'var(--blue-600)':'var(--teal-600)'};">${h.type==='govt'?'Government':'Private'}</span>
+          &nbsp;·&nbsp; ${h.beds.toLocaleString()} beds
+        </div>
+      </div>`;
+    card.addEventListener('click', () => selectHospital(h.id));
+    g.appendChild(card);
+  });
+}
+
+function selectHospital(id) {
+  selectedHospital = id;
+  seedState(id);
+  document.querySelectorAll('.hospital-option').forEach((el, i) => {
+    el.classList.toggle('selected', hospitals[i].id === id);
+  });
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('emptyState').style.display  = 'none';
+  activeCatFilter = 'all';
+  renderAll();
+}
+
+// ── RENDER ALL ─────────────────────────────────────────────
+function renderAll() {
+  renderStats();
+  renderCategories();
+  renderBedFilters();
+  renderBedsVisual('all');
+  renderActivity();
+  renderChart();
+  populateSelects();
+}
+
+// ── STATS ──────────────────────────────────────────────────
+function renderStats() {
+  const state = bedState[selectedHospital];
+  let totalBeds=0, totalOcc=0, totalRes=0, totalMaint=0, totalAvail=0;
+  bedCategories.forEach(cat => {
+    const s = state[cat.id];
+    totalBeds  += s.total;
+    totalOcc   += s.occupied;
+    totalRes   += s.reserved;
+    totalMaint += s.maintenance;
+    totalAvail += (s.total - s.occupied - s.reserved - s.maintenance);
+  });
+  const occPct = Math.round(totalOcc / totalBeds * 100);
+
+  const cards = [
+    { icon:'fas fa-bed',         bg:'var(--teal-50)',   ic:'var(--teal-600)',   val:totalBeds,   lbl:'Total Beds',     sub:`Across all wards`,                       subColor:'var(--text-muted)' },
+    { icon:'fas fa-check-circle',bg:'var(--green-50)',  ic:'var(--green-600)',  val:totalAvail,  lbl:'Available',      sub:`${Math.round(totalAvail/totalBeds*100)}% free`,subColor:'var(--green-600)' },
+    { icon:'fas fa-user-friends', bg:'var(--red-50)',    ic:'var(--red-600)',    val:totalOcc,    lbl:'Occupied',       sub:`${occPct}% occupancy`,                   subColor:'var(--red-400)' },
+    { icon:'fas fa-bookmark',    bg:'var(--amber-50)', ic:'var(--amber-600)',  val:totalRes,    lbl:'Reserved',       sub:'Awaiting admission',                      subColor:'var(--amber-400)' },
+    { icon:'fas fa-tools',       bg:'var(--gray-50)',   ic:'var(--gray-600)',   val:totalMaint,  lbl:'Maintenance',    sub:'Temporarily offline',                     subColor:'var(--gray-400)' },
+    { icon:'fas fa-heartbeat',   bg:'var(--red-50)',    ic:'var(--red-600)',    val:state['icu'].occupied, lbl:'ICU Occupied',  sub:`of ${state['icu'].total} ICU beds`, subColor: state['icu'].occupied >= state['icu'].total*0.8 ? 'var(--red-600)' : 'var(--text-muted)' },
+  ];
+
+  const row = document.getElementById('statsRow');
+  row.innerHTML = '';
+  cards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'stat-card';
+    el.innerHTML = `
+      <div class="stat-icon" style="background:${c.bg};color:${c.ic};"><i class="${c.icon}"></i></div>
+      <div class="stat-value" style="color:${c.ic};">${c.val.toLocaleString()}</div>
+      <div class="stat-label">${c.lbl}</div>
+      <div class="stat-sub" style="color:${c.subColor};">${c.sub}</div>`;
+    row.appendChild(el);
+  });
+}
+
+// ── CATEGORIES ─────────────────────────────────────────────
+function renderCategories() {
+  const state = bedState[selectedHospital];
+  const g = document.getElementById('categoriesGrid');
+  g.innerHTML = '';
+
+  bedCategories.forEach(cat => {
+    const s = state[cat.id];
+    const avail = s.total - s.occupied - s.reserved - s.maintenance;
+    const occPct = Math.round(s.occupied / s.total * 100);
+    const critColor = occPct >= 90 ? 'var(--red-400)' : occPct >= 70 ? 'var(--amber-400)' : 'var(--green-400)';
+    const critLabel = occPct >= 90 ? 'Critical' : occPct >= 70 ? 'High' : 'Normal';
+
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.innerHTML = `
+      <div class="category-header">
+        <div class="category-left">
+          <div class="cat-icon" style="background:${cat.iconBg};color:${cat.iconColor};"><i class="${cat.icon}"></i></div>
+          <div>
+            <div class="cat-name">${cat.fullName}</div>
+            <div class="cat-code">${cat.wards.join(' · ')}</div>
+          </div>
+        </div>
+        <div>
+          <div class="cat-total-badge" style="color:${cat.iconColor};">${s.total}</div>
+          <div class="cat-total-label">total beds</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:${occPct}%;background:${cat.barColor};"></div>
+        </div>
+        <div class="progress-labels">
+          <span style="color:var(--text-muted);">${occPct}% occupied</span>
+          <span style="color:${critColor};font-weight:600;">${critLabel}</span>
+        </div>
+      </div>
+      <div class="bed-counts">
+        <div class="bed-count-cell">
+          <div class="bed-count-num" style="color:var(--green-600);">${avail}</div>
+          <div class="bed-count-lbl">Available</div>
+        </div>
+        <div class="bed-count-cell">
+          <div class="bed-count-num" style="color:var(--red-400);">${s.occupied}</div>
+          <div class="bed-count-lbl">Occupied</div>
+        </div>
+        <div class="bed-count-cell">
+          <div class="bed-count-num" style="color:var(--amber-400);">${s.reserved + s.maintenance}</div>
+          <div class="bed-count-lbl">Reserved/Maint.</div>
+        </div>
+      </div>
+      <div class="cat-actions">
+        <span class="ward-tag" style="background:${cat.iconBg};color:${cat.iconColor};">
+          <i class="${cat.icon}" style="font-size:10px;"></i>${cat.name}
+        </span>
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn btn-outline btn-sm" onclick="filterByCategory('${cat.id}')"><i class="fas fa-eye"></i> View Beds</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('admitModal')"><i class="fas fa-plus"></i> Admit</button>
+        </div>
+      </div>`;
+    g.appendChild(card);
+  });
+}
+
+// ── BED FILTERS ────────────────────────────────────────────
+function renderBedFilters() {
+  const f = document.getElementById('bedFilters');
+  f.innerHTML = '';
+  const allChip = document.createElement('span');
+  allChip.className = 'filter-chip' + (activeCatFilter==='all' ? ' active' : '');
+  allChip.setAttribute('data-cat','all');
+  allChip.textContent = 'All Beds';
+  allChip.addEventListener('click', () => filterByCategory('all'));
+  f.appendChild(allChip);
+
+  bedCategories.forEach(cat => {
+    const chip = document.createElement('span');
+    chip.className = 'filter-chip' + (activeCatFilter===cat.id ? ' active' : '');
+    chip.setAttribute('data-cat', cat.id);
+    chip.innerHTML = `<i class="${cat.icon}" style="font-size:11px;margin-right:3px;"></i>${cat.name}`;
+    chip.addEventListener('click', () => filterByCategory(cat.id));
+    f.appendChild(chip);
+  });
+}
+
+function filterByCategory(catId) {
+  activeCatFilter = catId;
+  renderBedFilters();
+  renderBedsVisual(catId);
+  if (catId !== 'all') {
+    document.getElementById('bedsVisualGrid').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+}
+
+// ── BED VISUAL GRID ────────────────────────────────────────
+function renderBedsVisual(catId) {
+  const state = bedState[selectedHospital];
+  const grid  = document.getElementById('bedsVisualGrid');
+  const title = document.getElementById('bedGridTitle');
+  grid.innerHTML = '';
+
+  const cats = catId === 'all' ? bedCategories : bedCategories.filter(c => c.id === catId);
+  let totalShown = 0;
+
+  cats.forEach(cat => {
+    const s = state[cat.id];
+    const max = Math.min(s.total, 60); // cap display at 60 per cat
+    const avail = s.total - s.occupied - s.reserved - s.maintenance;
+
+    for (let i = 1; i <= max; i++) {
+      let status;
+      if (i <= s.occupied)                          status = 'occupied';
+      else if (i <= s.occupied + s.reserved)        status = 'reserved';
+      else if (i <= s.occupied + s.reserved + s.maintenance) status = 'maintenance';
+      else                                           status = 'available';
+
+      const bedNum = `${cat.name}-${String(i).padStart(2,'0')}`;
+      const statusLabel = { available:'Available', occupied:'Occupied', reserved:'Reserved', maintenance:'Maintenance' }[status];
+      const patientInfo = status === 'occupied' ? ` · ${['Mr. Rahim','Mrs. Begum','Md. Karim','Fatema','Dr. Ali'][i%5]}` : '';
+
+      const cell = document.createElement('div');
+      cell.className = `bed-cell ${status}`;
+      cell.innerHTML = `<i class="${cat.icon}"></i><span>${bedNum}</span>`;
+      cell.addEventListener('mouseenter', e => showTooltip(e, `<strong>${bedNum}</strong><br>${cat.fullName}<br>Status: ${statusLabel}${patientInfo}`));
+      cell.addEventListener('mousemove',  e => moveTooltip(e));
+      cell.addEventListener('mouseleave', hideTooltip);
+      cell.addEventListener('click', () => {
+        if (status === 'available') openModal('admitModal');
+      });
+      grid.appendChild(cell);
+      totalShown++;
+    }
+    if (s.total > 60) {
+      const more = document.createElement('div');
+      more.className = 'bed-cell maintenance';
+      more.style.cssText = 'font-size:0.6rem;padding:0.3rem;';
+      more.innerHTML = `<i class="fas fa-ellipsis-h"></i><span>+${s.total-60} more</span>`;
+      grid.appendChild(more);
+    }
+  });
+  title.textContent = `Showing ${totalShown} of ${cats.reduce((acc,c)=>acc+state[c.id].total,0)} beds`;
+}
+
+// ── TOOLTIP ────────────────────────────────────────────────
+const tooltip = document.getElementById('bedTooltip');
+function showTooltip(e, html) {
+  tooltip.innerHTML = html; tooltip.classList.add('show');
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  tooltip.style.left = (e.clientX + 14) + 'px';
+  tooltip.style.top  = (e.clientY - 10) + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('show'); }
+
+// ── ACTIVITY ───────────────────────────────────────────────
+function renderActivity() {
+  const list = document.getElementById('activityList');
+  list.innerHTML = '';
+  activities.forEach(a => {
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+      <div class="activity-icon" style="background:${a.bg};color:${a.ic};"><i class="${a.icon}"></i></div>
+      <div class="activity-text">
+        <div class="activity-title">${a.title}</div>
+        <div class="activity-sub">${a.sub}</div>
+      </div>
+      <div class="activity-time">${a.time}</div>`;
+    list.appendChild(item);
+  });
+}
+
+// ── OCCUPANCY CHART ────────────────────────────────────────
+function renderChart() {
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const values = [72, 78, 81, 75, 88, 91, 85];
+  const chart = document.getElementById('occupancyChart');
+  chart.innerHTML = '';
+  const max = Math.max(...values);
+  days.forEach((d, i) => {
+    const pct = Math.round(values[i] / max * 100);
+    const color = values[i] >= 88 ? 'var(--red-400)' : values[i] >= 78 ? 'var(--amber-400)' : 'var(--teal-400)';
+    const wrap = document.createElement('div');
+    wrap.className = 'chart-bar-wrap';
+    wrap.innerHTML = `
+      <div style="font-size:0.65rem;color:var(--text-muted);font-weight:600;">${values[i]}%</div>
+      <div class="chart-bar" style="height:${pct}%;background:${color};"></div>
+      <div class="chart-bar-label">${d}</div>`;
+    chart.appendChild(wrap);
+  });
+}
+
+// ── POPULATE SELECTS ───────────────────────────────────────
+function populateSelects() {
+  const opts = bedCategories.map(c => `<option value="${c.id}">${c.fullName}</option>`).join('');
+  ['admitBedType','transferTo','addBedType'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<option value="">-- Select ward --</option>` + opts;
+  });
+}
+
+// ── MODAL ──────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── ADMIT HANDLER (demo) ───────────────────────────────────
+function handleAdmit() {
+  const catId = document.getElementById('admitBedType').value;
+  if (catId && bedState[selectedHospital] && bedState[selectedHospital][catId]) {
+    const s = bedState[selectedHospital][catId];
+    const avail = s.total - s.occupied - s.reserved - s.maintenance;
+    if (avail > 0) {
+      s.occupied++;
+      activities.unshift({
+        type:'admit', icon:'fas fa-user-plus', bg:'var(--teal-50)', ic:'var(--teal-600)',
+        title:`Patient admitted to ${bedCategories.find(c=>c.id===catId).name}`,
+        sub:'New admission', time:'Just now'
+      });
+      if (activities.length > 12) activities.pop();
+    }
+  }
+  closeModal('admitModal');
+  renderAll();
+}
+
+// ── DISCHARGE HANDLER (demo) ──────────────────────────────
+function handleDischarge() {
+  if (bedState[selectedHospital]) {
+    const cat = bedCategories[Math.floor(Math.random()*bedCategories.length)];
+    const s = bedState[selectedHospital][cat.id];
+    if (s.occupied > 0) {
+      s.occupied--;
+      activities.unshift({
+        type:'discharge', icon:'fas fa-user-minus', bg:'var(--coral-50)', ic:'var(--coral-600)',
+        title:`Patient discharged from ${cat.name}`, sub:'Discharged', time:'Just now'
+      });
+      if (activities.length > 12) activities.pop();
+    }
+  }
+  closeModal('dischargeModal');
+  renderAll();
+}
+
+// ── REFRESH ────────────────────────────────────────────────
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  if (!selectedHospital) return;
+  // Randomise occupied slightly
+  bedCategories.forEach(cat => {
+    const s = bedState[selectedHospital][cat.id];
+    const avail = s.total - s.occupied - s.reserved - s.maintenance;
+    const delta = Math.floor(Math.random()*3) - 1;
+    if (delta > 0 && avail > 0)    s.occupied = Math.min(s.total, s.occupied + delta);
+    if (delta < 0 && s.occupied>0) s.occupied = Math.max(0, s.occupied + delta);
+  });
+  renderAll();
+});
+
+// ── NAVBAR TOGGLER ─────────────────────────────────────────
+document.getElementById('navbarToggler').addEventListener('click', () => {
+  document.getElementById('navbarMenu').classList.toggle('show');
+});
+
+// ── INIT ───────────────────────────────────────────────────
+renderHospitals();
+</script>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MedFind - Bangladesh's leading digital healthcare platform. Find doctors, hospitals, book appointments.">
+  <title>MedFind | Digital Healthcare Platform Bangladesh</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/animation.css">
+
+  <!-- Icons & Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary:#2563eb; --primary-dark:#1d4ed8; --primary-light:#dbeafe;
+      --accent:#7c3aed; --secondary:#10b981;
+      --gray-50:#f8fafc; --gray-100:#f1f5f9; --gray-200:#e2e8f0;
+      --gray-300:#cbd5e1; --gray-400:#94a3b8; --gray-500:#64748b;
+      --gray-600:#475569; --gray-700:#334155; --gray-800:#1e293b; --gray-900:#0f172a;
+      --white:#fff; --danger:#ef4444; --warning:#f59e0b;
+      --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+      --shadow-xl:0 20px 40px rgba(0,0,0,0.12);
+      --shadow-2xl:0 25px 60px rgba(0,0,0,0.18);
+      --radius-lg:16px; --radius-xl:24px; --radius-2xl:32px;
+      --transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;color:var(--gray-800);overflow-x:hidden;}
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg,#0f172a 0%,#1e293b 60%,#2d1b69 100%);
+      color:white; padding:5rem 0 4rem; position:relative; overflow:hidden;
+    }
+    .hero::before,.hero::after {
+      content:''; position:absolute; border-radius:50%; pointer-events:none;
+    }
+    .hero::before {
+      width:700px;height:700px;top:-200px;right:-150px;
+      background:radial-gradient(circle,rgba(37,99,235,0.18) 0%,transparent 70%);
+      animation:floatBg 10s ease-in-out infinite;
+    }
+    .hero::after {
+      width:500px;height:500px;bottom:-150px;left:-100px;
+      background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%);
+      animation:floatBg 13s ease-in-out infinite reverse;
+    }
+    @keyframes floatBg{0%,100%{transform:translate(0,0);}50%{transform:translate(-20px,-20px);}}
+
+    .hero-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem;text-align:center;}
+    .badge-dot{width:8px;height:8px;background:#34d399;border-radius:50%;display:inline-block;margin-right:6px;animation:bdot 2s ease infinite;box-shadow:0 0 0 0 rgba(52,211,153,.4);}
+    @keyframes bdot{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.4)}50%{box-shadow:0 0 0 8px rgba(52,211,153,0)}}
+    .hero-badge {
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.2);
+      padding:10px 20px;border-radius:40px;font-size:0.875rem;font-weight:500;
+      margin-bottom:2rem;
+    }
+    .hero-badge i{color:#fbbf24;}
+    .hero-title{font-size:clamp(2.2rem,5vw,4rem);font-weight:800;line-height:1.15;margin-bottom:1.5rem;color:#f8fafc;}
+    .hero-title .grad{background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
+    .hero-subtitle{font-size:1.15rem;color:#94a3b8;max-width:580px;margin:0 auto 3rem;line-height:1.8;}
+
+    /* Search Box */
+    .search-box {
+      background:rgba(255,255,255,0.08);backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:var(--radius-2xl);padding:2rem;max-width:860px;margin:0 auto;
+    }
+    .search-tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+    .s-tab {
+      padding:10px 20px;background:transparent;border:none;
+      border-radius:40px;color:rgba(255,255,255,0.65);font-weight:500;
+      cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:6px;font-size:0.9rem;
+    }
+    .s-tab:hover{color:white;background:rgba(255,255,255,0.1);}
+    .s-tab.active{background:linear-gradient(135deg,var(--primary),var(--accent));color:white;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+    .blood-tab.active{background:linear-gradient(135deg,#dc2626,#b91c1c)!important;}
+    .blood-tab:not(.active){color:#dc2626;}
+    .search-row{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;}
+    .s-input-wrap{position:relative;}
+    .s-input-wrap i{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#94a3b8;}
+    .s-input{width:100%;padding:14px 14px 14px 44px;border:none;border-radius:12px;font-size:1rem;font-family:'Inter',sans-serif;transition:var(--transition);}
+    .s-input:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,0.4);}
+    .s-select{padding:14px;border:none;border-radius:12px;font-size:1rem;font-family:'Inter',sans-serif;background:white;cursor:pointer;}
+    .s-btn {
+      padding:14px 28px;background:linear-gradient(135deg,var(--primary),var(--accent));
+      border:none;border-radius:12px;color:white;font-weight:600;font-size:1rem;
+      cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:8px;white-space:nowrap;
+    }
+    .s-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,0.35);}
+
+    /* Hero Stats */
+    .hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:3rem;flex-wrap:wrap;}
+    .h-stat{text-align:center;}
+    .h-stat-num{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#93c5fd,white);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .h-stat-lbl{font-size:0.8rem;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+    /* ── SECTION DEFAULTS ── */
+    .section{padding:5rem 0;}
+    .section-alt{background:var(--gray-50);}
+    .container{max-width:1200px;margin:0 auto;padding:0 2rem;}
+    .section-head{text-align:center;max-width:680px;margin:0 auto 3.5rem;}
+    .section-head h2{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;color:var(--gray-900);margin-bottom:1rem;}
+    .section-head h2 .grad{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .section-head p{color:var(--gray-500);font-size:1.05rem;line-height:1.7;}
+
+    /* ── FEATURES ── */
+    .features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+    .feat-card {
+      text-align:center;padding:2rem 1.5rem;background:white;
+      border-radius:var(--radius-xl);box-shadow:var(--shadow-md);
+      border:1px solid var(--gray-200);transition:var(--transition);
+    }
+    .feat-card:hover{transform:translateY(-8px);border-color:var(--primary);box-shadow:var(--shadow-xl);}
+    .feat-icon {
+      width:72px;height:72px;border-radius:20px;
+      background:linear-gradient(135deg,var(--primary-light),#ede9fe);
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 1.2rem;font-size:1.8rem;color:var(--primary);transition:var(--transition);
+    }
+    .feat-card:hover .feat-icon{background:linear-gradient(135deg,var(--primary),var(--accent));color:white;}
+    .feat-card h3{font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:var(--gray-800);}
+    .feat-card p{font-size:0.9rem;color:var(--gray-500);line-height:1.7;}
+
+    /* ── DOCTORS ── */
+    .section-header-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;}
+    .view-all{display:flex;align-items:center;gap:6px;color:var(--primary);font-weight:600;text-decoration:none;transition:var(--transition);}
+    .view-all:hover{gap:10px;}
+    .doctors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+    .doc-card {
+      background:white;border-radius:var(--radius-xl);overflow:hidden;
+      box-shadow:var(--shadow-md);border:1px solid var(--gray-200);
+      transition:var(--transition);cursor:pointer;
+    }
+    .doc-card:hover{transform:translateY(-8px);border-color:var(--primary);box-shadow:var(--shadow-xl);}
+    .doc-img{height:220px;position:relative;overflow:hidden;background:linear-gradient(135deg,#dbeafe,#ede9fe);}
+    .doc-img img{width:100%;height:100%;object-fit:cover;transition:var(--transition);}
+    .doc-card:hover .doc-img img{transform:scale(1.06);}
+    .doc-rating-badge {
+      position:absolute;top:12px;right:12px;
+      background:linear-gradient(135deg,#fbbf24,#f59e0b);
+      color:#1e293b;padding:5px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;
+    }
+    .doc-info{padding:1.25rem;}
+    .doc-name{font-size:1.05rem;font-weight:700;color:var(--gray-800);margin-bottom:6px;}
+    .doc-specialty{display:inline-block;background:var(--primary-light);color:var(--primary);padding:3px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;margin-bottom:10px;}
+    .doc-hospital{display:flex;align-items:center;gap:6px;color:var(--gray-500);font-size:0.83rem;margin-bottom:8px;}
+    .doc-hospital i{color:var(--primary);}
+    .doc-stars{color:#f59e0b;font-size:0.85rem;letter-spacing:1px;margin-bottom:12px;}
+    .doc-stars small{color:var(--gray-400);margin-left:4px;}
+    .doc-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--gray-100);padding-top:12px;}
+    .doc-fee{font-weight:700;color:var(--primary);}
+    .doc-fee small{font-weight:400;color:var(--gray-400);font-size:0.8rem;}
+    .btn-book {
+      padding:8px 18px;background:linear-gradient(135deg,var(--primary),var(--accent));
+      color:white;border:none;border-radius:30px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:var(--transition);
+    }
+    .btn-book:hover{transform:scale(1.05);}
+
+    /* ── LOCATIONS ── */
+    .loc-section{padding:5rem 0;background:linear-gradient(135deg,var(--gray-900),#0f172a);color:white;}
+    .loc-section .section-head h2{color:white;}
+    .loc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-top:2.5rem;}
+    .loc-card {
+      background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+      border-radius:var(--radius-lg);padding:1.25rem;text-align:center;
+      transition:var(--transition);cursor:pointer;
+    }
+    .loc-card:hover{background:rgba(37,99,235,0.2);border-color:var(--primary);transform:translateY(-4px);}
+    .loc-icon{width:44px;height:44px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.1rem;}
+    .loc-card h3{font-size:0.95rem;font-weight:600;margin-bottom:4px;}
+    .loc-card p{font-size:0.75rem;color:#94a3b8;}
+
+    /* ── BLOG ── */
+    .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+    .blog-card{background:white;border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid var(--gray-200);transition:var(--transition);}
+    .blog-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-xl);}
+    .blog-img{height:190px;position:relative;overflow:hidden;}
+    .blog-img img{width:100%;height:100%;object-fit:cover;transition:var(--transition);}
+    .blog-card:hover .blog-img img{transform:scale(1.05);}
+    .blog-cat{position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;padding:5px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;}
+    .blog-body{padding:1.5rem;}
+    .blog-meta{display:flex;gap:12px;color:var(--gray-400);font-size:0.82rem;margin-bottom:10px;}
+    .blog-title{font-size:1.05rem;font-weight:700;color:var(--gray-800);margin-bottom:10px;line-height:1.4;}
+    .blog-excerpt{font-size:0.88rem;color:var(--gray-500);line-height:1.7;margin-bottom:1rem;}
+    .blog-read{display:inline-flex;align-items:center;gap:6px;color:var(--primary);font-weight:600;text-decoration:none;font-size:0.88rem;transition:var(--transition);}
+    .blog-read:hover{gap:10px;}
+
+    /* ── CTA ── */
+    .cta-section{padding:5rem 0;background:linear-gradient(135deg,var(--primary),var(--accent),var(--secondary));color:white;position:relative;overflow:hidden;text-align:center;}
+    .cta-section::before{content:'';position:absolute;top:-40%;right:-15%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,0.15) 0%,transparent 70%);border-radius:50%;}
+    .cta-content{position:relative;z-index:2;max-width:680px;margin:0 auto;padding:0 2rem;}
+    .cta-content h2{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:800;margin-bottom:1.2rem;}
+    .cta-content p{font-size:1.1rem;opacity:0.9;margin-bottom:2.5rem;line-height:1.7;}
+    .cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+    .cta-btn-white{padding:14px 32px;background:white;color:var(--primary);border-radius:40px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:var(--transition);box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+    .cta-btn-white:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.25);}
+    .cta-btn-outline{padding:14px 32px;background:rgba(255,255,255,0.15);color:white;border:2px solid white;border-radius:40px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:var(--transition);}
+    .cta-btn-outline:hover{background:rgba(255,255,255,0.25);transform:translateY(-2px);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1100px){.features-grid,.doctors-grid{grid-template-columns:repeat(2,1fr);}.loc-grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:768px){
+      .search-row{grid-template-columns:1fr;}
+      .doctors-grid,.blog-grid{grid-template-columns:1fr;}
+      .loc-grid{grid-template-columns:repeat(2,1fr);}
+      .hero-stats{gap:1.5rem;}
+      .section-header-row{flex-direction:column;gap:1rem;align-items:flex-start;}
+    }
+    @media(max-width:480px){.features-grid{grid-template-columns:1fr;}.loc-grid{grid-template-columns:1fr 1fr;}}
+    @media(max-width:768px){.platform-cards-grid{grid-template-columns:1fr!important;}}
+    @media(min-width:769px) and (max-width:1100px){.platform-cards-grid{grid-template-columns:repeat(2,1fr)!important;}}
+  </style>
+</head>
+<body>
+
+<!-- Navbar injected by components.js -->
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge" data-aos="fade-down">
+      <span class="badge-dot"></span>
+      Bangladesh's First AI-Powered Telemedicine Platform
+    </div>
+    <h1 class="hero-title" data-aos="fade-up">
+      Find Your <span class="grad">Doctor & Hospital</span><br>Anywhere in Bangladesh
+    </h1>
+    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="100">
+      Connect with verified specialists, book video consultations, and access your medical records — all in one secure platform, available 24/7.
+    </p>
+
+    <div class="search-box" data-aos="fade-up" data-aos-delay="200">
+      <div class="search-tabs">
+        <button class="s-tab active" data-tab="doctor" onclick="setSearchTab(this,'doctor')"><i class="fas fa-user-md"></i> Find Doctor</button>
+        <button class="s-tab" data-tab="hospital" onclick="setSearchTab(this,'hospital')"><i class="fas fa-hospital"></i> Find Hospital</button>
+        <button class="s-tab" data-tab="lab" onclick="setSearchTab(this,'lab')"><i class="fas fa-flask"></i> Lab Test</button>
+        <button class="s-tab blood-tab" data-tab="blood" onclick="setSearchTab(this,'blood')"><i class="fas fa-tint"></i> Blood Donor</button>
+      </div>
+      <div class="search-row">
+        <div class="s-input-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" class="s-input" id="searchInput" placeholder="Search doctor, specialty, or condition…">
+        </div>
+        <select class="s-select" id="divisionSelect">
+          <option value="">All Divisions</option>
+          <option>Dhaka</option><option>Chattogram</option><option>Rajshahi</option>
+          <option>Khulna</option><option>Sylhet</option><option>Barishal</option>
+          <option>Rangpur</option><option>Mymensingh</option>
+        </select>
+        <button class="s-btn" onclick="doSearch()"><i class="fas fa-search"></i> Search</button>
+      </div>
+    </div>
+
+    <div class="hero-stats" data-aos="fade-up" data-aos-delay="300">
+      <div class="h-stat"><div class="h-stat-num">24/7</div><div class="h-stat-lbl">Video Consultation</div></div>
+      <div class="h-stat"><div class="h-stat-num">50+</div><div class="h-stat-lbl">Specialties</div></div>
+      <div class="h-stat"><div class="h-stat-num">8</div><div class="h-stat-lbl">Divisions Covered</div></div>
+      <div class="h-stat"><div class="h-stat-num">🔒</div><div class="h-stat-lbl">HIPAA-Compliant</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-aos="fade-up">
+      <h2>Why Choose <span class="grad">MedFind</span></h2>
+      <p>Experience the future of healthcare with our comprehensive digital platform built for Bangladesh</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>Verified Doctors</h3>
+        <p>All doctors verified with BMDC registration and credentials for your safety</p>
+      </div>
+      <div class="feat-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="feat-icon"><i class="fas fa-clock"></i></div>
+        <h3>Instant Booking</h3>
+        <p>Book appointments 24/7 with instant confirmation and reminders</p>
+      </div>
+      <div class="feat-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="feat-icon"><i class="fas fa-video"></i></div>
+        <h3>Video Consult</h3>
+        <p>Consult with specialist doctors from the comfort of your home</p>
+      </div>
+      <div class="feat-card" data-aos="fade-up" data-aos-delay="400">
+        <div class="feat-icon"><i class="fas fa-file-medical-alt"></i></div>
+        <h3>Digital Records</h3>
+        <p>Access your prescriptions, lab reports and medical history anytime</p>
+      </div>
+      <div class="feat-card" data-aos="fade-up" data-aos-delay="500" onclick="window.location.href='pages/medfind-ai.html'" style="cursor:pointer;border:1px solid rgba(0,212,170,.25);background:linear-gradient(135deg,rgba(0,212,170,.05),rgba(8,145,178,.05))">
+        <div class="feat-icon" style="background:rgba(0,212,170,.12);color:#00d4aa;"><i class="fas fa-robot"></i></div>
+        <h3 style="color:#0d9488;">MedFind AI ✨</h3>
+        <p>Get instant health guidance in Bangla & English powered by AI</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4 CORE DIRECTORIES ═══ -->
+<section style="padding:3rem 0;background:#fff;">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="display:inline-flex;align-items:center;gap:.5rem;background:#dbeafe;color:#1a56db;padding:.3rem 1rem;border-radius:100px;font-size:.8rem;font-weight:700;margin-bottom:.75rem">🎯 Complete Medical Platform</div>
+      <h2 style="font-size:1.9rem;font-weight:800;color:#0f172a;">Symptoms → Doctor → Treatment → <span class="grad">Drug</span></h2>
+      <p style="color:#64748b;font-size:.9rem;margin-top:.4rem">The complete patient journey — all in one platform</p>
+    </div>
+    <div class="platform-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+      <a href="pages/blood-donor/search.html" style="text-decoration:none;background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:1.5px solid #fecdd3;border-radius:18px;padding:1.5rem;cursor:pointer;transition:.2s;display:block" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:52px;height:52px;background:#dc2626;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem">🩸</div>
+        <div style="font-weight:800;font-size:1rem;color:#0f172a;margin-bottom:.35rem">Blood Donor Search</div>
+        <div style="font-size:.82rem;color:#7f1d1d;line-height:1.5">Find verified blood donors by blood group & district across Bangladesh</div>
+        <div style="margin-top:.75rem;font-size:.78rem;font-weight:700;color:#dc2626;display:flex;align-items:center;gap:.3rem">Find Donors <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="pages/donate/index.html" style="text-decoration:none;background:linear-gradient(135deg,#fef2f2,#fce7e7);border:1.5px solid #f9a8a8;border-radius:18px;padding:1.5rem;cursor:pointer;transition:.2s;display:block" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:52px;height:52px;background:#c1121f;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem">❤️</div>
+        <div style="font-weight:800;font-size:1rem;color:#0f172a;margin-bottom:.35rem">Donate Life</div>
+        <div style="font-size:.82rem;color:#7f1d1d;line-height:1.5">Register as an organ/blood donor · Your gift can save up to 8 lives</div>
+        <div style="margin-top:.75rem;font-size:.78rem;font-weight:700;color:#c1121f;display:flex;align-items:center;gap:.3rem">Register Now <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="pages/symptoms/index.html" style="text-decoration:none;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px solid #bfdbfe;border-radius:18px;padding:1.5rem;cursor:pointer;transition:.2s;display:block" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:52px;height:52px;background:#1a56db;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem">🩺</div>
+        <div style="font-weight:800;font-size:1rem;color:#0f172a;margin-bottom:.35rem">Symptom Checker</div>
+        <div style="font-size:.82rem;color:#3b5998;line-height:1.5">Describe symptoms → AI matches conditions → Suggests the right doctor</div>
+        <div style="margin-top:.75rem;font-size:.78rem;font-weight:700;color:#1a56db;display:flex;align-items:center;gap:.3rem">Try Now <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="pages/doctors/search.html" style="text-decoration:none;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:18px;padding:1.5rem;display:block;transition:.2s" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:52px;height:52px;background:#0d9488;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem">👨‍⚕️</div>
+        <div style="font-weight:800;font-size:1rem;color:#0f172a;margin-bottom:.35rem">Doctor Directory</div>
+        <div style="font-size:.82rem;color:#166534;line-height:1.5">1,500+ verified BMDC doctors · Book in-person or video consultation instantly</div>
+        <div style="margin-top:.75rem;font-size:.78rem;font-weight:700;color:#0d9488;display:flex;align-items:center;gap:.3rem">Find Doctor <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="pages/treatments/index.html" style="text-decoration:none;background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border:1.5px solid #d8b4fe;border-radius:18px;padding:1.5rem;display:block;transition:.2s" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:52px;height:52px;background:#7c3aed;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem">📋</div>
+        <div style="font-weight:800;font-size:1rem;color:#0f172a;margin-bottom:.35rem">Treatment Guide</div>
+        <div style="font-size:.82rem;color:#4c1d95;line-height:1.5">AI-powered treatment guides for 500+ conditions · Based on WHO & DGHS guidelines</div>
+        <div style="margin-top:.75rem;font-size:.78rem;font-weight:700;color:#7c3aed;display:flex;align-items:center;gap:.3rem">View Treatments <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="pages/drugs/index.html" style="text-decoration:none;background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1.5px solid #fcd34d;border-radius:18px;padding:1.5rem;display:block;transition:.2s" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:52px;height:52px;background:#d97706;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem">💊</div>
+        <div style="font-weight:800;font-size:1rem;color:#0f172a;margin-bottom:.35rem">Drug Directory</div>
+        <div style="font-size:.82rem;color:#92400e;line-height:1.5">Search any medicine · Dosage, side effects, Bangladesh availability & interactions</div>
+        <div style="margin-top:.75rem;font-size:.78rem;font-weight:700;color:#d97706;display:flex;align-items:center;gap:.3rem">Search Drugs <i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TOP DOCTORS ═══ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header-row" data-aos="fade-up">
+      <div>
+        <h2 style="font-size:2rem;font-weight:800;color:var(--gray-900);">Top <span class="grad">Rated</span> Doctors</h2>
+        <p style="color:var(--gray-500);margin-top:4px;">Most booked specialists this week</p>
+      </div>
+      <a href="pages/doctors/search.html" class="view-all">View All Doctors <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="doctors-grid" id="doctorsGrid">
+      <!-- Loaded by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LOCATIONS ═══ -->
+<section class="loc-section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Find Doctors <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">by Area</span></h2>
+      <p style="color:#94a3b8;">Search across all divisions of Bangladesh</p>
+    </div>
+    <div class="loc-grid">
+      <div class="loc-card" onclick="searchByLocation('Dhaka')"><div class="loc-icon"><i class="fas fa-city"></i></div><h3>Dhaka</h3><p>850+ Doctors · 120 Hospitals</p></div>
+      <div class="loc-card" onclick="searchByLocation('Chattogram')"><div class="loc-icon"><i class="fas fa-anchor"></i></div><h3>Chattogram</h3><p>320+ Doctors · 45 Hospitals</p></div>
+      <div class="loc-card" onclick="searchByLocation('Sylhet')"><div class="loc-icon"><i class="fas fa-umbrella-beach"></i></div><h3>Sylhet</h3><p>180+ Doctors · 25 Hospitals</p></div>
+      <div class="loc-card" onclick="searchByLocation('Khulna')"><div class="loc-icon"><i class="fas fa-water"></i></div><h3>Khulna</h3><p>160+ Doctors · 22 Hospitals</p></div>
+      <div class="loc-card" onclick="searchByLocation('Rajshahi')"><div class="loc-icon"><i class="fas fa-university"></i></div><h3>Rajshahi</h3><p>140+ Doctors · 20 Hospitals</p></div>
+      <div class="loc-card" onclick="searchByLocation('Barishal')"><div class="loc-icon"><i class="fas fa-ship"></i></div><h3>Barishal</h3><p>90+ Doctors · 12 Hospitals</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HEALTH ARTICLES ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-aos="fade-up">
+      <h2>Health <span class="grad">Articles</span></h2>
+      <p>Stay informed with the latest health tips and medical insights</p>
+    </div>
+    <div class="blog-grid" id="blogGrid"><!-- Loaded by JS --></div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2 data-aos="fade-up">Ready to Start Your Health Journey?</h2>
+    <p data-aos="fade-up" data-aos-delay="100">Join 500,000+ patients who found their perfect healthcare provider through MedFind</p>
+    <div class="cta-btns" data-aos="fade-up" data-aos-delay="200">
+      <a href="pages/register.html" class="cta-btn-white"><i class="fas fa-user-plus"></i> Sign Up Free</a>
+      <a href="pages/doctors/search.html" class="cta-btn-outline"><i class="fas fa-search"></i> Search Doctors</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer injected by components.js -->
+
+<!-- Scripts -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+AOS.init({ duration:700, once:true, offset:80 });
+
+// ── Search ──────────────────────────────────────────────────────
+let activeTab = 'doctor';
+function setSearchTab(btn, tab) {
+  document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  activeTab = tab;
+  const ph = { doctor:'Search doctor, specialty or condition…', hospital:'Search hospital name or location…', lab:'Search lab test name…' };
+  document.getElementById('searchInput').placeholder = ph[tab];
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  const div = document.getElementById('divisionSelect').value;
+  const routes = { doctor:'pages/doctors/search.html', hospital:'pages/hospital/list.html', lab:'pages/lab/tests.html' };
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (div) params.set('division', div);
+  window.location.href = routes[activeTab] + (params.toString() ? '?' + params.toString() : '');
+}
+document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+function searchByLocation(loc) {
+  window.location.href = 'pages/doctors/search.html?division=' + encodeURIComponent(loc);
+}
+
+// ── Doctors Data ────────────────────────────────────────────────
+const doctors = [
+  { id:1, name:'Prof. Dr. Ahmed Hossain', specialty:'Cardiologist', hospital:'United Hospital, Dhaka', fee:800, rating:4.9, reviews:324,
+    img:'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&q=80' },
+  { id:2, name:'Dr. Fatima Begum', specialty:'Gynecologist', hospital:'Square Hospital, Dhaka', fee:700, rating:4.8, reviews:256,
+    img:'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop&q=80' },
+  { id:3, name:'Prof. Dr. Kamal Uddin', specialty:'Neurosurgeon', hospital:'Apollo Hospital, Dhaka', fee:1000, rating:4.9, reviews:189,
+    img:'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop&q=80' },
+  { id:4, name:'Dr. Shahidul Islam', specialty:'Orthopedic Surgeon', hospital:'Labaid Hospital, Dhaka', fee:900, rating:4.7, reviews:145,
+    img:'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&q=80' }
+];
+
+function stars(r) {
+  let s='';
+  for(let i=1;i<=5;i++){s+=i<=Math.floor(r)?'★':i-r<0.5?'⭑':'☆';}
+  return s;
+}
+
+function renderDoctors() {
+  document.getElementById('doctorsGrid').innerHTML = doctors.map(d => `
+    <div class="doc-card" onclick="window.location='pages/doctors/search.html?id=${d.id}'">
+      <div class="doc-img">
+        <span class="doc-rating-badge">⭑ ${d.rating}</span>
+        <img src="${d.img}" alt="${d.name}" loading="lazy">
+      </div>
+      <div class="doc-info">
+        <div class="doc-name">${d.name}</div>
+        <span class="doc-specialty">${d.specialty}</span>
+        <div class="doc-hospital"><i class="fas fa-hospital-alt"></i> ${d.hospital}</div>
+        <div class="doc-stars">${stars(d.rating)} <small>(${d.reviews} reviews)</small></div>
+        <div class="doc-footer">
+          <div class="doc-fee">৳${d.fee} <small>/ visit</small></div>
+          <button class="btn-book" onclick="event.stopPropagation();window.location='pages/patients/appointments.html?doctor=${d.id}'">Book Now</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Blog Data ───────────────────────────────────────────────────
+const articles = [
+  { title:'Dengue Prevention & Treatment Guide 2024', excerpt:'Learn how to protect your family from dengue fever during outbreak season with expert tips.', cat:'Dengue', author:'Dr. Rahman', date:'2 days ago',
+    img:'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=350&fit=crop&q=80' },
+  { title:'Why Regular Health Check-ups Are Essential', excerpt:'Regular health screenings detect problems early when they\'re easier and cheaper to treat.', cat:'Wellness', author:'Dr. Sultana', date:'5 days ago',
+    img:'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=600&h=350&fit=crop&q=80' },
+  { title:'5 Heart Disease Warning Signs You Must Know', excerpt:'Recognizing early warning signs of heart disease can be life-saving. Learn what to watch for.', cat:'Heart Health', author:'Dr. Ahmed', date:'1 week ago',
+    img:'https://images.unsplash.com/photo-1628348070889-cb656235b4eb?w=600&h=350&fit=crop&q=80' }
+];
+
+function renderBlog() {
+  document.getElementById('blogGrid').innerHTML = articles.map(a => `
+    <article class="blog-card">
+      <div class="blog-img">
+        <span class="blog-cat">${a.cat}</span>
+        <img src="${a.img}" alt="${a.title}" loading="lazy">
+      </div>
+      <div class="blog-body">
+        <div class="blog-meta"><span><i class="fas fa-calendar-alt"></i> ${a.date}</span><span><i class="fas fa-user-md"></i> ${a.author}</span></div>
+        <div class="blog-title">${a.title}</div>
+        <div class="blog-excerpt">${a.excerpt}</div>
+        <a href="pages/health-articles.html" class="blog-read">Read More <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </article>`).join('');
+}
+
+renderDoctors();
+renderBlog();
+
+// ── Load live stats from backend ──
+async function loadPlatformStats() {
+  try {
+    const apiBase = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : '';
+    const res = await fetch(`${apiBase}/api/v1/analytics/dashboard/`);
+    const json = await res.json();
+    if (!json.success) return;
+    const d = json.data;
+    // Update any stat elements that exist
+    const patches = {
+      'stat-doctors': d.doctors?.total,
+      'stat-hospitals': d.hospitals?.total,
+      'stat-patients': d.patients?.total,
+    };
+    Object.entries(patches).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el && val) {
+        let count = 0;
+        const target = parseInt(val);
+        const timer = setInterval(() => {
+          count = Math.min(count + Math.ceil(target/60), target);
+          el.textContent = count.toLocaleString() + '+';
+          if (count >= target) clearInterval(timer);
+        }, 20);
+      }
+    });
+  } catch { /* backend offline - static values already shown */ }
+}
+loadPlatformStats();
+</script>
+<script src="services/api.js"></script>
+
+<!-- MEDFIND FOOTER -->
+<!-- Footer injected by components.js -->
+
+</body>
+</html>

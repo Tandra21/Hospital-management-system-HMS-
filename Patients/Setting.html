@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MedFind Bangladesh Admin Panel - Platform management and analytics (authorized access only).">
+<title>Settings & Privacy — MedFind Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --p:#2563eb;--pd:#1d4ed8;--pl:#dbeafe;--a:#7c3aed;--g:#10b981;--am:#f59e0b;--r:#ef4444;
+      --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g500:#64748b;--g700:#334155;
+      --g800:#1e293b;--g900:#0f172a;--sh:0 4px 16px rgba(0,0,0,.07);--rr:10px;--rl:16px;--tr:all .2s ease;
+    }
+    /* DARK MODE */
+    body.dark{--g50:#0f172a;--g100:#1e293b;--g200:#334155;--g400:#64748b;--g500:#94a3b8;--g700:#cbd5e1;--g800:#e2e8f0;--g900:#f1f5f9;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--g50);display:flex;height:100vh;overflow:hidden;transition:background .3s,color .3s;}
+
+    /* ── SIDEBAR ── */
+    .sb{width:248px;background:linear-gradient(180deg,#0f172a,#1e293b);min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+    .sb::-webkit-scrollbar{display:none;}
+    .sb-hdr{padding:1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,.06);}
+    .sb-brand{display:flex;align-items:center;gap:9px;}
+    .sb-brand-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--p),var(--a));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;}
+    .sb-brand-name{color:#fff;font-size:.98rem;font-weight:700;}
+    .sb-brand-sub{color:#64748b;font-size:.65rem;display:block;}
+    .sb-nav{flex:1;padding:.7rem 0;}
+    .sb-sec{padding:0 .8rem;margin-bottom:.5rem;}
+    .sb-sec-lbl{font-size:.62rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;padding:.4rem .5rem .2rem;}
+    .sb-link{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;color:#94a3b8;font-size:.84rem;font-weight:500;cursor:pointer;transition:var(--tr);margin-bottom:2px;text-decoration:none;}
+    .sb-link:hover,.sb-link.active{background:rgba(37,99,235,.2);color:#60a5fa;}
+    .sb-link i{width:16px;text-align:center;}
+    .sb-user{padding:.8rem 1rem;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:9px;}
+    .sb-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g),#0d9488);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#fff;border:2px solid rgba(16,185,129,.35);}
+    .sb-uname{color:#f1f5f9;font-size:.82rem;font-weight:600;}
+    .sb-urole{font-size:.63rem;color:#475569;}
+
+    /* ── MAIN ── */
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{height:62px;background:white;border-bottom:1px solid var(--g200);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;flex-shrink:0;transition:background .3s;}
+    body.dark .topbar{background:#1e293b;border-color:#334155;}
+    .tb-title{font-weight:800;font-size:1rem;color:var(--g900);flex:1;}
+    .tb-back{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--g100);border:none;border-radius:9px;cursor:pointer;color:var(--g500);font-size:.82rem;font-weight:600;font-family:inherit;transition:var(--tr);text-decoration:none;}
+    .tb-back:hover{background:var(--pl);color:var(--p);}
+    .content{flex:1;overflow-y:auto;padding:1.5rem;}
+    .content::-webkit-scrollbar{width:4px;}.content::-webkit-scrollbar-thumb{background:var(--g200);}
+
+    /* ── SETTINGS LAYOUT ── */
+    .settings-wrap{display:grid;grid-template-columns:220px 1fr;gap:1.5rem;max-width:1100px;}
+    .settings-nav{position:sticky;top:0;}
+    .snav-card{background:white;border-radius:var(--rl);border:1px solid var(--g200);box-shadow:var(--sh);overflow:hidden;}
+    body.dark .snav-card{background:#1e293b;border-color:#334155;}
+    .snav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--g500);transition:var(--tr);border-left:3px solid transparent;}
+    .snav-item:hover{background:var(--g50);color:var(--g700);}
+    body.dark .snav-item:hover{background:rgba(255,255,255,.04);}
+    .snav-item.active{background:var(--pl);color:var(--p);border-left-color:var(--p);font-weight:600;}
+    body.dark .snav-item.active{background:rgba(37,99,235,.15);color:#93c5fd;}
+    .snav-item i{width:16px;font-size:.85rem;}
+
+    /* ── SETTINGS PANELS ── */
+    .s-panel{display:none;}.s-panel.active{display:block;}
+    .s-card{background:white;border-radius:var(--rl);border:1px solid var(--g200);box-shadow:var(--sh);margin-bottom:1.2rem;overflow:hidden;}
+    body.dark .s-card{background:#1e293b;border-color:#334155;}
+    .s-card-hdr{padding:1.1rem 1.4rem;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;}
+    body.dark .s-card-hdr{border-color:#334155;}
+    .s-card-title{font-weight:800;font-size:.92rem;color:var(--g900);display:flex;align-items:center;gap:8px;}
+    .s-card-title i{color:var(--p);}
+    .s-card-body{padding:1.4rem;}
+    .s-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--g100);}
+    body.dark .s-row{border-color:rgba(255,255,255,.05);}
+    .s-row:last-child{border-bottom:none;}
+    .s-row-label{font-size:.86rem;font-weight:600;color:var(--g700);}
+    .s-row-desc{font-size:.74rem;color:var(--g400);margin-top:2px;}
+
+    /* TOGGLE SWITCH */
+    .toggle{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:var(--g200);border-radius:24px;transition:.3s;}
+    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+    .toggle input:checked + .toggle-slider{background:var(--p);}
+    .toggle input:checked + .toggle-slider::before{transform:translateX(20px);}
+
+    /* FORM INPUTS */
+    .s-input{width:100%;background:var(--g50);border:1.5px solid var(--g200);border-radius:10px;padding:.65rem 1rem;color:var(--g900);font-family:'Inter',sans-serif;font-size:.88rem;outline:none;transition:.2s;}
+    body.dark .s-input{background:rgba(255,255,255,.05);border-color:#334155;color:#f1f5f9;}
+    .s-input:focus{border-color:var(--p);background:var(--pl);}
+    body.dark .s-input:focus{background:rgba(37,99,235,.1);}
+    .s-input-group{margin-bottom:1rem;}
+    .s-input-group label{display:block;font-size:.76rem;font-weight:600;color:var(--g500);margin-bottom:5px;}
+    .s-grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .s-btn{padding:.68rem 1.4rem;border:none;border-radius:10px;font-size:.84rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:var(--tr);}
+    .s-btn-primary{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;}
+    .s-btn-primary:hover{opacity:.9;transform:translateY(-1px);}
+    .s-btn-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--r);}
+    .s-btn-danger:hover{background:rgba(239,68,68,.2);}
+    .s-btn-outline{background:transparent;border:1.5px solid var(--g200);color:var(--g500);}
+    .s-btn-outline:hover{background:var(--g100);}
+
+    /* AVATAR UPLOAD */
+    .avatar-upload{display:flex;align-items:center;gap:16px;margin-bottom:1.2rem;}
+    .avatar-preview{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--a));display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:#fff;border:3px solid var(--pl);flex-shrink:0;overflow:hidden;}
+    .avatar-preview img{width:100%;height:100%;object-fit:cover;}
+    .avatar-upload-btns{display:flex;flex-direction:column;gap:6px;}
+    .avatar-upload-btn{padding:6px 14px;border-radius:8px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.18s;}
+
+    /* 2FA */
+    .tfa-status{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:.74rem;font-weight:700;}
+    .tfa-on{background:#d1fae5;color:#065f46;} .tfa-off{background:#fee2e2;color:#991b1b;}
+
+    /* ACCESS LOG */
+    .log-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100);font-size:.8rem;}
+    body.dark .log-row{border-color:rgba(255,255,255,.05);}
+    .log-row:last-child{border-bottom:none;}
+    .log-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.8rem;}
+    .log-meta{flex:1;color:var(--g500);font-size:.72rem;}
+    .log-time{color:var(--g400);font-size:.68rem;white-space:nowrap;}
+
+    /* TEAM MEMBERS */
+    .team-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--g100);}
+    body.dark .team-row{border-color:rgba(255,255,255,.05);}
+    .team-row:last-child{border-bottom:none;}
+    .team-ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#fff;flex-shrink:0;}
+    .team-info{flex:1;}
+    .team-name{font-size:.84rem;font-weight:600;color:var(--g700);}
+    .team-email{font-size:.72rem;color:var(--g400);}
+    .role-badge{padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:700;}
+
+    /* PAYMENT/REVENUE */
+    .rev-stat{background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(124,58,237,.08));border:1px solid rgba(37,99,235,.15);border-radius:14px;padding:1.2rem;text-align:center;}
+    .rev-val{font-size:1.8rem;font-weight:800;color:var(--p);}
+    .rev-label{font-size:.74rem;color:var(--g500);margin-top:2px;}
+    .rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.2rem;}
+    .txn-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--g100);font-size:.82rem;}
+    body.dark .txn-row{border-color:rgba(255,255,255,.05);}
+    .txn-row:last-child{border-bottom:none;}
+    .txn-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+    .txn-amount{font-weight:700;color:var(--g);}
+    .txn-meta{flex:1;color:var(--g500);font-size:.74rem;}
+
+    /* TOAST */
+    #settingsToast{position:fixed;bottom:24px;right:24px;z-index:9999;background:#10b981;color:#fff;padding:12px 20px;border-radius:12px;font-size:.84rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);display:none;animation:fadeIn .3s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    @media(max-width:900px){.settings-wrap{grid-template-columns:1fr;}.settings-nav{position:relative;}.sb{display:none;}}
+    @media(max-width:600px){.s-grid2{grid-template-columns:1fr;}.rev-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body data-admin-page="admin">
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-hdr">
+    <div class="sb-brand">
+      <div class="sb-brand-ico"><i class="fas fa-heartbeat"></i></div>
+      <div><div class="sb-brand-name">MedFind Admin</div><div class="sb-brand-sub">Super Admin Panel</div></div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+  <a class="nav-brand" href="../../index.html"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">Dashboard</div>
+      <a class="sb-link" href="dashboard.html"><i class="fas fa-th-large"></i> Overview</a>
+      <a class="sb-link" href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">Manage</div>
+      <a class="sb-link" href="../doctors/search.html"><i class="fas fa-user-md"></i> Doctors</a>
+      <a class="sb-link" href="../patients/dashboard.html"><i class="fas fa-users"></i> Patients</a>
+      <a class="sb-link" href="../patients/appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a>
+      <a class="sb-link" href="../hospital/list.html"><i class="fas fa-hospital"></i> Hospitals</a>
+      <a class="sb-link" href="../hospital/bed-management.html"><i class="fas fa-bed"></i> Bed Management</a>
+      <a class="sb-link" href="../lab/tests.html"><i class="fas fa-flask"></i> Lab Tests</a>
+      <a class="sb-link" href="../billing/pharmacy.html"><i class="fas fa-pills"></i> Pharmacy</a>
+      <a class="sb-link" href="../pages/medfind-ai.html"><i class="fas fa-robot"></i> MedFind AI</a>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">System</div>
+      <a class="sb-link active" href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+      <a class="sb-link" href="../../index.html"><i class="fas fa-external-link-alt"></i> View Website</a>
+      <a class="sb-link" href="#" onclick="ADMIN_AUTH.logout(); return false;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-ava" id="sidebarAva">SA</div>
+    <div><div class="sb-uname" id="sbUserName">Super Admin</div><div class="sb-urole admin-role" id="sbUserRole">Platform Owner</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title"><i class="fas fa-gear" style="color:var(--p);margin-right:8px;"></i>Settings & Privacy</div>
+    <a href="dashboard.html" class="tb-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+  </div>
+  <div class="content">
+    <div class="settings-wrap">
+
+      <!-- SETTINGS NAV -->
+      <div class="settings-nav">
+        <div class="snav-card">
+          <div class="snav-item active" onclick="showPanel('appearance')"><i class="fas fa-palette"></i> Appearance</div>
+          <div class="snav-item" onclick="showPanel('profile')"><i class="fas fa-user-circle"></i> Profile</div>
+          <div class="snav-item" onclick="showPanel('security')"><i class="fas fa-shield-halved"></i> Security & 2FA</div>
+          <div class="snav-item" onclick="showPanel('team')"><i class="fas fa-users-gear"></i> Team Access</div>
+          <div class="snav-item" onclick="showPanel('notifications')"><i class="fas fa-bell"></i> Notifications</div>
+          <div class="snav-item" onclick="showPanel('payment')"><i class="fas fa-taka-sign"></i> Payment & Revenue</div>
+          <div class="snav-item" onclick="showPanel('system')"><i class="fas fa-sliders"></i> System Prefs</div>
+          <div class="snav-item" onclick="showPanel('logs')"><i class="fas fa-list-check"></i> Access Logs</div>
+        </div>
+      </div>
+
+      <!-- PANELS -->
+      <div>
+
+        <!-- APPEARANCE -->
+        <div class="s-panel active" id="panel-appearance">
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-moon"></i> Dark / Light Mode</div></div>
+            <div class="s-card-body">
+              <div class="s-row">
+                <div><div class="s-row-label">Dark Mode</div><div class="s-row-desc">Switch between dark and light interface theme</div></div>
+                <label class="toggle"><input type="checkbox" id="darkModeToggle" onchange="toggleDark(this.checked)"><span class="toggle-slider"></span></label>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Compact Sidebar</div><div class="s-row-desc">Collapse sidebar to icon-only mode</div></div>
+                <label class="toggle"><input type="checkbox" id="compactToggle"><span class="toggle-slider"></span></label>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Accent Color</div><div class="s-row-desc">Primary interface color</div></div>
+                <div style="display:flex;gap:8px;">
+                  <div onclick="setAccent('#2563eb')" style="width:24px;height:24px;border-radius:50%;background:#2563eb;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 2px #2563eb;"></div>
+                  <div onclick="setAccent('#7c3aed')" style="width:24px;height:24px;border-radius:50%;background:#7c3aed;cursor:pointer;border:2px solid #fff;"></div>
+                  <div onclick="setAccent('#059669')" style="width:24px;height:24px;border-radius:50%;background:#059669;cursor:pointer;border:2px solid #fff;"></div>
+                  <div onclick="setAccent('#d97706')" style="width:24px;height:24px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid #fff;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="s-panel" id="panel-profile">
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-user-circle"></i> Profile Information</div></div>
+            <div class="s-card-body">
+              <div class="avatar-upload">
+                <div class="avatar-preview" id="avatarPreview">AY</div>
+                <div class="avatar-upload-btns">
+                  <label class="avatar-upload-btn s-btn s-btn-primary" style="cursor:pointer;">
+                    <i class="fas fa-upload"></i> Upload Photo
+                    <input type="file" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
+                  </label>
+                  <button class="avatar-upload-btn s-btn s-btn-outline" onclick="removeAvatar()">Remove</button>
+                </div>
+              </div>
+              <div class="s-grid2">
+                <div class="s-input-group"><label>Full Name</label><input class="s-input" id="profileName" value="Ahsanul Yamin Babor"></div>
+                <div class="s-input-group"><label>Username / Handle</label><input class="s-input" id="profileUsername" value="baborkhan"></div>
+                <div class="s-input-group"><label>Email Address</label><input class="s-input" type="email" id="profileEmail" value="ahsanulyaminbabor@gmail.com"></div>
+                <div class="s-input-group"><label>Phone Number</label><input class="s-input" type="tel" id="profilePhone" value="01772172829"></div>
+                <div class="s-input-group"><label>Role / Title</label><input class="s-input" id="profileRole" value="Lead Full Stack Developer"></div>
+                <div class="s-input-group"><label>Location</label><input class="s-input" id="profileLocation" value="Dhaka, Bangladesh"></div>
+              </div>
+              <button class="s-btn s-btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-lock"></i> Change Password</div></div>
+            <div class="s-card-body">
+              <div class="s-input-group"><label>Current Password</label><input class="s-input" type="password" id="curPass" placeholder="Enter current password"></div>
+              <div class="s-grid2">
+                <div class="s-input-group"><label>New Password</label><input class="s-input" type="password" id="newPass" placeholder="Min 8 characters"></div>
+                <div class="s-input-group"><label>Confirm New Password</label><input class="s-input" type="password" id="conPass" placeholder="Repeat new password"></div>
+              </div>
+              <button class="s-btn s-btn-primary" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECURITY & 2FA -->
+        <div class="s-panel" id="panel-security">
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-shield-halved"></i> Two-Factor Authentication</div></div>
+            <div class="s-card-body">
+              <div class="s-row">
+                <div>
+                  <div class="s-row-label">2FA Status</div>
+                  <div class="s-row-desc" style="margin-top:4px;">
+                    <span class="tfa-status tfa-on" id="tfaStatus"><i class="fas fa-check-circle"></i> Enabled (OTP on login)</span>
+                  </div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="tfaToggle" checked onchange="toggle2FA(this.checked)"><span class="toggle-slider"></span></label>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Email OTP Verification</div><div class="s-row-desc">Send OTP to registered email on every admin login</div></div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Phone OTP Verification</div><div class="s-row-desc">Require phone number match on login</div></div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Block Direct URL Access</div><div class="s-row-desc">Prevent unauthorized direct URL entry to admin pages</div></div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-user-lock"></i> Authorized Owner Credentials</div></div>
+            <div class="s-card-body">
+              <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:var(--g500);">
+                <i class="fas fa-info-circle" style="color:var(--p);"></i> Only these credentials can access the full Admin Panel. Changes require OTP confirmation.
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+                  <div><div style="font-size:.8rem;font-weight:600;color:var(--g700);">ahsanulyaminbabor@gmail.com</div><div style="font-size:.68rem;color:var(--g400);">📞 01772172829 · Super Admin</div></div>
+                  <span class="tfa-status tfa-on" style="font-size:.68rem;">Owner</span>
+                </div>
+                <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+                  <div><div style="font-size:.8rem;font-weight:600;color:var(--g700);">baborkhan117085@gmail.com</div><div style="font-size:.68rem;color:var(--g400);">📞 01516550217 · Super Admin</div></div>
+                  <span class="tfa-status tfa-on" style="font-size:.68rem;">Owner</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEAM ACCESS -->
+        <div class="s-panel" id="panel-team">
+          <div class="s-card">
+            <div class="s-card-hdr">
+              <div class="s-card-title"><i class="fas fa-users-gear"></i> Team Members</div>
+              <button class="s-btn s-btn-primary" onclick="showAddMember()" style="padding:6px 14px;font-size:.78rem;"><i class="fas fa-plus"></i> Add Member</button>
+            </div>
+            <div class="s-card-body" id="teamList"><!-- filled by JS --></div>
+          </div>
+          <!-- Add Member Form -->
+          <div class="s-card" id="addMemberForm" style="display:none;">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-user-plus"></i> Add Team Member</div></div>
+            <div class="s-card-body">
+              <div class="s-grid2">
+                <div class="s-input-group"><label>Full Name</label><input class="s-input" id="tmName" placeholder="Team member name"></div>
+                <div class="s-input-group"><label>Email Address</label><input class="s-input" type="email" id="tmEmail" placeholder="member@email.com"></div>
+                <div class="s-input-group"><label>Phone Number</label><input class="s-input" type="tel" id="tmPhone" placeholder="01XXXXXXXXX"></div>
+                <div class="s-input-group"><label>Role</label>
+                  <select class="s-input" id="tmRole">
+                    <option value="developer">Developer</option>
+                    <option value="hospital_admin">Hospital Admin</option>
+                    <option value="doctor">Doctor</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <button class="s-btn s-btn-primary" onclick="addTeamMember()"><i class="fas fa-save"></i> Add Member</button>
+                <button class="s-btn s-btn-outline" onclick="document.getElementById('addMemberForm').style.display='none'">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="s-panel" id="panel-notifications">
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-envelope"></i> Email Notifications</div></div>
+            <div class="s-card-body">
+              <div class="s-row"><div><div class="s-row-label">New Appointment Alerts</div><div class="s-row-desc">Email when new appointments are booked</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">Payment Confirmations</div><div class="s-row-desc">Email on every successful transaction</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">Admin Login Alerts</div><div class="s-row-desc">Email when admin panel is accessed</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">System Error Reports</div><div class="s-row-desc">Email on critical errors or downtime</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-mobile-screen"></i> SMS & In-App Notifications</div></div>
+            <div class="s-card-body">
+              <div class="s-row"><div><div class="s-row-label">SMS Alerts (01772172829)</div><div class="s-row-desc">Critical alerts via SMS to owner phone</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">In-App Dashboard Alerts</div><div class="s-row-desc">Show notification badges on dashboard</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">Browser Push Notifications</div><div class="s-row-desc">Browser notifications when page is open</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENT & REVENUE -->
+        <div class="s-panel" id="panel-payment">
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-taka-sign"></i> Revenue Overview</div></div>
+            <div class="s-card-body">
+              <div class="rev-grid">
+                <div class="rev-stat"><div class="rev-val" id="revToday">৳0</div><div class="rev-label">Today's Revenue</div></div>
+                <div class="rev-stat"><div class="rev-val" id="revMonth">৳0</div><div class="rev-label">This Month</div></div>
+                <div class="rev-stat"><div class="rev-val" id="revTotal">৳0</div><div class="rev-label">Total All Time</div></div>
+              </div>
+              <div style="display:flex;gap:10px;margin-bottom:1.2rem;">
+                <button class="s-btn s-btn-primary" onclick="exportRevenue('csv')"><i class="fas fa-download"></i> Export CSV</button>
+                <button class="s-btn s-btn-outline" onclick="exportRevenue('pdf')"><i class="fas fa-file-pdf"></i> Export PDF</button>
+              </div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-mobile-screen-button"></i> Payment Gateway — bKash</div></div>
+            <div class="s-card-body">
+              <div class="s-row">
+                <div><div class="s-row-label">Primary bKash Account</div><div class="s-row-desc">All platform payments route to this number</div></div>
+                <div style="font-size:.88rem;font-weight:700;color:var(--p);">01772172829</div>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Auto Transaction Tracking</div><div class="s-row-desc">Log every payment automatically</div></div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Payment Gateway Status</div><div class="s-row-desc">bKash / Nagad / Rocket integration</div></div>
+                <span class="tfa-status tfa-on"><i class="fas fa-circle"></i> Active</span>
+              </div>
+              <div style="margin-top:1rem;">
+                <div style="font-size:.8rem;font-weight:600;color:var(--g500);margin-bottom:8px;">Recent Transactions</div>
+                <div id="txnList"><!-- filled by JS --></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SYSTEM PREFERENCES -->
+        <div class="s-panel" id="panel-system">
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-language"></i> Language & Region</div></div>
+            <div class="s-card-body">
+              <div class="s-row">
+                <div><div class="s-row-label">Interface Language</div><div class="s-row-desc">Admin panel display language</div></div>
+                <select class="s-input" style="width:140px;" id="langSelect">
+                  <option value="en">English</option>
+                  <option value="bn">বাংলা</option>
+                </select>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Timezone</div><div class="s-row-desc">Server and display timezone</div></div>
+                <select class="s-input" style="width:200px;">
+                  <option selected>Asia/Dhaka (UTC+6)</option>
+                  <option>UTC</option>
+                </select>
+              </div>
+              <div class="s-row">
+                <div><div class="s-row-label">Currency Display</div><div class="s-row-desc">Revenue and billing currency</div></div>
+                <select class="s-input" style="width:140px;">
+                  <option selected>BDT (৳)</option>
+                  <option>USD ($)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-gauge-high"></i> Dashboard Customization</div></div>
+            <div class="s-card-body">
+              <div class="s-row"><div><div class="s-row-label">Show Revenue Widget</div><div class="s-row-desc">Display revenue stats on main dashboard</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">Real-time Data Refresh</div><div class="s-row-desc">Auto-refresh dashboard every 30 seconds</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">Show Pending Badges</div><div class="s-row-desc">Display count badges on pending items</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="s-row"><div><div class="s-row-label">Animations</div><div class="s-row-desc">Enable UI motion and transitions</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-hdr"><div class="s-card-title"><i class="fas fa-code-branch"></i> Version & Maintenance</div></div>
+            <div class="s-card-body">
+              <div class="s-row"><div><div class="s-row-label">Platform Version</div><div class="s-row-desc">MedFind Bangladesh v3.0 Final</div></div><span style="font-size:.78rem;font-weight:700;color:var(--g);">v3.0.0 stable</span></div>
+              <div class="s-row"><div><div class="s-row-label">Last Updated</div></div><span style="font-size:.78rem;color:var(--g500);">April 2026</span></div>
+              <div class="s-row"><div><div class="s-row-label">Maintenance Mode</div><div class="s-row-desc">Temporarily disable public access for maintenance</div></div><label class="toggle"><input type="checkbox" id="maintMode" onchange="toggleMaintenance(this.checked)"><span class="toggle-slider"></span></label></div>
+              <div style="margin-top:1rem;display:flex;gap:10px;">
+                <button class="s-btn s-btn-primary" onclick="showToast('Cache cleared successfully!')"><i class="fas fa-broom"></i> Clear Cache</button>
+                <button class="s-btn s-btn-danger" onclick="confirmReset()"><i class="fas fa-rotate-left"></i> Reset Settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCESS LOGS -->
+        <div class="s-panel" id="panel-logs">
+          <div class="s-card">
+            <div class="s-card-hdr">
+              <div class="s-card-title"><i class="fas fa-list-check"></i> Login Activity</div>
+              <button class="s-btn s-btn-outline" onclick="clearLogs()" style="padding:5px 12px;font-size:.76rem;"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+            <div class="s-card-body" id="accessLogList"><!-- filled by JS --></div>
+          </div>
+        </div>
+
+      </div><!-- /panels col -->
+    </div><!-- /settings-wrap -->
+  </div>
+</div>
+
+<div id="settingsToast"></div>
+
+<script src="../../assets/js/config.js"></script>
+  <script src="../../assets/js/admin-auth.js"></script>
+<script src="../../assets/js/components.js"></script>
+<script>
+// ── PANEL NAVIGATION ────────────────────────────────────────
+function showPanel(id) {
+  document.querySelectorAll('.s-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id)?.classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'logs') renderLogs();
+  if (id === 'team') renderTeam();
+  if (id === 'payment') renderPayment();
+}
+
+// ── DARK MODE ────────────────────────────────────────────────
+function toggleDark(on) {
+  document.body.classList.toggle('dark', on);
+  localStorage.setItem('mf_dark', on ? '1' : '0');
+  showToast(on ? 'Dark mode enabled' : 'Light mode enabled');
+}
+function setAccent(color) {
+  document.documentElement.style.setProperty('--p', color);
+  localStorage.setItem('mf_accent', color);
+  showToast('Accent color updated');
+}
+// Restore on load
+if (localStorage.getItem('mf_dark') === '1') {
+  document.body.classList.add('dark');
+  document.getElementById('darkModeToggle').checked = true;
+}
+if (localStorage.getItem('mf_accent')) {
+  document.documentElement.style.setProperty('--p', localStorage.getItem('mf_accent'));
+}
+
+// ── PROFILE ─────────────────────────────────────────────────
+function previewAvatar(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById('avatarPreview');
+    prev.innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
+  };
+  reader.readAsDataURL(file);
+}
+function removeAvatar() {
+  document.getElementById('avatarPreview').innerHTML = 'AY';
+  showToast('Avatar removed');
+}
+function saveProfile() {
+  const data = {
+    name: document.getElementById('profileName').value,
+    email: document.getElementById('profileEmail').value,
+    phone: document.getElementById('profilePhone').value,
+    role: document.getElementById('profileRole').value,
+    location: document.getElementById('profileLocation').value,
+  };
+  localStorage.setItem('mf_admin_profile', JSON.stringify(data));
+  // Update sidebar
+  document.querySelectorAll('#sbUserName, .admin-username').forEach(el => el.textContent = data.name);
+  showToast('Profile saved successfully!');
+}
+function changePassword() {
+  const cur = document.getElementById('curPass').value;
+  const nw = document.getElementById('newPass').value;
+  const cn = document.getElementById('conPass').value;
+  if (!cur) { showToast('Enter current password', 'error'); return; }
+  if (nw.length < 8) { showToast('New password must be at least 8 characters', 'error'); return; }
+  if (nw !== cn) { showToast('Passwords do not match', 'error'); return; }
+  document.getElementById('curPass').value = '';
+  document.getElementById('newPass').value = '';
+  document.getElementById('conPass').value = '';
+  showToast('Password updated successfully!');
+}
+
+// ── 2FA ─────────────────────────────────────────────────────
+function toggle2FA(on) {
+  const badge = document.getElementById('tfaStatus');
+  badge.className = 'tfa-status ' + (on ? 'tfa-on' : 'tfa-off');
+  badge.innerHTML = on ? '<i class="fas fa-check-circle"></i> Enabled (OTP on login)' : '<i class="fas fa-times-circle"></i> Disabled';
+  localStorage.setItem('mf_2fa', on ? '1' : '0');
+  showToast('2FA ' + (on ? 'enabled' : 'disabled'));
+}
+
+// ── TEAM MEMBERS ─────────────────────────────────────────────
+const ROLE_COLORS = { superadmin:'#10b981', developer:'#6366f1', hospital_admin:'#f59e0b', doctor:'#3b82f6', patient:'#94a3b8' };
+const ROLE_LABELS = { superadmin:'Super Admin', developer:'Developer', hospital_admin:'Hospital Admin', doctor:'Doctor', patient:'Patient' };
+const DEFAULT_TEAM = [
+  { name:'Ahsanul Yamin Babor', email:'ahsanulyaminbabor@gmail.com', phone:'01772172829', role:'superadmin', active:true },
+  { name:'Md Monowarul Aziz',   email:'monowarul@medfind.com',       phone:'01XXXXXXXXX', role:'developer', active:true },
+  { name:'Tandra Pramanik',     email:'tandra@medfind.com',          phone:'01XXXXXXXXX', role:'developer', active:true },
+  { name:'A H M Al Toufiq Noor',email:'toufiq@medfind.com',          phone:'01XXXXXXXXX', role:'developer', active:true },
+];
+function getTeam() {
+  return JSON.parse(localStorage.getItem('mf_team_members') || JSON.stringify(DEFAULT_TEAM));
+}
+function saveTeam(team) { localStorage.setItem('mf_team_members', JSON.stringify(team)); }
+function renderTeam() {
+  const team = getTeam();
+  const list = document.getElementById('teamList');
+  if (!list) return;
+  list.innerHTML = team.map((m, i) => `
+    <div class="team-row">
+      <div class="team-ava" style="background:linear-gradient(135deg,${ROLE_COLORS[m.role]},${ROLE_COLORS[m.role]}99)">${m.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+      <div class="team-info">
+        <div class="team-name">${m.name}</div>
+        <div class="team-email">${m.email} · ${m.phone}</div>
+      </div>
+      <span class="role-badge" style="background:${ROLE_COLORS[m.role]}22;color:${ROLE_COLORS[m.role]}">${ROLE_LABELS[m.role]}</span>
+      ${m.role !== 'superadmin' ? `<button onclick="removeMember(${i})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;padding:4px 10px;color:#ef4444;font-size:.72rem;cursor:pointer;font-family:inherit;">Remove</button>` : '<span style="font-size:.7rem;color:#94a3b8">Owner</span>'}
+    </div>`).join('');
+}
+function showAddMember() { document.getElementById('addMemberForm').style.display = 'block'; }
+function addTeamMember() {
+  const name = document.getElementById('tmName').value.trim();
+  const email = document.getElementById('tmEmail').value.trim();
+  const phone = document.getElementById('tmPhone').value.trim();
+  const role = document.getElementById('tmRole').value;
+  if (!name || !email || !phone) { showToast('All fields are required', 'error'); return; }
+  const team = getTeam();
+  team.push({ name, email, phone, role, active: true });
+  saveTeam(team);
+  renderTeam();
+  document.getElementById('addMemberForm').style.display = 'none';
+  ['tmName','tmEmail','tmPhone'].forEach(id => document.getElementById(id).value = '');
+  showToast(`${name} added to team!`);
+}
+function removeMember(i) {
+  if (!confirm('Remove this team member?')) return;
+  const team = getTeam();
+  team.splice(i, 1);
+  saveTeam(team);
+  renderTeam();
+  showToast('Team member removed');
+}
+
+// ── PAYMENT / REVENUE ────────────────────────────────────────
+function renderPayment() {
+  // Simulate revenue data
+  const today = Math.floor(Math.random() * 20000) + 30000;
+  const month = today * 28;
+  const total = month * 6;
+  document.getElementById('revToday').textContent = '৳' + today.toLocaleString();
+  document.getElementById('revMonth').textContent = '৳' + month.toLocaleString();
+  document.getElementById('revTotal').textContent = '৳' + total.toLocaleString();
+  // Transaction history
+  const txns = [
+    { type:'bkash', name:'Appointment Booking', amount:800, time:'Today 10:32 AM', id:'TXN#8821' },
+    { type:'nagad', name:'Lab Test Payment',    amount:1200, time:'Today 9:15 AM',  id:'TXN#8820' },
+    { type:'bkash', name:'Consultation Fee',    amount:1500, time:'Yesterday',      id:'TXN#8819' },
+    { type:'rocket',name:'Pharmacy Order',      amount:650,  time:'Yesterday',      id:'TXN#8818' },
+    { type:'bkash', name:'OPD Billing',         amount:500,  time:'2 days ago',     id:'TXN#8817' },
+  ];
+  const colors = { bkash:'#E0143F', nagad:'#F3741F', rocket:'#8B5CF6' };
+  document.getElementById('txnList').innerHTML = txns.map(t => `
+    <div class="txn-row">
+      <div class="txn-ico" style="background:${colors[t.type]}22;color:${colors[t.type]}"><i class="fas fa-mobile-screen-button"></i></div>
+      <div class="txn-meta"><div style="font-weight:600;color:var(--g700);font-size:.8rem">${t.name}</div>${t.time} · ${t.id}</div>
+      <div class="txn-amount">+৳${t.amount.toLocaleString()}</div>
+    </div>`).join('');
+}
+function exportRevenue(format) {
+  showToast(`Revenue report exported as ${format.toUpperCase()}`);
+}
+
+// ── ACCESS LOGS ──────────────────────────────────────────────
+function renderLogs() {
+  const logs = JSON.parse(localStorage.getItem('mf_access_logs') || '[]');
+  const list = document.getElementById('accessLogList');
+  if (!list) return;
+  if (!logs.length) { list.innerHTML = '<div style="text-align:center;color:var(--g400);padding:20px;font-size:.82rem;">No access logs yet.</div>'; return; }
+  list.innerHTML = logs.slice(0, 30).map(l => `
+    <div class="log-row">
+      <div class="log-icon" style="background:rgba(37,99,235,.1);color:var(--p)"><i class="fas fa-shield-halved"></i></div>
+      <div><div style="font-size:.8rem;font-weight:600;color:var(--g700)">${l.user || 'Unknown'}</div><div class="log-meta">${l.page}</div></div>
+      <div class="log-time">${new Date(l.time).toLocaleString('en-BD', {dateStyle:'short',timeStyle:'short'})}</div>
+    </div>`).join('');
+}
+function clearLogs() {
+  if (!confirm('Clear all access logs?')) return;
+  localStorage.removeItem('mf_access_logs');
+  renderLogs();
+  showToast('Access logs cleared');
+}
+
+// ── SYSTEM ───────────────────────────────────────────────────
+function toggleMaintenance(on) {
+  localStorage.setItem('mf_maintenance', on ? '1' : '0');
+  showToast(on ? '⚠️ Maintenance mode ENABLED' : 'Maintenance mode disabled', on ? 'warn' : 'success');
+}
+function confirmReset() {
+  if (!confirm('Reset all settings to defaults? This cannot be undone.')) return;
+  localStorage.removeItem('mf_dark'); localStorage.removeItem('mf_accent');
+  localStorage.removeItem('mf_admin_profile'); localStorage.removeItem('mf_2fa');
+  location.reload();
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('settingsToast');
+  const colors = { success:'#10b981', error:'#ef4444', warn:'#f59e0b' };
+  t.style.background = colors[type] || colors.success;
+  t.style.display = 'block';
+  t.innerHTML = `<i class="fas fa-${type==='error'?'times':'check'}-circle"></i> ${msg}`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+renderTeam();
+renderPayment();
+renderLogs();
+</script>
+</body>
+</html>

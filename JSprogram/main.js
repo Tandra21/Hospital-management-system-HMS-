@@ -223,13 +223,13 @@ class MedFindApp {
         // Load navbar if container exists
         const navbarContainer = document.getElementById('navbar-container');
         if (navbarContainer && !navbarContainer.innerHTML) {
-            this.loadComponent('../components/navbar.html', 'navbar-container');
+            this.loadComponent('../Components/navbar.html', 'navbar-container');
         }
         
         // Load footer if container exists
         const footerContainer = document.getElementById('footer-container');
         if (footerContainer && !footerContainer.innerHTML) {
-            this.loadComponent('../components/footer.html', 'footer-container');
+            this.loadComponent('../Components/footer.html', 'footer-container');
         }
     }
 

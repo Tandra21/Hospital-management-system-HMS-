@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Home - Hospital Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome</h2>
+    <p>Use the doctor search page to browse available doctors and hospitals, then move to the booking or details pages.</p>
+</div>
+<div class="grid grid-2">
+    <div class="card">
+        <h3>Doctors</h3>
+        <ul>
+            {% for doctor in doctors %}
+                <li><a class="button-outline" href="/doctor/{{ doctor._id }}/">{{ doctor.name }}</a></li>
+            {% empty %}
+                <li>No sample doctors available. Run the seed script.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="card">
+        <h3>Hospitals</h3>
+        <ul>
+            {% for hospital in hospitals %}
+                <li><a class="button-outline" href="/hospital/{{ hospital._id }}/">{{ hospital.name }}</a></li>
+            {% empty %}
+                <li>No sample hospitals available. Run the seed script.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

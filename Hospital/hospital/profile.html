@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hospital Directory Bangladesh - Browse hospitals with bed availability, services, contacts and location.">
+<title>Hospitals & Clinics - MedFind Bangladesh</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--secondary:#0d9488;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--white:#fff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--gray-800);}
+        .navbar{background:var(--white);height:64px;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+        .nav-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+        .nav-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;}
+        .nav-text{font-size:1.2rem;font-weight:800;color:var(--primary);}
+        .nav-links{display:flex;gap:1rem;}
+        .nav-links a{font-size:.875rem;color:var(--gray-700);text-decoration:none;font-weight:500;padding:.4rem .75rem;border-radius:8px;transition:.2s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--primary);background:var(--gray-100);}
+        .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border-radius:10px;font-weight:600;font-size:.85rem;cursor:pointer;border:none;text-decoration:none;transition:.2s;}
+        .btn-primary{background:var(--primary);color:#fff;}
+        .btn-primary:hover{background:var(--primary-dark);}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,#1e3a5f,#2563eb,#0d9488);padding:3rem 2rem;color:#fff;}
+        .hero-inner{max-width:900px;margin:0 auto;text-align:center;}
+        .hero h1{font-size:2.2rem;font-weight:800;margin-bottom:.75rem;}
+        .hero p{opacity:.9;margin-bottom:2rem;}
+        .hero-search{display:flex;gap:.75rem;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:.6rem;}
+        .hero-search input,.hero-search select{flex:1;background:none;border:none;outline:none;color:#fff;font-size:.9rem;padding:.4rem .5rem;}
+        .hero-search select option{color:var(--gray-900);background:#fff;}
+        .hero-search input::placeholder{color:rgba(255,255,255,.7);}
+        .hero-search-btn{background:var(--white);color:var(--primary);border:none;padding:.6rem 1.5rem;border-radius:10px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.4rem;}
+        .divider{width:1px;background:rgba(255,255,255,.3);}
+        .hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.2);}
+        .hs-item{text-align:center;}
+        .hs-num{font-size:1.8rem;font-weight:800;}
+        .hs-label{font-size:.8rem;opacity:.8;}
+
+        /* FILTER BAR */
+        .filter-bar{background:var(--white);border-bottom:1px solid var(--gray-200);padding:.875rem 2rem;position:sticky;top:64px;z-index:99;}
+        .filter-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+        .filter-group{display:flex;gap:.4rem;flex-wrap:wrap;}
+        .filt-pill{padding:.35rem .9rem;border:1.5px solid var(--gray-200);border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;background:var(--white);color:var(--gray-700);transition:.2s;white-space:nowrap;}
+        .filt-pill:hover,.filt-pill.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+        .filter-bar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem;}
+        .sort-sel{padding:.4rem .75rem;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.85rem;outline:none;background:var(--white);}
+        .view-btns{display:flex;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;}
+        .vb{padding:.35rem .65rem;border:none;background:var(--white);cursor:pointer;color:var(--gray-500);font-size:.85rem;transition:.2s;}
+        .vb.on{background:var(--primary);color:#fff;}
+
+        /* MAIN */
+        .main{max-width:1400px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:260px 1fr;gap:1.5rem;}
+
+        /* SIDEBAR FILTERS */
+        .adv-filters{position:sticky;top:130px;height:fit-content;}
+        .af-card{background:var(--white);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+        .af-header{padding:1rem 1.25rem;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;}
+        .af-title{font-size:.95rem;font-weight:700;}
+        .af-clear{font-size:.8rem;color:var(--primary);cursor:pointer;border:none;background:none;font-weight:600;}
+        .af-section{padding:.9rem 1.25rem;border-bottom:1px solid var(--gray-100);}
+        .af-section:last-of-type{border-bottom:none;}
+        .af-sec-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);margin-bottom:.65rem;}
+        .af-check{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
+        .af-check label{display:flex;align-items:center;gap:.5rem;font-size:.85rem;cursor:pointer;}
+        .af-check input[type=checkbox]{accent-color:var(--primary);width:15px;height:15px;}
+        .af-cnt{font-size:.72rem;background:var(--gray-100);padding:.1rem .4rem;border-radius:100px;color:var(--gray-500);}
+        .af-range-wrap{display:flex;flex-direction:column;gap:.4rem;}
+        .af-range-wrap input{accent-color:var(--primary);}
+        .af-range-labels{display:flex;justify-content:space-between;font-size:.78rem;color:var(--gray-500);}
+        .af-apply{width:100%;padding:.7rem;background:var(--primary);color:#fff;border:none;border-radius:0 0 16px 16px;font-weight:700;cursor:pointer;transition:.2s;}
+        .af-apply:hover{background:var(--primary-dark);}
+
+        /* HOSPITAL CARDS */
+        .hospitals-col{display:flex;flex-direction:column;gap:1rem;}
+        .results-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+        .results-txt{font-size:.875rem;font-weight:600;color:var(--gray-700);}
+        .hosp-card{background:var(--white);border-radius:18px;border:1.5px solid var(--gray-200);overflow:hidden;transition:.3s;display:flex;}
+        .hosp-card:hover{border-color:var(--primary);box-shadow:0 6px 25px rgba(37,99,235,.1);transform:translateY(-1px);}
+        .hosp-card.premium{border-color:#f59e0b;}
+        .hosp-left{width:180px;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+        .hosp-type-badge{position:absolute;top:.6rem;left:.6rem;font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;text-transform:uppercase;}
+        .hosp-type-badge.govt{background:#dbeafe;color:#1e40af;}
+        .hosp-type-badge.private{background:#d1fae5;color:#065f46;}
+        .hosp-type-badge.clinic{background:#f3e8ff;color:#6b21a8;}
+        .hosp-type-badge.diagnostic{background:#fef3c7;color:#92400e;}
+        .premium-badge{position:absolute;top:.6rem;right:.6rem;background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:100px;}
+        .hosp-icon{font-size:3rem;}
+        .hosp-body{flex:1;padding:1.25rem;}
+        .hosp-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem;}
+        .hosp-name{font-size:1.05rem;font-weight:800;color:var(--gray-900);}
+        .hosp-addr{font-size:.82rem;color:var(--gray-500);margin-top:.2rem;display:flex;align-items:center;gap:.3rem;}
+        .hosp-rating{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;}
+        .rating-box{background:#fef3c7;color:#92400e;padding:.35rem .65rem;border-radius:8px;text-align:center;}
+        .rating-box .num{font-size:1.1rem;font-weight:800;}
+        .rating-box .lbl{font-size:.65rem;font-weight:600;}
+        .hosp-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem;}
+        .h-tag{background:var(--gray-100);color:var(--gray-700);padding:.2rem .55rem;border-radius:6px;font-size:.75rem;font-weight:500;}
+        .h-tag.emergency{background:#fee2e2;color:#dc2626;}
+        .h-tag.icu{background:#dbeafe;color:#1e40af;}
+        .h-tag.lab{background:#f3e8ff;color:#7c3aed;}
+        .h-tag.pharmacy{background:#d1fae5;color:#065f46;}
+        .hosp-stats{display:flex;gap:1.5rem;margin-bottom:.9rem;}
+        .hs-stat{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--gray-600);}
+        .hs-stat strong{color:var(--gray-900);}
+        .hosp-actions{display:flex;gap:.6rem;align-items:center;}
+        .ha-btn{display:flex;align-items:center;gap:.4rem;padding:.55rem 1rem;border-radius:10px;font-weight:600;font-size:.83rem;cursor:pointer;border:none;transition:.2s;text-decoration:none;}
+        .ha-primary{background:var(--primary);color:#fff;}
+        .ha-primary:hover{background:var(--primary-dark);}
+        .ha-outline{border:1.5px solid var(--primary);color:var(--primary);background:var(--white);}
+        .ha-outline:hover{background:var(--primary-light);}
+        .ha-map{border:1.5px solid var(--gray-200);color:var(--gray-700);background:var(--white);}
+        .ha-map:hover{border-color:var(--secondary);color:var(--secondary);}
+        .bed-bar{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden;margin-bottom:.35rem;}
+        .bed-fill{height:100%;border-radius:3px;}
+        .bed-label{font-size:.72rem;color:var(--gray-500);}
+        .hosp-right{padding:1.25rem;border-left:1px solid var(--gray-100);display:flex;flex-direction:column;gap:.75rem;min-width:200px;justify-content:center;}
+        .avail-section{text-align:center;}
+        .avail-num{font-size:1.6rem;font-weight:800;color:var(--success);}
+        .avail-lbl{font-size:.75rem;color:var(--gray-500);}
+        .emergency-pill{display:flex;align-items:center;gap:.4rem;justify-content:center;background:#fee2e2;color:#dc2626;padding:.4rem .75rem;border-radius:8px;font-size:.78rem;font-weight:700;}
+        .emergency-pill.open{background:#d1fae5;color:#065f46;}
+
+        /* PAGINATION */
+        .pagination{display:flex;justify-content:center;gap:.4rem;padding:2rem 0;}
+        .pg-btn{width:36px;height:36px;border:1.5px solid var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.875rem;font-weight:600;background:var(--white);color:var(--gray-700);transition:.2s;}
+        .pg-btn.active,.pg-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+        @media(max-width:1100px){.main{grid-template-columns:1fr;}.adv-filters{position:relative;top:0;}}
+        @media(max-width:768px){.hosp-card{flex-direction:column;}.hosp-left{width:100%;min-height:100px;}.hosp-right{border-left:none;border-top:1px solid var(--gray-100);flex-direction:row;flex-wrap:wrap;gap:1rem;}.hero h1{font-size:1.7rem;}.hero-stats{gap:1.5rem;}}
+    </style>
+</head>
+<body>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="../../index.html" class="nav-brand"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+    <div class="nav-links">
+        <a href="../patients/dashboard.html">Dashboard</a>
+        <a href="list.html" class="active">Hospitals</a>
+        <a href="../doctors/search.html">Doctors</a>
+        <a href="../patients/viewmaps.html">Map View</a>
+        <a href="../lab/tests.html">Lab Tests</a>
+    </div>
+    <a href="../patients/dashboard.html" class="btn btn-primary"><i class="fas fa-user-circle"></i> My Account</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-inner">
+        <h1><i class="fas fa-hospital"></i> Hospitals & Healthcare Facilities</h1>
+        <p>Find and compare hospitals, clinics, and diagnostic centres across all 8 divisions of Bangladesh</p>
+        <div class="hero-search">
+            <i class="fas fa-search" style="color:rgba(255,255,255,.7);padding:.4rem .25rem"></i>
+            <input type="text" id="searchQ" placeholder="Hospital name, service, location...">
+            <div class="divider"></div>
+            <select id="divisionFilter">
+                <option value="">All Divisions</option>
+                <option value="Dhaka">Dhaka</option>
+                <option value="Chittagong">Chittagong</option>
+                <option value="Rajshahi">Rajshahi</option>
+                <option value="Khulna">Khulna</option>
+                <option value="Sylhet">Sylhet</option>
+                <option value="Barisal">Barisal</option>
+                <option value="Rangpur">Rangpur</option>
+                <option value="Mymensingh">Mymensingh</option>
+            </select>
+            <button class="hero-search-btn" onclick="applyFilters()"><i class="fas fa-search"></i> Search</button>
+        </div>
+        <div class="hero-stats">
+            <div class="hs-item"><div class="hs-num">800+</div><div class="hs-label">Hospitals Listed</div></div>
+            <div class="hs-item"><div class="hs-num">64</div><div class="hs-label">Districts Covered</div></div>
+            <div class="hs-item"><div class="hs-num">50,000+</div><div class="hs-label">Total Beds</div></div>
+            <div class="hs-item"><div class="hs-num">24/7</div><div class="hs-label">Emergency Available</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+    <div class="filter-inner">
+        <div class="filter-group" id="typeFilter">
+            <div class="filt-pill active" onclick="filterType('all',this)">All Types</div>
+            <div class="filt-pill" onclick="filterType('government',this)">Government</div>
+            <div class="filt-pill" onclick="filterType('private',this)">Private</div>
+            <div class="filt-pill" onclick="filterType('clinic',this)">Clinic</div>
+            <div class="filt-pill" onclick="filterType('diagnostic',this)">Diagnostic</div>
+        </div>
+        <div class="filter-bar-right">
+            <select class="sort-sel" onchange="sortHospitals(this.value)">
+                <option value="rating">Highest Rated</option>
+                <option value="beds">Most Beds</option>
+                <option value="name">Name A–Z</option>
+                <option value="distance">Nearest First</option>
+            </select>
+            <div class="view-btns">
+                <button class="vb on" title="List View"><i class="fas fa-list"></i></button>
+                <button class="vb" title="Grid View" onclick="window.location='../patients/viewmaps.html'"><i class="fas fa-map"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <!-- ADVANCED FILTERS -->
+    <aside class="adv-filters">
+        <div class="af-card">
+            <div class="af-header">
+                <span class="af-title"><i class="fas fa-sliders-h" style="color:var(--primary)"></i> Filters</span>
+                <button class="af-clear" onclick="clearAll()">Clear All</button>
+            </div>
+            <div class="af-section">
+                <div class="af-sec-title">Facilities</div>
+                <div class="af-check"><label><input type="checkbox" id="fEmergency"> 24/7 Emergency</label><span class="af-cnt">142</span></div>
+                <div class="af-check"><label><input type="checkbox" id="fICU"> ICU Available</label><span class="af-cnt">89</span></div>
+                <div class="af-check"><label><input type="checkbox" id="fLab"> In-house Lab</label><span class="af-cnt">203</span></div>
+                <div class="af-check"><label><input type="checkbox" id="fPharmacy"> Pharmacy</label><span class="af-cnt">310</span></div>
+                <div class="af-check"><label><input type="checkbox" id="fAmbulance"> Ambulance Service</label><span class="af-cnt">175</span></div>
+            </div>
+            <div class="af-section">
+                <div class="af-sec-title">Minimum Rating</div>
+                <div class="af-range-wrap">
+                    <input type="range" min="3" max="5" step=".5" value="3.5" id="ratingFilter" oninput="document.getElementById('ratingVal').textContent='★ '+this.value+'+'" style="width:100%">
+                    <div class="af-range-labels"><span>3.0</span><span id="ratingVal">★ 3.5+</span><span>5.0</span></div>
+                </div>
+            </div>
+            <div class="af-section">
+                <div class="af-sec-title">Bed Capacity</div>
+                <div class="af-check"><label><input type="radio" name="beds" value="0"> Any</label></div>
+                <div class="af-check"><label><input type="radio" name="beds" value="100"> 100+ Beds</label></div>
+                <div class="af-check"><label><input type="radio" name="beds" value="500"> 500+ Beds</label></div>
+                <div class="af-check"><label><input type="radio" name="beds" value="1000"> 1000+ Beds</label></div>
+            </div>
+            <div class="af-section">
+                <div class="af-sec-title">Specialty</div>
+                <div class="af-check"><label><input type="checkbox"> Cardiology</label></div>
+                <div class="af-check"><label><input type="checkbox"> Neurology</label></div>
+                <div class="af-check"><label><input type="checkbox"> Oncology</label></div>
+                <div class="af-check"><label><input type="checkbox"> Pediatrics</label></div>
+                <div class="af-check"><label><input type="checkbox"> Orthopedics</label></div>
+                <div class="af-check"><label><input type="checkbox"> Gynecology</label></div>
+            </div>
+            <button class="af-apply" onclick="applyFilters()"><i class="fas fa-search"></i> Apply Filters</button>
+        </div>
+    </aside>
+
+    <!-- HOSPITALS LIST -->
+    <div class="hospitals-col">
+        <div class="results-row">
+            <div class="results-txt" id="resultsText">Showing <strong>10</strong> hospitals</div>
+        </div>
+        <div id="hospitalsList"><!-- JS --></div>
+        <div class="pagination">
+            <div class="pg-btn"><i class="fas fa-chevron-left"></i></div>
+            <div class="pg-btn active">1</div>
+            <div class="pg-btn">2</div>
+            <div class="pg-btn">3</div>
+            <span style="color:var(--gray-400)">...</span>
+            <div class="pg-btn">80</div>
+            <div class="pg-btn"><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const hospitals = [
+    {id:1,name:'Dhaka Medical College Hospital',type:'government',division:'Dhaka',district:'Dhaka',addr:'Bakshibazar, Dhaka 1000',rating:4.5,reviews:1840,beds:2650,availBeds:340,icu:120,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏛️',color:'linear-gradient(135deg,#1e3a5f,#2563eb)',specialties:['Cardiology','Neurology','Oncology','Surgery','Pediatrics'],premium:false,established:1946,phone:'02-55167100'},
+    {id:2,name:'BSMMU (PG Hospital)',type:'government',division:'Dhaka',district:'Dhaka',addr:'Shahbagh, Dhaka 1000',rating:4.6,reviews:2100,beds:1700,availBeds:210,icu:80,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏥',color:'linear-gradient(135deg,#065f46,#059669)',specialties:['Medicine','Surgery','Cardiology','Neurology'],premium:false,established:1965,phone:'02-55165300'},
+    {id:3,name:'Square Hospitals Ltd.',type:'private',division:'Dhaka',district:'Dhaka',addr:'West Panthapath, Dhaka 1205',rating:4.8,reviews:3200,beds:400,availBeds:45,icu:35,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏨',color:'linear-gradient(135deg,#7c3aed,#8b5cf6)',specialties:['Cardiology','Neurology','Oncology','Orthopedics'],premium:true,established:2006,phone:'02-8159457'},
+    {id:4,name:'Evercare Hospital Dhaka',type:'private',division:'Dhaka',district:'Dhaka',addr:'Plot 81, Block E, Bashundhara, Dhaka',rating:4.9,reviews:2890,beds:450,availBeds:62,icu:40,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏩',color:'linear-gradient(135deg,#b45309,#d97706)',specialties:['Cardiology','Cancer Care','Orthopedics','Transplant'],premium:true,established:2010,phone:'02-8431229'},
+    {id:5,name:'Ibn Sina Hospital',type:'private',division:'Dhaka',district:'Dhaka',addr:'Kallyanpur, Dhaka',rating:4.5,reviews:1450,beds:200,availBeds:28,icu:18,emergency:true,lab:true,pharmacy:true,ambulance:false,icon:'🏥',color:'linear-gradient(135deg,#0284c7,#38bdf8)',specialties:['Medicine','Surgery','Gynecology','Pediatrics'],premium:false,established:1983,phone:'02-8034401'},
+    {id:6,name:'Chittagong Medical College Hospital',type:'government',division:'Chittagong',district:'Chittagong',addr:'Pahartali, Chittagong 4203',rating:4.4,reviews:980,beds:1500,availBeds:190,icu:60,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏛️',color:'linear-gradient(135deg,#1e3a5f,#2563eb)',specialties:['Surgery','Medicine','Gynecology','Pediatrics'],premium:false,established:1959,phone:'031-751741'},
+    {id:7,name:'Rajshahi Medical College Hospital',type:'government',division:'Rajshahi',district:'Rajshahi',addr:'Rajshahi 6000',rating:4.3,reviews:720,beds:1200,availBeds:145,icu:45,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏛️',color:'linear-gradient(135deg,#1e3a5f,#2563eb)',specialties:['Medicine','Surgery','Gynecology'],premium:false,established:1958,phone:'0721-772150'},
+    {id:8,name:'Popular Diagnostic Centre',type:'diagnostic',division:'Dhaka',district:'Dhaka',addr:'Dhanmondi, Dhaka 1205',rating:4.7,reviews:4200,beds:0,availBeds:0,icu:0,emergency:false,lab:true,pharmacy:false,ambulance:false,icon:'🔬',color:'linear-gradient(135deg,#7c3aed,#a78bfa)',specialties:['Pathology','Radiology','Diagnostics'],premium:true,established:1983,phone:'02-9136030'},
+    {id:9,name:'Labaid Diagnostic Centre',type:'diagnostic',division:'Dhaka',district:'Dhaka',addr:'Dhanmondi, Dhaka',rating:4.6,reviews:3100,beds:0,availBeds:0,icu:0,emergency:false,lab:true,pharmacy:false,ambulance:false,icon:'🧪',color:'linear-gradient(135deg,#059669,#34d399)',specialties:['Pathology','Cardiology Testing','Imaging'],premium:false,established:1990,phone:'02-9130280'},
+    {id:10,name:'Sylhet MAG Osmani Hospital',type:'government',division:'Sylhet',district:'Sylhet',addr:'Sylhet 3100',rating:4.3,reviews:650,beds:800,availBeds:98,icu:35,emergency:true,lab:true,pharmacy:true,ambulance:true,icon:'🏛️',color:'linear-gradient(135deg,#1e3a5f,#2563eb)',specialties:['Medicine','Surgery','Gynecology'],premium:false,established:1962,phone:'0821-716770'},
+];
+
+let currentType = 'all';
+let displayed = [...hospitals];
+
+function renderHospitals(list) {
+    document.getElementById('resultsText').innerHTML = `Showing <strong>${list.length}</strong> hospitals`;
+    document.getElementById('hospitalsList').innerHTML = list.map(h => {
+        const occRate = h.beds > 0 ? Math.round((h.beds - h.availBeds) / h.beds * 100) : 0;
+        const barColor = occRate > 80 ? '#ef4444' : occRate > 60 ? '#f59e0b' : '#10b981';
+        return `
+        <div class="hosp-card ${h.premium?'premium':''}">
+            <div class="hosp-left" style="background:${h.color}">
+                <span class="hosp-type-badge ${h.type}">${h.type}</span>
+                ${h.premium?'<span class="premium-badge">⭐ Premium</span>':''}
+                <span class="hosp-icon">${h.icon}</span>
+            </div>
+            <div class="hosp-body">
+                <div class="hosp-top">
+                    <div>
+                        <div class="hosp-name">${h.name}</div>
+                        <div class="hosp-addr"><i class="fas fa-map-marker-alt"></i>${h.addr}</div>
+                    </div>
+                    <div class="hosp-rating">
+                        <div class="rating-box">
+                            <div class="num">⭐ ${h.rating}</div>
+                            <div class="lbl">${h.reviews.toLocaleString()} reviews</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hosp-tags">
+                    ${h.emergency?'<span class="h-tag emergency"><i class="fas fa-ambulance"></i> 24/7 Emergency</span>':''}
+                    ${h.icu>0?`<span class="h-tag icu"><i class="fas fa-procedures"></i> ICU (${h.icu})</span>`:''}
+                    ${h.lab?'<span class="h-tag lab"><i class="fas fa-flask"></i> Lab</span>':''}
+                    ${h.pharmacy?'<span class="h-tag pharmacy"><i class="fas fa-pills"></i> Pharmacy</span>':''}
+                    ${h.specialties.slice(0,2).map(s=>`<span class="h-tag">${s}</span>`).join('')}
+                    ${h.specialties.length>2?`<span class="h-tag">+${h.specialties.length-2} more</span>`:''}
+                </div>
+                <div class="hosp-stats">
+                    <div class="hs-stat"><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> Est. <strong>${h.established}</strong></div>
+                    ${h.beds>0?`<div class="hs-stat"><i class="fas fa-bed" style="color:var(--secondary)"></i> <strong>${h.beds.toLocaleString()}</strong> beds</div>`:''}
+                    <div class="hs-stat"><i class="fas fa-phone" style="color:var(--success)"></i> <strong>${h.phone}</strong></div>
+                    <div class="hs-stat"><i class="fas fa-globe" style="color:var(--warning)"></i> ${h.division}</div>
+                </div>
+                ${h.beds>0?`
+                <div style="margin-bottom:.9rem">
+                    <div class="bed-label" style="margin-bottom:.25rem">Bed Occupancy: ${occRate}% (${h.availBeds} available)</div>
+                    <div class="bed-bar"><div class="bed-fill" style="width:${occRate}%;background:${barColor}"></div></div>
+                </div>`:''}
+                <div class="hosp-actions">
+                    <a href="profile.html?id=${h.id}" class="ha-btn ha-primary"><i class="fas fa-hospital"></i> View Profile</a>
+                    <a href="../doctors/search.html?hospital=${h.id}" class="ha-btn ha-outline"><i class="fas fa-user-md"></i> Find Doctors</a>
+                    <a href="../patients/viewmaps.html" class="ha-btn ha-map"><i class="fas fa-map-marker-alt"></i> Map</a>
+                    ${h.lab?`<a href="../lab/tests.html?hospital=${h.id}" class="ha-btn ha-map"><i class="fas fa-flask"></i> Book Lab</a>`:''}
+                </div>
+            </div>
+            ${h.beds>0?`
+            <div class="hosp-right">
+                <div class="avail-section">
+                    <div class="avail-num">${h.availBeds}</div>
+                    <div class="avail-lbl">Beds Available</div>
+                </div>
+                <div class="emergency-pill ${h.emergency?'open':''}">
+                    <i class="fas fa-${h.emergency?'check-circle':'times-circle'}"></i>
+                    ${h.emergency?'Emergency Open':'No Emergency'}
+                </div>
+                ${h.ambulance?'<div style="text-align:center;font-size:.78rem;color:var(--success);font-weight:600"><i class="fas fa-ambulance"></i> Ambulance Available</div>':''}
+            </div>`:''}
+        </div>`;
+    }).join('');
+}
+
+function filterType(type, el) {
+    currentType = type;
+    document.querySelectorAll('.filt-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    applyFilters();
+}
+
+function applyFilters() {
+    const q = document.getElementById('searchQ').value.toLowerCase();
+    const div = document.getElementById('divisionFilter').value;
+    const emergency = document.getElementById('fEmergency').checked;
+    const icu = document.getElementById('fICU').checked;
+    const lab = document.getElementById('fLab').checked;
+    const minRating = parseFloat(document.getElementById('ratingFilter').value);
+
+    displayed = hospitals.filter(h => {
+        if (currentType !== 'all' && h.type !== currentType) return false;
+        if (div && h.division !== div) return false;
+        if (q && !h.name.toLowerCase().includes(q) && !h.addr.toLowerCase().includes(q)) return false;
+        if (emergency && !h.emergency) return false;
+        if (icu && h.icu === 0) return false;
+        if (lab && !h.lab) return false;
+        if (h.rating < minRating) return false;
+        return true;
+    });
+    renderHospitals(displayed);
+}
+
+function sortHospitals(by) {
+    const sorted = [...displayed].sort((a, b) => {
+        if (by === 'rating') return b.rating - a.rating;
+        if (by === 'beds') return b.beds - a.beds;
+        if (by === 'name') return a.name.localeCompare(b.name);
+        return 0;
+    });
+    renderHospitals(sorted);
+}
+
+function clearAll() {
+    currentType = 'all';
+    document.querySelectorAll('.filt-pill').forEach((p,i) => p.classList.toggle('active', i===0));
+    ['fEmergency','fICU','fLab','fPharmacy','fAmbulance'].forEach(id => document.getElementById(id).checked = false);
+    document.getElementById('searchQ').value = '';
+    document.getElementById('divisionFilter').value = '';
+    displayed = [...hospitals];
+    renderHospitals(displayed);
+}
+
+// INIT
+renderHospitals(hospitals);
+
+// API fetch
+async function fetchHospitals() {
+    try {
+        // const res = await fetch('/api/v1/hospitals/?' + new URLSearchParams({page:1,limit:20}));
+        // const data = await res.json();
+        // if(data.success) renderHospitals(data.data);
+        console.log('API: GET /api/v1/hospitals/');
+    } catch(e) { console.warn('API offline — using local data'); }
+}
+fetchHospitals();
+</script>
+<script src="../../assets/js/components.js"></script>
+<script src="../../services/api.js"></script>
+
+<!-- MEDFIND FOOTER -->
+<footer style="background:#0f172a;border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem 1.5rem;margin-top:4rem;">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between;margin-bottom:2rem;">
+      <div>
+        <img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;">
+        <p style="color:#64748b;font-size:.82rem;max-width:260px;line-height:1.6;">Bangladesh's digital healthcare platform. Connecting patients with doctors, donors, and AI health tools.</p>
+      </div>
+      <div style="display:flex;gap:3rem;flex-wrap:wrap;">
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Platform</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="/pages/symptoms/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Symptom Checker</a>
+            <a href="/pages/drugs/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Drug Directory</a>
+            <a href="/pages/treatments/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Treatment Guide</a>
+            <a href="/pages/blood-donor/search.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Blood Donors</a>
+            <a href="/pages/doctors/search.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Find Doctors</a>
+            <a href="/pages/hospital/list.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Hospitals</a>
+          </div>
+        </div>
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Legal</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="/pages/privacy.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Privacy Policy</a>
+            <a href="/pages/terms.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Terms of Service</a>
+            <a href="/pages/medical-disclaimer.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Medical Disclaimer</a>
+            <a href="/pages/consent-forms.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Consent Forms</a>
+            <a href="/pages/data-backup-policy.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Data & Security</a>
+            <a href="/pages/cookies.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Cookie Policy</a>
+          </div>
+        </div>
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Emergency</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="tel:999" style="color:#fca5a5;font-size:.82rem;font-weight:700;text-decoration:none;">🚨 999 — National Emergency</a>
+            <a href="tel:+8801772172829" style="color:#fca5a5;font-size:.82rem;text-decoration:none;">📞 MedFind: 01772-172829</a>
+            <a href="tel:029667722" style="color:#94a3b8;font-size:.82rem;text-decoration:none;">🏥 Dhaka Medical: 02-9667722</a>
+            <a href="mailto:medfindbd2026@gmail.com" style="color:#94a3b8;font-size:.82rem;text-decoration:none;">✉️ medfindbd2026@gmail.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
+      <p style="color:#475569;font-size:.78rem;">© 2026 MedFind Bangladesh. All rights reserved. Not a substitute for professional medical advice.</p>
+      <p style="color:#475569;font-size:.78rem;">🇧🇩 Made for Bangladesh | DGHS Compliant</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

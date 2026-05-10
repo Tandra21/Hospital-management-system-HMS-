@@ -1,0 +1,221 @@
+/* ═══════════════════════════════════════════════════════════
+   MedFind — Enhanced Animation Library
+   Professional, smooth, impressive animations
+   Developer: Ahsanul Yamin Babor | github.com/Baborkhan
+═══════════════════════════════════════════════════════════ */
+
+/* ── KEYFRAMES ─────────────────────────────────────────────── */
+@keyframes fadeIn      { from{opacity:0}            to{opacity:1} }
+@keyframes fadeOut     { from{opacity:1}            to{opacity:0} }
+@keyframes fadeInUp    { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInDown  { from{opacity:0;transform:translateY(-24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInLeft  { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeInRight { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+@keyframes scaleIn     { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+@keyframes scaleInBounce { 0%{opacity:0;transform:scale(.8)} 70%{transform:scale(1.03)} 100%{opacity:1;transform:scale(1)} }
+@keyframes slideInUp   { from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes slideInDown { from{transform:translateY(-100%)} to{transform:translateY(0)} }
+@keyframes slideInLeft { from{transform:translateX(-100%)} to{transform:translateX(0)} }
+@keyframes slideInRight{ from{transform:translateX(100%)} to{transform:translateX(0)} }
+
+/* Gradient shimmer for loading states */
+@keyframes shimmer {
+  0%   { background-position: -800px 0 }
+  100% { background-position:  800px 0 }
+}
+
+/* Pulse glow */
+@keyframes pulseGlow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,.4) }
+  50%      { box-shadow: 0 0 0 12px rgba(37,99,235,0) }
+}
+@keyframes pulseGlowGreen {
+  0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,.4) }
+  50%      { box-shadow: 0 0 0 10px rgba(16,185,129,0) }
+}
+
+/* Spin */
+@keyframes spin        { to{transform:rotate(360deg)} }
+@keyframes spinReverse { to{transform:rotate(-360deg)} }
+
+/* Float — hero icons */
+@keyframes float {
+  0%,100% { transform:translateY(0px) }
+  50%      { transform:translateY(-12px) }
+}
+
+/* Heartbeat — for medical context */
+@keyframes heartbeat {
+  0%,100% { transform:scale(1) }
+  14%      { transform:scale(1.2) }
+  28%      { transform:scale(1) }
+  42%      { transform:scale(1.15) }
+  70%      { transform:scale(1) }
+}
+
+/* Count up animation (used via JS) */
+@keyframes countUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* Progress bar fill */
+@keyframes progressFill {
+  from { width: 0 }
+}
+
+/* Gradient shift — for hero backgrounds */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50% }
+  50%  { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+/* Ticker scroll */
+@keyframes ticker { 0%{transform:translateX(100vw)} 100%{transform:translateX(-100%)} }
+
+/* Rainbow border */
+@keyframes rainbowBorder {
+  0%   { border-color: #2563eb }
+  25%  { border-color: #7c3aed }
+  50%  { border-color: #0d9488 }
+  75%  { border-color: #f59e0b }
+  100% { border-color: #2563eb }
+}
+
+/* Notification pop */
+@keyframes notifPop {
+  0%   { transform:scale(0);opacity:0 }
+  60%  { transform:scale(1.15);opacity:1 }
+  100% { transform:scale(1) }
+}
+
+/* Ripple */
+@keyframes ripple {
+  to { transform:scale(4);opacity:0 }
+}
+
+/* ── UTILITY CLASSES ───────────────────────────────────────── */
+
+/* Fade */
+.animate-fadeIn     { animation: fadeIn .4s ease both }
+.animate-fadeInUp   { animation: fadeInUp .5s cubic-bezier(.22,1,.36,1) both }
+.animate-fadeInDown { animation: fadeInDown .5s cubic-bezier(.22,1,.36,1) both }
+.animate-fadeInLeft { animation: fadeInLeft .5s cubic-bezier(.22,1,.36,1) both }
+.animate-fadeInRight{ animation: fadeInRight .5s cubic-bezier(.22,1,.36,1) both }
+.animate-scaleIn    { animation: scaleIn .4s cubic-bezier(.22,1,.36,1) both }
+.animate-scaleInBounce { animation: scaleInBounce .5s cubic-bezier(.22,1,.36,1) both }
+
+/* Delays */
+.delay-1 { animation-delay: .1s }
+.delay-2 { animation-delay: .15s }
+.delay-3 { animation-delay: .2s }
+.delay-4 { animation-delay: .25s }
+.delay-5 { animation-delay: .3s }
+.delay-6 { animation-delay: .4s }
+.delay-7 { animation-delay: .5s }
+.delay-8 { animation-delay: .6s }
+
+/* Continuous */
+.animate-spin      { animation: spin 1s linear infinite }
+.animate-spin-slow { animation: spin 3s linear infinite }
+.animate-float     { animation: float 4s ease-in-out infinite }
+.animate-heartbeat { animation: heartbeat 1.5s ease-in-out infinite }
+.animate-pulse-glow{ animation: pulseGlow 2s ease-in-out infinite }
+.animate-pulse-green{ animation: pulseGlowGreen 2s ease-in-out infinite }
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+.skeleton-dark {
+  background: linear-gradient(90deg, rgba(255,255,255,.05) 25%, rgba(255,255,255,.1) 37%, rgba(255,255,255,.05) 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* Hover interactions */
+.hover-lift       { transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease }
+.hover-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,.12) }
+
+.hover-scale       { transition: transform .2s cubic-bezier(.22,1,.36,1) }
+.hover-scale:hover { transform: scale(1.03) }
+
+.hover-glow:hover { box-shadow: 0 0 20px rgba(37,99,235,.25) }
+
+/* Card entrance stagger */
+.card-stagger:nth-child(1) { animation: fadeInUp .5s ease .05s both }
+.card-stagger:nth-child(2) { animation: fadeInUp .5s ease .1s both }
+.card-stagger:nth-child(3) { animation: fadeInUp .5s ease .15s both }
+.card-stagger:nth-child(4) { animation: fadeInUp .5s ease .2s both }
+.card-stagger:nth-child(5) { animation: fadeInUp .5s ease .25s both }
+.card-stagger:nth-child(6) { animation: fadeInUp .5s ease .3s both }
+
+/* Progress bar animated fill */
+.progress-animated > .progress-fill {
+  animation: progressFill 1.2s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #2563eb, #7c3aed, #0d9488);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-warm {
+  background: linear-gradient(135deg, #f59e0b, #ef4444, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Ripple button effect */
+.btn-ripple { position: relative; overflow: hidden }
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  transform: scale(0);
+  pointer-events: none;
+}
+.btn-ripple:active::after {
+  animation: ripple .5s ease-out;
+  width: 100px; height: 100px;
+  top: calc(50% - 50px); left: calc(50% - 50px);
+}
+
+/* Smooth page transition */
+.page-enter { animation: fadeInUp .4s ease both }
+
+/* Loading spinner */
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(37,99,235,.15);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+.spinner-sm {
+  width: 20px; height: 20px;
+  border-width: 2px;
+}
+
+/* Breathing gradient hero */
+.hero-animated-bg {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Status indicators */
+.status-live::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  margin-right: 5px;
+  animation: pulseGlowGreen 2s infinite;
+}

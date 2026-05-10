@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI Symptom Checker Bangladesh - Describe your symptoms and get instant analysis, possible conditions, and doctor recommendations.">
+<title>Symptom Checker — MedFind Bangladesh</title>
+<link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--pri:#1a56db;--teal:#0d9488;--em:#10b981;--warn:#f59e0b;--danger:#ef4444;--bg:#f0f4ff;--card:#fff;--border:#e2e8f0;--text:#0f172a;--muted:#64748b;--subtle:#94a3b8;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Satoshi',sans-serif;background:var(--bg);color:var(--text);}
+/* NAV */
+.nav{background:#fff;border-bottom:1px solid var(--border);height:62px;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.nav-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+.nav-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--pri),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Clash Display',sans-serif;font-weight:700;font-size:.85rem;}
+.nav-text{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.15rem;color:var(--pri);}
+.nav-links{display:flex;gap:.25rem;}
+.nav-links a{font-size:.85rem;color:var(--muted);text-decoration:none;font-weight:500;padding:.4rem .8rem;border-radius:8px;transition:.2s;}
+.nav-links a:hover,.nav-links a.active{background:var(--bg);color:var(--pri);}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border-radius:10px;font-weight:600;font-size:.85rem;cursor:pointer;border:none;text-decoration:none;transition:.2s;font-family:'Satoshi',sans-serif;}
+.btn-pri{background:var(--pri);color:#fff;} .btn-pri:hover{background:#1342b0;}
+.btn-out{border:1.5px solid var(--pri);color:var(--pri);background:#fff;} .btn-out:hover{background:var(--bg);}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1a3a6e 50%,#0d9488 100%);padding:4rem 2rem 3rem;color:#fff;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(255,255,255,.05)'/%3E%3C/svg%3E");animation:bgMove 20s linear infinite;}
+@keyframes bgMove{from{background-position:0 0}to{background-position:60px 60px}}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;padding:.35rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;margin-bottom:1.25rem;}
+.hero h1{font-family:'Clash Display',sans-serif;font-size:2.8rem;font-weight:700;line-height:1.15;margin-bottom:.75rem;}
+.hero h1 span{background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1rem;color:rgba(255,255,255,.75);max-width:560px;margin:0 auto 2rem;}
+.hero-flow{display:flex;align-items:center;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-bottom:2.5rem;}
+.flow-step{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;}
+.flow-arrow{color:rgba(255,255,255,.4);font-size:.8rem;}
+
+/* MAIN CHECKER */
+.checker-wrap{max-width:960px;margin:-2rem auto 0;padding:0 1.5rem 3rem;position:relative;z-index:10;}
+.checker-card{background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,.12);overflow:hidden;}
+.checker-head{background:linear-gradient(135deg,#1a56db,#0d9488);padding:1.5rem 2rem;color:#fff;display:flex;align-items:center;justify-content:space-between;}
+.checker-head h2{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.2rem;}
+.checker-head p{font-size:.82rem;opacity:.85;margin-top:.2rem;}
+.step-dots{display:flex;gap:.5rem;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.3);}
+.step-dot.active{background:#fff;}
+
+/* SYMPTOM INPUT AREA */
+.checker-body{padding:2rem;}
+.section-lbl{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem;}
+.symptom-search{display:flex;gap:.75rem;margin-bottom:1.25rem;}
+.symp-inp{flex:1;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:12px;font-size:.9rem;font-family:'Satoshi',sans-serif;outline:none;color:var(--text);transition:.2s;}
+.symp-inp:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(26,86,219,.1);}
+.add-symp-btn{background:var(--pri);color:#fff;border:none;padding:.7rem 1.25rem;border-radius:12px;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;transition:.2s;}
+.add-symp-btn:hover{background:#1342b0;}
+
+/* QUICK SYMPTOMS */
+.quick-symptoms{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;}
+.qs-chip{background:var(--bg);border:1.5px solid var(--border);color:var(--muted);padding:.35rem .9rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;}
+.qs-chip:hover{border-color:var(--pri);color:var(--pri);background:rgba(26,86,219,.05);}
+.qs-chip.selected{background:rgba(26,86,219,.1);border-color:var(--pri);color:var(--pri);}
+
+/* SELECTED SYMPTOMS */
+.selected-symptoms{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;min-height:40px;padding:.5rem;background:var(--bg);border-radius:12px;border:1.5px dashed var(--border);}
+.selected-symptoms.has-items{border-style:solid;border-color:var(--pri);background:rgba(26,86,219,.03);}
+.sel-chip{display:flex;align-items:center;gap:.4rem;background:var(--pri);color:#fff;padding:.35rem .75rem;border-radius:100px;font-size:.8rem;font-weight:600;}
+.sel-remove{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.8rem;padding:0;line-height:1;}
+.sel-remove:hover{color:#fff;}
+.empty-msg{font-size:.82rem;color:var(--subtle);align-self:center;padding:.25rem .5rem;}
+
+/* BODY PART + FILTERS */
+.filters-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.filter-group label{font-size:.8rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.4rem;}
+.filter-select{width:100%;padding:.55rem .8rem;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:'Satoshi',sans-serif;outline:none;color:var(--text);cursor:pointer;}
+.filter-select:focus{border-color:var(--pri);}
+
+/* ANALYZE BTN */
+.analyze-btn{width:100%;padding:.85rem;background:linear-gradient(135deg,var(--pri),var(--teal));color:#fff;border:none;border-radius:14px;font-weight:700;font-size:1rem;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.6rem;font-family:'Satoshi',sans-serif;}
+.analyze-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,86,219,.3);}
+.analyze-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+/* RESULTS */
+.results{display:none;margin-top:2rem;border-top:1px solid var(--border);padding-top:2rem;}
+.results.show{display:block;}
+.ai-thinking{display:flex;align-items:center;gap:.75rem;padding:1rem;background:linear-gradient(135deg,rgba(26,86,219,.05),rgba(13,148,136,.05));border-radius:12px;margin-bottom:1.5rem;border:1px solid rgba(26,86,219,.15);}
+.thinking-dots{display:flex;gap:.3rem;}
+.thinking-dot{width:7px;height:7px;border-radius:50%;background:var(--pri);animation:thinkPulse 1.4s ease infinite;}
+.thinking-dot:nth-child(2){animation-delay:.2s;}
+.thinking-dot:nth-child(3){animation-delay:.4s;}
+@keyframes thinkPulse{0%,80%,100%{transform:scale(.8);opacity:.5}40%{transform:scale(1.2);opacity:1}}
+
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;}
+.result-section-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+
+/* CONDITION CARDS */
+.condition-cards{display:flex;flex-direction:column;gap:.75rem;}
+.cond-card{border:1.5px solid var(--border);border-radius:14px;padding:1rem 1.25rem;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.cond-card:hover{border-color:var(--pri);box-shadow:0 4px 16px rgba(26,86,219,.08);}
+.cond-card.high{border-left:4px solid var(--danger);}
+.cond-card.medium{border-left:4px solid var(--warn);}
+.cond-card.low{border-left:4px solid var(--em);}
+.cond-name{font-weight:700;font-size:.92rem;margin-bottom:.2rem;}
+.cond-desc{font-size:.78rem;color:var(--muted);line-height:1.5;}
+.cond-match{position:absolute;top:.75rem;right:1rem;font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;}
+.cond-match.high{background:#fee2e2;color:var(--danger);}
+.cond-match.medium{background:#fef3c7;color:#92400e;}
+.cond-match.low{background:#dcfce7;color:#166534;}
+.cond-tags{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap;}
+.cond-tag{font-size:.68rem;font-weight:600;background:var(--bg);color:var(--muted);padding:.15rem .5rem;border-radius:100px;}
+
+/* DOCTOR SUGGESTIONS */
+.doc-suggestions{display:flex;flex-direction:column;gap:.75rem;}
+.doc-sug{border:1.5px solid var(--border);border-radius:14px;padding:1rem;display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;transition:.2s;text-decoration:none;color:inherit;}
+.doc-sug:hover{border-color:var(--pri);box-shadow:0 4px 16px rgba(26,86,219,.08);}
+.doc-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0;}
+.doc-inf{flex:1;}
+.doc-nm{font-weight:700;font-size:.88rem;}
+.doc-sp{font-size:.75rem;color:var(--muted);margin-top:.1rem;}
+.doc-row{display:flex;align-items:center;gap:.75rem;margin-top:.4rem;}
+.doc-fee{font-size:.78rem;font-weight:700;color:var(--pri);}
+.doc-rat{font-size:.75rem;color:var(--warn);}
+.doc-avail{font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;}
+.doc-avail.online{background:#dcfce7;color:#166534;}
+.consult-btn{background:var(--pri);color:#fff;border:none;padding:.45rem .85rem;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;}
+.consult-btn:hover{background:#1342b0;}
+
+/* URGENCY ALERT */
+.urgency-alert{border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:flex-start;}
+.urgency-alert.high{background:#fef2f2;border:1.5px solid #fecaca;}
+.urgency-alert.medium{background:#fffbeb;border:1.5px solid #fde68a;}
+.urgency-alert.low{background:#f0fdf4;border:1.5px solid #bbf7d0;}
+.ua-icon{font-size:1.5rem;flex-shrink:0;}
+.ua-title{font-weight:700;font-size:.9rem;margin-bottom:.25rem;}
+.ua-text{font-size:.82rem;color:var(--muted);line-height:1.5;}
+
+/* TREATMENT PREVIEW */
+.treatment-preview{background:linear-gradient(135deg,rgba(13,148,136,.06),rgba(26,86,219,.06));border:1.5px solid rgba(13,148,136,.2);border-radius:14px;padding:1.25rem;}
+.tp-steps{display:flex;flex-direction:column;gap:.6rem;margin-top:.75rem;}
+.tp-step{display:flex;gap:.75rem;align-items:flex-start;}
+.tp-num{width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;}
+.tp-text{font-size:.82rem;color:var(--text);line-height:1.5;}
+.tp-text strong{color:var(--teal);}
+
+/* FULL WIDTH SECTION */
+.full-width-section{margin-top:1.25rem;}
+
+/* BODY DIAGRAM */
+.body-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.5rem;}
+.body-part{padding:.5rem .4rem;border:1.5px solid var(--border);border-radius:10px;font-size:.75rem;font-weight:600;text-align:center;cursor:pointer;transition:.2s;color:var(--muted);}
+.body-part:hover{border-color:var(--pri);color:var(--pri);}
+.body-part.selected{background:rgba(26,86,219,.1);border-color:var(--pri);color:var(--pri);}
+.body-part i{display:block;font-size:1.1rem;margin-bottom:.25rem;}
+
+/* COMMON CONDITIONS BROWSER */
+.conditions-browser{padding:2rem 1.5rem 3rem;max-width:1200px;margin:0 auto;}
+.cb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:gap}
+.cb-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.4rem;}
+.cat-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.cat-tab{padding:.4rem 1rem;border-radius:100px;font-size:.8rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);transition:.2s;}
+.cat-tab:hover,.cat-tab.active{background:var(--pri);color:#fff;border-color:var(--pri);}
+.cond-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.cond-browse-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:1.25rem;cursor:pointer;transition:.2s;text-decoration:none;color:inherit;}
+.cond-browse-card:hover{border-color:var(--pri);box-shadow:0 4px 20px rgba(26,86,219,.1);transform:translateY(-2px);}
+.cbc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.75rem;}
+.cbc-name{font-family:'Clash Display',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.35rem;}
+.cbc-syms{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem;}
+.cbc-footer{display:flex;align-items:center;justify-content:space-between;}
+.cbc-spec{font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;background:var(--bg);color:var(--muted);}
+.cbc-arrow{color:var(--pri);font-size:.8rem;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:100px;}
+
+@media(max-width:768px){.hero h1{font-size:2rem;}.result-grid{grid-template-columns:1fr;}.filters-row{grid-template-columns:1fr;}.body-selector{grid-template-columns:repeat(3,1fr);}  .nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-brand" href="../../index.html"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Symptoms</a>
+    <a href="../doctors/search.html">Doctors</a>
+    <a href="../treatments/index.html">Treatments</a>
+    <a href="../drugs/index.html">Drugs</a>
+  </div>
+  <div style="display:flex;gap:.5rem">
+    <a class="btn btn-out" href="../login.html">Login</a>
+    <a class="btn btn-pri" href="../doctors/search.html"><i class="fas fa-user-md"></i> Find Doctor</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><i class="fas fa-brain"></i> AI-Powered Symptom Analysis</div>
+  <h1>Describe Your Symptoms,<br>Get <span>Smart Guidance</span></h1>
+  <p>Our AI analyzes your symptoms and connects you with the right specialist in Bangladesh — instantly and accurately.</p>
+  <div class="hero-flow">
+    <div class="flow-step"><i class="fas fa-list-ul" style="color:#60a5fa"></i> Enter Symptoms</div>
+    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+    <div class="flow-step"><i class="fas fa-brain" style="color:#34d399"></i> AI Analysis</div>
+    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+    <div class="flow-step"><i class="fas fa-stethoscope" style="color:#a78bfa"></i> Possible Conditions</div>
+    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+    <div class="flow-step"><i class="fas fa-user-md" style="color:#fbbf24"></i> Doctor Match</div>
+  </div>
+</div>
+
+<!-- SYMPTOM CHECKER -->
+<div class="checker-wrap">
+  <div class="checker-card">
+    <div class="checker-head">
+      <div>
+        <h2><i class="fas fa-search-plus"></i> Symptom Checker</h2>
+        <p>Add your symptoms below for AI-powered analysis</p>
+      </div>
+      <div class="step-dots">
+        <div class="step-dot active"></div><div class="step-dot active"></div><div class="step-dot"></div>
+      </div>
+    </div>
+
+    <div class="checker-body">
+      <!-- BODY PART SELECTOR -->
+      <div class="section-lbl">Where do you feel it? (Select body area)</div>
+      <div class="body-selector">
+        <div class="body-part" onclick="toggleBodyPart(this,'head')"><i class="fas fa-brain"></i>Head / Brain</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'chest')"><i class="fas fa-heartbeat"></i>Chest / Heart</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'lungs')"><i class="fas fa-lungs"></i>Lungs</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'abdomen')"><i class="fas fa-stomach"></i>Abdomen</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'skin')"><i class="fas fa-hand-paper"></i>Skin</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'joints')"><i class="fas fa-bone"></i>Joints / Bones</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'eyes')"><i class="fas fa-eye"></i>Eyes / Vision</div>
+        <div class="body-part" onclick="toggleBodyPart(this,'general')"><i class="fas fa-thermometer"></i>Whole Body</div>
+      </div>
+
+      <!-- SYMPTOM INPUT -->
+      <div class="section-lbl">Type your symptoms</div>
+      <div class="symptom-search">
+        <input type="text" class="symp-inp" id="sympInput" placeholder="e.g. chest pain, fever, headache..." onkeydown="if(event.key==='Enter')addSymptom()">
+        <button class="add-symp-btn" onclick="addSymptom()"><i class="fas fa-plus"></i> Add</button>
+      </div>
+
+      <!-- QUICK CHIPS -->
+      <div class="section-lbl">Common symptoms — click to add</div>
+      <div class="quick-symptoms" id="quickSymptoms">
+        <div class="qs-chip" onclick="quickAdd(this,'Fever')">🌡️ Fever</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Headache')">🤕 Headache</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Chest Pain')">💔 Chest Pain</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Cough')">😮‍💨 Cough</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Shortness of Breath')">🫁 Short of Breath</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Fatigue')">😴 Fatigue</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Nausea')">🤢 Nausea</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Dizziness')">💫 Dizziness</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Back Pain')">🦴 Back Pain</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Abdominal Pain')">🫃 Abdominal Pain</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Sore Throat')">👄 Sore Throat</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Rash')">🔴 Skin Rash</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Joint Pain')">🦵 Joint Pain</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Vomiting')">🤮 Vomiting</div>
+        <div class="qs-chip" onclick="quickAdd(this,'High Blood Pressure')">🩸 High BP</div>
+        <div class="qs-chip" onclick="quickAdd(this,'Palpitations')">💓 Palpitations</div>
+      </div>
+
+      <!-- SELECTED -->
+      <div class="section-lbl">Your selected symptoms <span id="sympCount" style="background:var(--pri);color:#fff;font-size:.7rem;padding:.1rem .45rem;border-radius:100px;margin-left:.25rem">0</span></div>
+      <div class="selected-symptoms" id="selectedSymptoms">
+        <span class="empty-msg">No symptoms added yet — click above or type</span>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Duration</label>
+          <select class="filter-select" id="filterDuration">
+            <option>Select duration</option>
+            <option>Today (< 24 hours)</option>
+            <option>2-3 days</option>
+            <option>1 week</option>
+            <option>2+ weeks</option>
+            <option>1+ month</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Severity</label>
+          <select class="filter-select" id="filterSeverity">
+            <option>Select severity</option>
+            <option>Mild (manageable)</option>
+            <option>Moderate (affects daily life)</option>
+            <option>Severe (need urgent care)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Age Group</label>
+          <select class="filter-select" id="filterAge">
+            <option>Select age</option>
+            <option>Child (0-12)</option>
+            <option>Teen (13-17)</option>
+            <option>Adult (18-40)</option>
+            <option>Middle-aged (41-60)</option>
+            <option>Senior (60+)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ANALYZE -->
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyzeSymptoms()">
+        <i class="fas fa-brain"></i> Analyze Symptoms with AI
+      </button>
+
+      <!-- DISCLAIMER -->
+      <p style="font-size:.72rem;color:var(--subtle);text-align:center;margin-top:.75rem;line-height:1.5">
+        ⚕️ This tool provides guidance only — not a medical diagnosis. Always consult a licensed doctor for proper evaluation.
+      </p>
+
+      <!-- RESULTS SECTION -->
+      <div class="results" id="resultsSection">
+        <div class="ai-thinking" id="aiThinking">
+          <div class="thinking-dots"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>
+          <div>
+            <div style="font-weight:700;font-size:.88rem;color:var(--pri)">MedFind AI is analyzing your symptoms...</div>
+            <div style="font-size:.78rem;color:var(--muted)">Matching with 10,000+ conditions in our database</div>
+          </div>
+        </div>
+
+        <div id="resultsContent" style="display:none">
+          <!-- Urgency alert -->
+          <div class="urgency-alert medium" id="urgencyAlert">
+            <div class="ua-icon">⚠️</div>
+            <div>
+              <div class="ua-title">Moderate Urgency — Consult a Doctor Soon</div>
+              <div class="ua-text">Based on your symptoms, we recommend seeing a doctor within 24-48 hours. Your symptoms may indicate a condition that needs professional evaluation.</div>
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <!-- Possible Conditions -->
+            <div>
+              <div class="result-section-title"><i class="fas fa-stethoscope" style="color:var(--pri)"></i> Possible Conditions</div>
+              <div class="condition-cards" id="conditionCards">
+                <!-- filled by JS -->
+              </div>
+            </div>
+
+            <!-- Recommended Doctors -->
+            <div>
+              <div class="result-section-title"><i class="fas fa-user-md" style="color:var(--teal)"></i> Recommended Specialists</div>
+              <div class="doc-suggestions" id="docSuggestions">
+                <!-- filled by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Treatment Preview -->
+          <div class="full-width-section">
+            <div class="result-section-title"><i class="fas fa-notes-medical" style="color:var(--em)"></i> Initial Guidance</div>
+            <div class="treatment-preview" id="treatmentPreview">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap">
+            <a href="../doctors/search.html" class="btn btn-pri" style="flex:1;justify-content:center;padding:.75rem"><i class="fas fa-user-md"></i> Find a Specialist Now</a>
+            <a href="../treatments/index.html" class="btn btn-out" style="flex:1;justify-content:center;padding:.75rem"><i class="fas fa-book-medical"></i> View Treatment Guide</a>
+            <button class="btn" style="flex:1;justify-content:center;padding:.75rem;background:#f3e8ff;color:#7c3aed;border:1.5px solid #ddd6fe" onclick="window.location='../../telemedicine.html'"><i class="fas fa-video"></i> Video Consult Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BROWSE CONDITIONS -->
+<div class="conditions-browser">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem">
+    <div>
+      <div class="cb-title">Browse Conditions by Category</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-top:.25rem">Explore 500+ conditions with symptoms, causes, and treatments</div>
+    </div>
+    <a href="../treatments/index.html" class="btn btn-out">View All Treatments <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="cat-tabs" id="catTabs">
+    <div class="cat-tab active" onclick="filterCategory('all',this)">All Conditions</div>
+    <div class="cat-tab" onclick="filterCategory('heart',this)">❤️ Heart</div>
+    <div class="cat-tab" onclick="filterCategory('respiratory',this)">🫁 Respiratory</div>
+    <div class="cat-tab" onclick="filterCategory('neuro',this)">🧠 Neurology</div>
+    <div class="cat-tab" onclick="filterCategory('gastro',this)">🫃 Gastro</div>
+    <div class="cat-tab" onclick="filterCategory('diabetes',this)">🩸 Diabetes/Endo</div>
+    <div class="cat-tab" onclick="filterCategory('skin',this)">🔴 Skin</div>
+    <div class="cat-tab" onclick="filterCategory('musculo',this)">🦴 Musculoskeletal</div>
+  </div>
+  <div class="cond-grid" id="condGrid"></div>
+</div>
+
+<script src="../../assets/js/config.js"></script>
+  <script>
+let selectedSymptoms = [];
+let selectedBodyParts = [];
+
+const conditionDB = [
+  // HEART
+  {id:'angina',name:'Angina Pectoris',category:'heart',icon:'❤️',color:'#fee2e2',iconColor:'#dc2626',symptoms:['Chest Pain','Palpitations','Shortness of Breath','Fatigue'],specialty:'Cardiology',urgency:'high',description:'Chest pain from reduced blood flow to the heart muscle.',treatments:['Nitroglycerin','Beta Blockers','Lifestyle changes'],keywords:['chest','heart','pain']},
+  {id:'hypertension',name:'Hypertension',category:'heart',icon:'🩸',color:'#fef3c7',iconColor:'#d97706',symptoms:['Headache','High Blood Pressure','Dizziness','Fatigue'],specialty:'Cardiology',urgency:'medium',description:'Persistently elevated blood pressure in arteries.',treatments:['Antihypertensives','Low salt diet','Exercise'],keywords:['blood pressure','bp','headache']},
+  {id:'arrhythmia',name:'Cardiac Arrhythmia',category:'heart',icon:'💓',color:'#fee2e2',iconColor:'#dc2626',symptoms:['Palpitations','Dizziness','Shortness of Breath','Fatigue'],specialty:'Cardiology',urgency:'high',description:'Irregular heartbeat that may feel like fluttering.',treatments:['Antiarrhythmics','Cardioversion','Pacemaker'],keywords:['heart','palpitations','flutter']},
+  // RESPIRATORY
+  {id:'asthma',name:'Bronchial Asthma',category:'respiratory',icon:'🫁',color:'#dbeafe',iconColor:'#1a56db',symptoms:['Shortness of Breath','Cough','Wheezing','Chest tightness'],specialty:'Pulmonology',urgency:'medium',description:'Chronic inflammation of airways causing breathing difficulty.',treatments:['Inhalers','Corticosteroids','Avoid triggers'],keywords:['breathing','wheeze','cough']},
+  {id:'pneumonia',name:'Pneumonia',category:'respiratory',icon:'😮‍💨',color:'#dbeafe',iconColor:'#1a56db',symptoms:['Fever','Cough','Shortness of Breath','Chest Pain','Fatigue'],specialty:'Pulmonology',urgency:'high',description:'Infection inflaming air sacs in one or both lungs.',treatments:['Antibiotics','Rest','Fluids','Oxygen therapy'],keywords:['fever','cough','breathing']},
+  {id:'covid',name:'COVID-19',category:'respiratory',icon:'🦠',color:'#dbeafe',iconColor:'#1a56db',symptoms:['Fever','Cough','Fatigue','Shortness of Breath','Loss of taste'],specialty:'Internal Medicine',urgency:'high',description:'Respiratory illness caused by SARS-CoV-2 coronavirus.',treatments:['Antivirals','Supportive care','Isolation','Vaccination'],keywords:['fever','cough','covid','taste']},
+  // NEUROLOGY
+  {id:'migraine',name:'Migraine',category:'neuro',icon:'🧠',color:'#f3e8ff',iconColor:'#7c3aed',symptoms:['Headache','Nausea','Vomiting','Light sensitivity','Dizziness'],specialty:'Neurology',urgency:'low',description:'Recurring severe headaches, often with nausea and visual disturbances.',treatments:['Triptans','NSAIDs','Preventive medication','Rest in dark room'],keywords:['headache','nausea','light']},
+  {id:'stroke',name:'Stroke (CVA)',category:'neuro',icon:'⚡',color:'#fee2e2',iconColor:'#dc2626',symptoms:['Sudden headache','Dizziness','Weakness','Confusion','Vision changes'],specialty:'Neurology',urgency:'high',description:'Brain damage from interrupted blood supply — EMERGENCY.',treatments:['tPA (clot buster)','Surgery','Rehabilitation','Aspirin'],keywords:['sudden','weakness','face','arm']},
+  {id:'epilepsy',name:'Epilepsy',category:'neuro',icon:'🌊',color:'#f3e8ff',iconColor:'#7c3aed',symptoms:['Seizures','Loss of consciousness','Confusion','Jerking movements'],specialty:'Neurology',urgency:'high',description:'Neurological disorder causing recurrent seizures.',treatments:['Antiepileptics','Ketogenic diet','Surgery'],keywords:['seizure','convulsion','unconscious']},
+  // GASTRO
+  {id:'gastritis',name:'Gastritis',category:'gastro',icon:'🫃',color:'#dcfce7',iconColor:'#059669',symptoms:['Abdominal Pain','Nausea','Vomiting','Indigestion'],specialty:'Gastroenterology',urgency:'low',description:'Inflammation of the stomach lining.',treatments:['Antacids','PPIs','H.pylori treatment','Diet change'],keywords:['stomach','acid','burning','nausea']},
+  {id:'appendicitis',name:'Appendicitis',category:'gastro',icon:'🚨',color:'#fee2e2',iconColor:'#dc2626',symptoms:['Abdominal Pain','Fever','Nausea','Vomiting'],specialty:'General Surgery',urgency:'high',description:'Inflammation of the appendix — requires urgent surgery.',treatments:['Emergency appendectomy','Antibiotics'],keywords:['right side','pain','abdomen']},
+  {id:'ibs',name:'Irritable Bowel Syndrome',category:'gastro',icon:'🫃',color:'#dcfce7',iconColor:'#059669',symptoms:['Abdominal Pain','Bloating','Diarrhea','Constipation'],specialty:'Gastroenterology',urgency:'low',description:'Common disorder affecting the large intestine.',treatments:['Dietary changes','Fiber','Antispasmodics','Stress management'],keywords:['bowel','cramping','diarrhea']},
+  // DIABETES
+  {id:'diabetes2',name:'Type 2 Diabetes',category:'diabetes',icon:'🩸',color:'#fef3c7',iconColor:'#d97706',symptoms:['Fatigue','Frequent urination','Excessive thirst','Blurred vision'],specialty:'Endocrinology',urgency:'medium',description:'Metabolic disease with high blood sugar due to insulin resistance.',treatments:['Metformin','Insulin','Diet','Exercise'],keywords:['sugar','thirst','urine','tired']},
+  {id:'thyroid',name:'Hypothyroidism',category:'diabetes',icon:'🦋',color:'#fef3c7',iconColor:'#d97706',symptoms:['Fatigue','Weight gain','Cold intolerance','Depression','Joint Pain'],specialty:'Endocrinology',urgency:'low',description:'Underactive thyroid gland producing insufficient hormones.',treatments:['Levothyroxine','Regular monitoring'],keywords:['fatigue','weight','cold','thyroid']},
+  // SKIN
+  {id:'eczema',name:'Eczema (Atopic Dermatitis)',category:'skin',icon:'🔴',color:'#fff7ed',iconColor:'#ea580c',symptoms:['Rash','Itching','Dry skin','Redness'],specialty:'Dermatology',urgency:'low',description:'Condition making skin red, itchy and inflamed.',treatments:['Moisturizers','Topical steroids','Antihistamines','Avoid triggers'],keywords:['rash','itch','skin','dry']},
+  {id:'psoriasis',name:'Psoriasis',category:'skin',icon:'🔶',color:'#fff7ed',iconColor:'#ea580c',symptoms:['Rash','Scaling','Joint Pain','Redness','Itching'],specialty:'Dermatology',urgency:'low',description:'Autoimmune condition causing rapid skin cell buildup.',treatments:['Topical treatments','Light therapy','Biologics'],keywords:['scales','plaque','skin','joints']},
+  // MUSCULOSKELETAL
+  {id:'arthritis',name:'Rheumatoid Arthritis',category:'musculo',icon:'🦴',color:'#f3e8ff',iconColor:'#7c3aed',symptoms:['Joint Pain','Stiffness','Swelling','Fatigue'],specialty:'Rheumatology',urgency:'medium',description:'Autoimmune disease causing joint inflammation.',treatments:['DMARDs','NSAIDs','Biologics','Physical therapy'],keywords:['joint','stiffness','swelling']},
+  {id:'backpain',name:'Lumbar Disc Herniation',category:'musculo',icon:'🦵',color:'#f3e8ff',iconColor:'#7c3aed',symptoms:['Back Pain','Leg pain','Numbness','Weakness'],specialty:'Orthopedics',urgency:'medium',description:'Displaced disc pressing on spinal nerves.',treatments:['Pain killers','Physical therapy','Surgery if severe'],keywords:['back','leg','nerve','disc']},
+];
+
+const doctorDB = [
+  {id:1,name:'Dr. Karimul Hasan',initials:'KH',specialty:['Cardiology'],fee:1200,videoFee:800,rating:4.9,hospital:'BSMMU, Dhaka',video:true,color:'linear-gradient(135deg,#1a56db,#60a5fa)'},
+  {id:2,name:'Dr. Sultana Begum',initials:'SB',specialty:['Neurology'],fee:1500,videoFee:1000,rating:4.8,hospital:'Square Hospital',video:true,color:'linear-gradient(135deg,#7c3aed,#a78bfa)'},
+  {id:3,name:'Dr. Fatema Khanam',initials:'FK',specialty:['Pulmonology','Internal Medicine'],fee:1100,videoFee:700,rating:4.7,hospital:'NIDCH, Dhaka',video:true,color:'linear-gradient(135deg,#0d9488,#2dd4bf)'},
+  {id:4,name:'Dr. Rahman Kabir',initials:'RK',specialty:['Gastroenterology'],fee:1300,videoFee:900,rating:4.8,hospital:'BSMMU, Dhaka',video:false,color:'linear-gradient(135deg,#059669,#34d399)'},
+  {id:5,name:'Dr. Nadia Islam',initials:'NI',specialty:['Endocrinology','Diabetes'],fee:1000,videoFee:700,rating:4.9,hospital:'BIRDEM, Dhaka',video:true,color:'linear-gradient(135deg,#d97706,#fbbf24)'},
+  {id:6,name:'Dr. Moinul Ahsan',initials:'MA',specialty:['Dermatology'],fee:800,videoFee:600,rating:4.7,hospital:'Dhaka Medical',video:true,color:'linear-gradient(135deg,#dc2626,#f87171)'},
+  {id:7,name:'Dr. Rina Akter',initials:'RA',specialty:['Rheumatology','Orthopedics'],fee:1400,videoFee:950,rating:4.8,hospital:'Evercare, Dhaka',video:true,color:'linear-gradient(135deg,#be185d,#ec4899)'},
+  {id:8,name:'Dr. Akash Bose',initials:'AB',specialty:['General Surgery'],fee:1600,videoFee:1100,rating:4.6,hospital:'Square Hospital',video:false,color:'linear-gradient(135deg,#0284c7,#38bdf8)'},
+];
+
+function toggleBodyPart(el, part) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!selectedBodyParts.includes(part)) selectedBodyParts.push(part);
+  } else {
+    selectedBodyParts = selectedBodyParts.filter(p => p !== part);
+  }
+}
+
+function addSymptom() {
+  const inp = document.getElementById('sympInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!selectedSymptoms.includes(val)) {
+    selectedSymptoms.push(val);
+    renderSelected();
+  }
+  inp.value = '';
+}
+
+function quickAdd(el, sym) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!selectedSymptoms.includes(sym)) { selectedSymptoms.push(sym); renderSelected(); }
+  } else {
+    selectedSymptoms = selectedSymptoms.filter(s => s !== sym);
+    renderSelected();
+  }
+}
+
+function removeSymptom(sym) {
+  selectedSymptoms = selectedSymptoms.filter(s => s !== sym);
+  // un-select chip
+  document.querySelectorAll('.qs-chip').forEach(c => {
+    if (c.textContent.includes(sym)) c.classList.remove('selected');
+  });
+  renderSelected();
+}
+
+function renderSelected() {
+  const wrap = document.getElementById('selectedSymptoms');
+  const count = document.getElementById('sympCount');
+  count.textContent = selectedSymptoms.length;
+  if (!selectedSymptoms.length) {
+    wrap.classList.remove('has-items');
+    wrap.innerHTML = '<span class="empty-msg">No symptoms added yet — click above or type</span>';
+    return;
+  }
+  wrap.classList.add('has-items');
+  wrap.innerHTML = selectedSymptoms.map(s => `
+    <div class="sel-chip">${s}<button class="sel-remove" onclick="removeSymptom('${s}')">×</button></div>
+  `).join('');
+}
+
+async function analyzeSymptoms() {
+  if (!selectedSymptoms.length) {
+    alert('Please add at least one symptom first!');
+    return;
+  }
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> AI Analyzing...';
+  const results = document.getElementById('resultsSection');
+  const content = document.getElementById('resultsContent');
+  const thinking = document.getElementById('aiThinking');
+  results.classList.add('show');
+  content.style.display = 'none';
+  thinking.style.display = 'flex';
+  results.scrollIntoView({behavior:'smooth', block:'start'});
+
+  const bodyParts = selectedBodyParts.join(', ') || 'unspecified';
+  const duration = document.getElementById('filterDuration').value;
+  const severity = document.getElementById('filterSeverity').value;
+  const age = document.getElementById('filterAge').value;
+  const symptomList = selectedSymptoms.join(', ');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2500,
+        system: `You are a senior consultant physician in Bangladesh with expertise in tropical medicine, infectious diseases, and general medicine. You are trained at BSMMU (Bangabandhu Sheikh Mujib Medical University) and follow Bangladesh DGHS National Standard Treatment Guidelines.
+
+Respond ONLY in valid JSON. No markdown, no backticks, no preamble.
+
+{
+  "urgency": "emergency|high|medium|low",
+  "urgencyExplain": "one clear sentence why this urgency level",
+  "redFlags": ["STOP - go to hospital immediately if: symptom 1", "Red flag 2", "Red flag 3"],
+  "conditions": [
+    {
+      "name": "Condition name",
+      "localName": "Bengali or local common name if applicable",
+      "matchPercent": 85,
+      "prevalenceInBD": "Very common in Bangladesh during monsoon / Year-round / etc",
+      "briefExplain": "What this condition is in 1-2 plain sentences",
+      "causes": "Main causes including Bangladesh-specific factors (contaminated water, season, crowding)",
+      "prognosis": "Expected recovery with proper treatment"
+    }
+  ],
+  "doctorToSee": {
+    "specialty": "Specialist type (e.g. Medicine, Gastroenterology, Cardiology)",
+    "bdTitle": "Title used in Bangladesh (e.g. MBBS, MD Medicine, FCPS)",
+    "urgency": "See today / Within 48 hours / Within 1 week",
+    "whereBD": "BSMMU OPD / DMCH / Upazila Health Complex / Square Hospital / Local chamber",
+    "estimatedFeeBDT": "300-500 at government / 800-2000 at private"
+  },
+  "medicines": [
+    {
+      "generic": "Generic drug name",
+      "brandsBD": ["Square brand", "Beximco brand", "ACI brand"],
+      "dose": "Standard adult dose and frequency",
+      "duration": "Treatment duration",
+      "otc": true,
+      "costBDT": "Approx cost per course in BDT",
+      "importantNote": "Key warning or instruction"
+    }
+  ],
+  "tests": [
+    {
+      "name": "Test name",
+      "why": "What it checks for",
+      "urgency": "Immediate / Within 24h / Routine",
+      "availableBD": "All labs / Major cities / Specialized centers",
+      "costBDT": "Approx cost in BDT"
+    }
+  ],
+  "diet": {
+    "recommended": ["Food/drink 1", "Food 2", "Food 3"],
+    "avoid": ["Avoid 1", "Avoid 2"],
+    "hydration": "Specific hydration advice (ORS, saline water, coconut water etc)"
+  },
+  "homeRemedies": [
+    {"remedy": "Remedy name", "howTo": "How to use it", "evidence": "Traditionally used / Some evidence / Well-evidenced", "caution": "When NOT to use"}
+  ],
+  "whenToGoHospitalNow": "Specific triggers: if fever above 39.5C for 3 days, OR blood in stool, OR unconscious etc",
+  "prevention": ["Prevention tip 1", "Prevention tip 2", "Prevention tip 3"],
+  "disclaimer": "This analysis is based on symptoms described and does not constitute a medical diagnosis. Please consult a qualified physician."
+}
+
+Clinical rules:
+- For dengue: always check platelet count, check for warning signs (abdominal pain, bleeding, vomiting)
+- For typhoid: always mention Widal test and blood culture, paracetamol only (no NSAIDs)
+- For diarrhea: always mention ORS (Oral Rehydration Salt) - critical in Bangladesh
+- For respiratory: mention TB screening if chronic cough >3 weeks
+- For fever: mention malaria if from rural/hilly areas, dengue if from urban areas in monsoon
+- Always give realistic BDT costs (2024-2025 prices)
+- Bangladeshi drug brands: Square Pharma, Beximco Pharma, ACI, Eskayef, Renata, Incepta, Opsonin`,
+        messages: [{
+          role: 'user',
+          content: `Patient symptoms: ${symptomList}
+Body area affected: ${bodyParts}
+Duration: ${duration}
+Severity: ${severity}
+Age group: ${age}
+Location: Bangladesh
+
+Please provide comprehensive analysis including conditions, specialist doctors, medications available in Bangladesh, recommended tests, home remedies, and diet advice.`
+        }]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+    const raw = data.content.map(c => c.text || '').join('');
+    const aiData = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    thinking.style.display = 'none';
+    content.style.display = 'block';
+    renderAIResults(aiData, symptomList);
+  } catch(e) {
+    console.log('AI error, using local matching:', e.message);
+    thinking.style.display = 'none';
+    content.style.display = 'block';
+    renderResults(); // fallback to static
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-brain"></i> Analyze Symptoms with AI';
+}
+
+function renderAIResults(ai, symptomList) {
+  // ── 1. URGENCY ALERT ────────────────────────────────────────────────────
+  const urgencyEl = document.getElementById('urgencyAlert');
+  const urgencyConfig = {
+    emergency: { cls:'high', icon:'🚨', title:'EMERGENCY — Go to Hospital Immediately', color:'#dc2626' },
+    high:      { cls:'high', icon:'🔴', title:'High Urgency — Seek Medical Attention Today', color:'var(--danger)' },
+    medium:    { cls:'medium', icon:'⚠️', title:'Moderate — See a Doctor Within 24-48 Hours', color:'var(--warn)' },
+    low:       { cls:'low', icon:'✅', title:'Low Urgency — Monitor and Book an Appointment', color:'var(--em)' }
+  };
+  const uc = urgencyConfig[ai.urgency] || urgencyConfig.medium;
+  urgencyEl.className = `urgency-alert ${uc.cls}`;
+  urgencyEl.innerHTML = `<div class="ua-icon">${uc.icon}</div><div><div class="ua-title">${uc.title}</div><div class="ua-text">${ai.urgencyMsg || ''}</div>${ai.summary ? `<div style="margin-top:.4rem;font-size:.82rem;opacity:.85">${ai.summary}</div>` : ''}</div>`;
+
+  // ── 2. CONDITIONS ────────────────────────────────────────────────────────
+  const matchPctClass = { high:'high', medium:'medium', low:'low' };
+  document.getElementById('conditionCards').innerHTML = (ai.conditions || []).map(c => `
+    <div class="cond-card ${c.level||'low'}" onclick="window.location='../treatments/index.html?condition=${encodeURIComponent(c.name)}'">
+      <span class="cond-match ${matchPctClass[c.level]||'low'}">${c.match}% match</span>
+      <div class="cond-name">${c.name}${c.localName ? ` <span style="font-size:.75rem;font-weight:400;color:var(--sub)">(${c.localName})</span>` : ''}</div>
+      <div class="cond-desc">${c.description}</div>
+      ${c.howCommonInBD ? `<div style="font-size:.73rem;color:var(--sub);margin:.3rem 0">📊 ${c.howCommonInBD} in Bangladesh</div>` : ''}
+      <div class="cond-tags">
+        <span class="cond-tag">🏥 ${c.specialty}</span>
+        ${(c.causes||[]).slice(0,2).map(ca=>`<span class="cond-tag">• ${ca}</span>`).join('')}
+        ${c.level==='high'?'<span class="cond-tag" style="background:#fee2e2;color:#dc2626">⚠️ Urgent</span>':''}
+      </div>
+    </div>`).join('');
+
+  // ── 3. DOCTORS ───────────────────────────────────────────────────────────
+  const docSugs = [];
+  (ai.doctors || []).forEach(d => {
+    const matched = doctorDB.find(doc => doc.specialty.some(s => s.toLowerCase().includes(d.specialty.toLowerCase()) || d.specialty.toLowerCase().includes(s.toLowerCase())));
+    if (matched) docSugs.push({ ...matched, _aiDoc: d });
+  });
+  const finalDocs = docSugs.length ? docSugs : doctorDB.slice(0, 3);
+  document.getElementById('docSuggestions').innerHTML = finalDocs.slice(0, 3).map(d => `
+    <div class="doc-sug">
+      <div class="doc-av" style="background:${d.color}">${d.initials}</div>
+      <div class="doc-inf">
+        <div class="doc-nm">${d.name}</div>
+        <div class="doc-sp">${d.specialty[0]} · ${d.hospital}</div>
+        ${d._aiDoc?.urgency ? `<div style="font-size:.72rem;color:#f59e0b;margin:.1rem 0">⏱ ${d._aiDoc.urgency}</div>` : ''}
+        ${d._aiDoc?.whereToBD ? `<div style="font-size:.7rem;color:var(--sub)">📍 ${d._aiDoc.whereToBD}</div>` : ''}
+        <div class="doc-row">
+          <span class="doc-fee">৳${d.fee}</span>
+          <span class="doc-rat">⭐ ${d.rating}</span>
+          ${d.video ? '<span class="doc-avail online"><i class="fas fa-video"></i> Video</span>' : ''}
+        </div>
+      </div>
+      <button class="consult-btn" onclick="window.location='../patients/appointments.html?doctor=${d.id}&type=video'">${d.video ? '🎥 Book Video' : '📅 Book'}</button>
+    </div>`).join('');
+
+  // ── 4. TREATMENT + DRUGS + TESTS + DIET + RED FLAGS ─────────────────────
+  const mainCondition = ai.conditions?.[0]?.name || 'Your Symptoms';
+  let treatmentHTML = `<div style="font-weight:700;font-size:.9rem;margin-bottom:.75rem">AI Analysis for: <strong style="color:var(--teal)">${mainCondition}</strong></div>`;
+
+  // Guidance steps
+  if (ai.guidance?.length) {
+    treatmentHTML += `<div style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin-bottom:.4rem">What To Do</div>`;
+    treatmentHTML += `<div class="tp-steps">`;
+    treatmentHTML += (ai.guidance||[]).map((g,i) => `<div class="tp-step"><div class="tp-num">${i+1}</div><div class="tp-text"><strong>${g.step}</strong>${g.timeline?` <span style="font-size:.72rem;color:var(--sub)">(${g.timeline})</span>`:''} — ${g.detail}</div></div>`).join('');
+    treatmentHTML += `</div>`;
+  }
+
+  // Drugs
+  if (ai.drugs?.length) {
+    treatmentHTML += `<div style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:.75rem 0 .4rem">💊 Medications Available in Bangladesh</div>`;
+    treatmentHTML += ai.drugs.map(d => `
+      <div style="background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.15);border-radius:10px;padding:.6rem .8rem;margin-bottom:.4rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.3rem">
+          <div><strong style="font-size:.85rem">${d.name}</strong> <span style="font-size:.72rem;color:var(--sub)">(${d.type})</span></div>
+          <span style="font-size:.7rem;background:${d.otcOrPrescription==='OTC'?'#d1fae5':'#fef3c7'};color:${d.otcOrPrescription==='OTC'?'#065f46':'#92400e'};padding:.1rem .5rem;border-radius:6px;font-weight:700">${d.otcOrPrescription}</span>
+        </div>
+        ${d.brandsBD?.length ? `<div style="font-size:.73rem;color:#60a5fa;margin:.2rem 0">🇧🇩 BD Brands: ${d.brandsBD.join(', ')}</div>` : ''}
+        <div style="font-size:.73rem;color:var(--sub)">${d.dosage} ${d.approxCostBD ? `· ~৳${d.approxCostBD}` : ''}</div>
+        ${d.warning ? `<div style="font-size:.7rem;color:#fbbf24;margin-top:.2rem">⚠️ ${d.warning}</div>` : ''}
+      </div>`).join('');
+  }
+
+  // Recommended Tests
+  if (ai.tests?.length) {
+    treatmentHTML += `<div style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:.75rem 0 .4rem">🔬 Recommended Tests</div>`;
+    treatmentHTML += ai.tests.map(t => `
+      <div style="display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)">
+        <span style="font-size:.7rem;background:#e0e7ff;color:#3730a3;padding:.1rem .5rem;border-radius:5px;font-weight:700;white-space:nowrap">${t.urgency}</span>
+        <div><div style="font-size:.82rem;font-weight:600">${t.name}</div><div style="font-size:.72rem;color:var(--sub)">${t.why} ${t.approxCostBD?`· ~৳${t.approxCostBD}`:''}</div></div>
+      </div>`).join('');
+  }
+
+  // Home Remedies
+  if (ai.homeRemedies?.length) {
+    treatmentHTML += `<div style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:.75rem 0 .4rem">🌿 Home Remedies</div>`;
+    treatmentHTML += ai.homeRemedies.map(r => `
+      <div style="font-size:.78rem;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><strong>${r.remedy}</strong>: ${r.howTo}${r.caution?` <span style="color:#fbbf24">(⚠️ ${r.caution})</span>`:''}</div>`).join('');
+  }
+
+  // Diet
+  if (ai.diet) {
+    treatmentHTML += `<div style="margin-top:.75rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:.6rem">
+        <div style="font-size:.72rem;font-weight:700;color:#10b981;margin-bottom:.3rem">✅ EAT</div>
+        ${(ai.diet.eat||[]).map(f=>`<div style="font-size:.75rem">• ${f}</div>`).join('')}
+      </div>
+      <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:8px;padding:.6rem">
+        <div style="font-size:.72rem;font-weight:700;color:#ef4444;margin-bottom:.3rem">❌ AVOID</div>
+        ${(ai.diet.avoid||[]).map(f=>`<div style="font-size:.75rem">• ${f}</div>`).join('')}
+      </div>
+    </div>`;
+    if (ai.diet.hydration) treatmentHTML += `<div style="font-size:.75rem;color:var(--sub);margin-top:.4rem">💧 ${ai.diet.hydration}</div>`;
+  }
+
+  // Red Flags
+  if (ai.redFlags?.length) {
+    treatmentHTML += `<div style="margin-top:.75rem;background:#fee2e2;border-radius:10px;padding:.75rem">
+      <div style="font-weight:700;font-size:.8rem;color:#dc2626;margin-bottom:.4rem">🚨 Go to Emergency Hospital Immediately If:</div>
+      ${ai.redFlags.map(f=>`<div style="font-size:.78rem;color:#991b1b;margin-bottom:.2rem">• ${f}</div>`).join('')}
+    </div>`;
+  }
+
+  treatmentHTML += `<div style="font-size:.7rem;color:var(--sub);margin-top:.75rem;padding:.5rem;background:rgba(255,255,255,.03);border-radius:6px">⚠️ ${ai.disclaimer || 'AI suggestions are supportive only. Always consult a qualified doctor.'}</div>`;
+  treatmentHTML += `<a href="../treatments/index.html?condition=${encodeURIComponent(mainCondition)}" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;font-size:.82rem;font-weight:700;color:var(--teal);text-decoration:none">View Full Treatment Guide <i class="fas fa-arrow-right"></i></a>`;
+
+  document.getElementById('treatmentPreview').innerHTML = treatmentHTML;
+}
+
+function renderResults() {
+  // Match conditions
+  const matched = conditionDB.filter(c => {
+    return c.symptoms.some(s => selectedSymptoms.some(sel =>
+      s.toLowerCase().includes(sel.toLowerCase()) || sel.toLowerCase().includes(s.toLowerCase())
+    ));
+  }).slice(0, 4);
+
+  // Fallback if no match
+  const conditions = matched.length ? matched : conditionDB.slice(0, 3);
+
+  // Urgency
+  const hasHigh = conditions.some(c => c.urgency === 'high');
+  const urgencyEl = document.getElementById('urgencyAlert');
+  if (hasHigh) {
+    urgencyEl.className = 'urgency-alert high';
+    urgencyEl.innerHTML = '<div class="ua-icon">🚨</div><div><div class="ua-title">High Urgency — Seek Medical Attention Soon</div><div class="ua-text">One or more of your symptoms may indicate a serious condition. Please consult a doctor or go to emergency care if symptoms are severe.</div></div>';
+  } else {
+    urgencyEl.className = 'urgency-alert medium';
+    urgencyEl.innerHTML = '<div class="ua-icon">⚠️</div><div><div class="ua-title">Moderate Urgency — See a Doctor Within 24-48 Hours</div><div class="ua-text">Your symptoms suggest a condition requiring professional evaluation. Book an appointment or video consult soon.</div></div>';
+  }
+
+  // Render conditions
+  const matchPct = ['95%','78%','62%','45%'];
+  const matchClass = ['high','medium','low','low'];
+  document.getElementById('conditionCards').innerHTML = conditions.map((c, i) => `
+    <div class="cond-card ${c.urgency}" onclick="window.location='../treatments/index.html?condition=${c.id}'">
+      <span class="cond-match ${matchClass[i] || 'low'}">${matchPct[i] || '40%'} match</span>
+      <div class="cond-name">${c.icon} ${c.name}</div>
+      <div class="cond-desc">${c.description}</div>
+      <div class="cond-tags">
+        <span class="cond-tag">🏥 ${c.specialty}</span>
+        ${c.urgency === 'high' ? '<span class="cond-tag" style="background:#fee2e2;color:#dc2626">⚠️ Urgent</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+
+  // Match doctors
+  const specialties = [...new Set(conditions.map(c => c.specialty))];
+  const matchedDocs = doctorDB.filter(d => d.specialty.some(s => specialties.includes(s))).slice(0, 3);
+  const docs = matchedDocs.length ? matchedDocs : doctorDB.slice(0, 3);
+  document.getElementById('docSuggestions').innerHTML = docs.map(d => `
+    <div class="doc-sug">
+      <div class="doc-av" style="background:${d.color}">${d.initials}</div>
+      <div class="doc-inf">
+        <div class="doc-nm">${d.name}</div>
+        <div class="doc-sp">${d.specialty[0]} · ${d.hospital}</div>
+        <div class="doc-row">
+          <span class="doc-fee">৳${d.fee}</span>
+          <span class="doc-rat">⭐ ${d.rating}</span>
+          ${d.video ? '<span class="doc-avail online"><i class="fas fa-video"></i> Video</span>' : ''}
+        </div>
+      </div>
+      <button class="consult-btn" onclick="window.location='../doctors/search.html?id=${d.id}'">${d.video ? '🎥 Consult' : '📅 Book'}</button>
+    </div>
+  `).join('');
+
+  // Treatment preview
+  const primary = conditions[0];
+  document.getElementById('treatmentPreview').innerHTML = `
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:.5rem">Initial Steps for <strong style="color:var(--teal)">${primary?.name || 'Your Condition'}</strong></div>
+    <div class="tp-steps">
+      <div class="tp-step"><div class="tp-num">1</div><div class="tp-text"><strong>Don't panic</strong> — Note down all symptoms, their severity, and when they started</div></div>
+      <div class="tp-step"><div class="tp-num">2</div><div class="tp-text"><strong>Rest and hydrate</strong> — Avoid strenuous activity until you've seen a doctor</div></div>
+      <div class="tp-step"><div class="tp-num">3</div><div class="tp-text"><strong>Book consultation</strong> — See a ${primary?.specialty || 'specialist'} for proper diagnosis</div></div>
+      <div class="tp-step"><div class="tp-num">4</div><div class="tp-text"><strong>Possible treatments include:</strong> ${primary?.treatments?.join(', ') || 'To be determined by your doctor'}</div></div>
+    </div>
+    <a href="../treatments/index.html?condition=${primary?.id}" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;font-size:.8rem;font-weight:700;color:var(--teal);text-decoration:none">View Full Treatment Guide <i class="fas fa-arrow-right"></i></a>
+  `;
+}
+
+// BROWSE CONDITIONS
+let currentCategory = 'all';
+function filterCategory(cat, el) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderCondGrid();
+}
+
+function renderCondGrid() {
+  const filtered = currentCategory === 'all' ? conditionDB : conditionDB.filter(c => c.category === currentCategory);
+  document.getElementById('condGrid').innerHTML = filtered.map(c => `
+    <div class="cond-browse-card" onclick="window.location='../treatments/index.html?condition=${c.id}'">
+      <div class="cbc-icon" style="background:${c.color};color:${c.iconColor}">${c.icon}</div>
+      <div class="cbc-name">${c.name}</div>
+      <div class="cbc-syms">Symptoms: ${c.symptoms.slice(0,3).join(', ')}${c.symptoms.length > 3 ? '...' : ''}</div>
+      <div class="cbc-footer">
+        <span class="cbc-spec">🏥 ${c.specialty}</span>
+        <span class="cbc-arrow"><i class="fas fa-arrow-right"></i></span>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderCondGrid();
+</script>
+
+<!-- MEDFIND FOOTER -->
+<footer style="background:#0f172a;border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem 1.5rem;margin-top:4rem;">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between;margin-bottom:2rem;">
+      <div>
+        <img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;">
+        <p style="color:#64748b;font-size:.82rem;max-width:260px;line-height:1.6;">Bangladesh's digital healthcare platform. Connecting patients with doctors, donors, and AI health tools.</p>
+      </div>
+      <div style="display:flex;gap:3rem;flex-wrap:wrap;">
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Platform</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="/pages/symptoms/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Symptom Checker</a>
+            <a href="/pages/drugs/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Drug Directory</a>
+            <a href="/pages/treatments/index.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Treatment Guide</a>
+            <a href="/pages/blood-donor/search.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Blood Donors</a>
+            <a href="/pages/doctors/search.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Find Doctors</a>
+            <a href="/pages/hospital/list.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Hospitals</a>
+          </div>
+        </div>
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Legal</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="/pages/privacy.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Privacy Policy</a>
+            <a href="/pages/terms.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Terms of Service</a>
+            <a href="/pages/medical-disclaimer.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Medical Disclaimer</a>
+            <a href="/pages/consent-forms.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Consent Forms</a>
+            <a href="/pages/data-backup-policy.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Data & Security</a>
+            <a href="/pages/cookies.html" style="color:#64748b;font-size:.82rem;text-decoration:none;">Cookie Policy</a>
+          </div>
+        </div>
+        <div>
+          <div style="color:#f8fafc;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Emergency</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <a href="tel:999" style="color:#fca5a5;font-size:.82rem;font-weight:700;text-decoration:none;">🚨 999 — National Emergency</a>
+            <a href="tel:+8801772172829" style="color:#fca5a5;font-size:.82rem;text-decoration:none;">📞 MedFind: 01772-172829</a>
+            <a href="tel:029667722" style="color:#94a3b8;font-size:.82rem;text-decoration:none;">🏥 Dhaka Medical: 02-9667722</a>
+            <a href="mailto:medfindbd2026@gmail.com" style="color:#94a3b8;font-size:.82rem;text-decoration:none;">✉️ medfindbd2026@gmail.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
+      <p style="color:#475569;font-size:.78rem;">© 2026 MedFind Bangladesh. All rights reserved. Not a substitute for professional medical advice.</p>
+      <p style="color:#475569;font-size:.78rem;">🇧🇩 Made for Bangladesh | DGHS Compliant</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

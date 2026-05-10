@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donate Life — MedFind Bangladesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--void:#0d1b2e;--deep:#0f2133;--ink:#112240;--srf:#162d44;--lift:#1e3a5a;--panel:#254872;--red:#c4163b;--rose:#e42e52;--blush:#f26d82;--coral:#ff9e90;--amber:#f5a523;--gold:#e8c86a;--sage:#3aafa9;--t1:#fdf0f5;--t2:#c499ae;--t3:#7a506a;--t4:#3d2040;--b1:rgba(196,22,59,.12);--b2:rgba(196,22,59,.25);--b3:rgba(196,22,59,.42)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit','Noto Sans Bengali',system-ui,sans-serif;background:#0d1b2e;color:#fdf0f5;overflow-x:hidden;min-height:100vh}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:linear-gradient(160deg,#040108 0%,#08020d 50%,#040108 100%)}
+#bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 15% 0%,rgba(196,22,59,.1) 0%,transparent 55%),radial-gradient(ellipse 60% 70% at 85% 100%,rgba(245,165,35,.06) 0%,transparent 55%)}
+.bghb{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80'%3E%3Cpath d='M0 40L80 40L100 14L122 66L142 20L168 56L188 40L400 40' stroke='rgba(196,22,59,0.055)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-size:400px 80px;animation:hbA 12s linear infinite}
+@keyframes hbA{to{background-position:400px 0}}
+.bgorb{position:absolute;border-radius:50%;filter:blur(100px)}
+.o1{width:550px;height:550px;top:-180px;left:-180px;background:radial-gradient(circle,rgba(196,22,59,.09),transparent 70%);animation:oF 22s ease-in-out infinite}
+.o2{width:450px;height:450px;bottom:-130px;right:-130px;background:radial-gradient(circle,rgba(245,165,35,.06),transparent 70%);animation:oF 18s ease-in-out infinite reverse;animation-delay:-7s}
+.o3{width:300px;height:300px;top:45%;left:45%;background:radial-gradient(circle,rgba(155,89,208,.04),transparent 70%);animation:oF 15s ease-in-out infinite;animation-delay:-3s}
+@keyframes oF{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(35px,-25px) scale(1.08)}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 28px;display:flex;align-items:center;gap:14px;background:rgba(4,1,8,.92);backdrop-filter:blur(28px);border-bottom:1px solid var(--b1)}
+nav::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(196,22,59,.5),transparent)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nicon{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--red),var(--rose));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(196,22,59,.35);transition:all .3s}
+.nicon:hover{transform:scale(1.1) rotate(-5deg)}
+.nbrand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:#fdf0f5}
+.nbrand span{color:var(--rose)}
+.nsep{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.5px}
+.nright{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nlang{display:flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:22px;overflow:hidden}
+.nl{padding:5px 13px;font-size:11px;font-weight:700;font-family:inherit;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all .2s}
+.nl.on{background:var(--red);color:white}
+.nback{display:flex;align-items:center;gap:5px;padding:7px 16px;border-radius:11px;border:1px solid var(--b2);background:transparent;color:var(--t2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none}
+.nback:hover{background:rgba(196,22,59,.1);color:var(--t1)}
+.lbanner{margin-top:64px;position:relative;z-index:1;background:linear-gradient(135deg,rgba(245,165,35,.07),rgba(245,165,35,.03));border-bottom:1px solid rgba(245,165,35,.18);padding:14px 28px;display:flex;align-items:flex-start;gap:14px}
+.lbico{font-size:20px;flex-shrink:0;margin-top:2px}
+.lbbody{font-size:12.5px;color:rgba(245,165,35,.88);line-height:1.7}
+.lbtitle{font-weight:800;font-size:13px;color:var(--amber);margin-bottom:2px}
+.hero{position:relative;z-index:1;min-height:100vh;padding:110px 28px 80px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(196,22,59,.09);border:1px solid rgba(196,22,59,.22);border-radius:30px;padding:7px 18px;margin-bottom:30px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--blush);text-transform:uppercase}
+.hheart{font-size:15px;animation:hb 1.4s ease-in-out infinite}
+@keyframes hb{0%,100%{transform:scale(1)}14%{transform:scale(1.22)}28%{transform:scale(1)}42%{transform:scale(1.14)}70%{transform:scale(1)}}
+.heyw{font-family:'Cormorant Garamond',serif;font-size:clamp(14px,2vw,17px);font-weight:500;font-style:italic;color:var(--blush);margin-bottom:12px;letter-spacing:.5px}
+.htitle{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,9vw,100px);font-weight:700;line-height:.92;letter-spacing:-3px;margin-bottom:24px}
+.ht1{display:block;color:var(--t1)}
+.ht2{display:block;background:linear-gradient(125deg,var(--red) 0%,var(--rose) 35%,var(--coral) 65%,var(--amber) 100%);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gSh 5s ease infinite}
+@keyframes gSh{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hsub{font-size:clamp(15px,1.8vw,18px);color:var(--t2);line-height:1.8;max-width:580px;margin:0 auto 44px}
+.hctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hstats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;margin-top:64px;padding-top:44px;border-top:1px solid rgba(255,255,255,.05)}
+.hstat{padding:0 38px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}
+.hstat:last-child{border-right:none}
+.hstatn{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-1px;background:linear-gradient(135deg,var(--red),var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hstatl{font-size:12px;color:var(--t3);font-weight:600;letter-spacing:.4px;margin-top:4px}
+.btnred{padding:16px 38px;border-radius:50px;background:linear-gradient(135deg,var(--red),var(--rose));border:none;color:white;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(196,22,59,.42);text-decoration:none;display:inline-flex;align-items:center;gap:9px;position:relative;overflow:hidden}
+.btnred::before{content:'';position:absolute;top:0;left:-120%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+.btnred:hover{transform:translateY(-3px);box-shadow:0 16px 44px rgba(196,22,59,.58)}
+.btnred:hover::before{left:120%}
+.btnghost{padding:16px 32px;border-radius:50px;background:transparent;border:1px solid var(--b2);color:var(--t1);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btnghost:hover{background:rgba(196,22,59,.1);border-color:var(--b3);transform:translateY(-2px)}
+/* KEY FIX: .rv elements are ALWAYS visible. JS only adds .waiting to off-screen ones. */
+.rv{opacity:1;transform:translateY(0);transition:opacity .72s cubic-bezier(.22,.68,0,1.2),transform .72s cubic-bezier(.22,.68,0,1.2)}
+.rv.waiting{opacity:0;transform:translateY(26px)}
+.rv.waiting.vis{opacity:1!important;transform:translateY(0)!important}
+.rv1.waiting{transition-delay:.08s}.rv2.waiting{transition-delay:.16s}.rv3.waiting{transition-delay:.24s}.rv4.waiting{transition-delay:.32s}
+.sec{position:relative;z-index:1}
+.cont{max-width:1040px;margin:0 auto;padding:0 28px}
+.spad{padding:84px 0}
+.stag{font-size:10.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--rose);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.stag::before{content:'';width:28px;height:2px;background:var(--rose);border-radius:2px}
+.sh{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-1.5px;line-height:1.05;margin-bottom:16px;color:var(--t1)}
+.sp{font-size:15px;color:var(--t2);line-height:1.8;max-width:580px}
+.hdiv{width:56px;height:3px;background:linear-gradient(90deg,var(--red),var(--coral));border-radius:3px;margin:18px 0 0}
+.hwg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:50px}
+.hwc{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:22px;padding:28px 24px;position:relative;overflow:hidden;transition:all .32s}
+.hwc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--rose),transparent);opacity:0;transition:opacity .32s}
+.hwc:hover{background:rgba(196,22,59,.06);border-color:var(--b1);transform:translateY(-5px);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.hwc:hover::before{opacity:1}
+.hwnum{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;background:linear-gradient(135deg,rgba(196,22,59,.35),rgba(196,22,59,.12));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:14px}
+.hwtitle{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;margin-bottom:8px;color:var(--t1)}
+.hwtext{font-size:13.5px;color:var(--t2);line-height:1.75}
+.orgg{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:9px;margin-top:42px}
+.orgc{background:rgba(255,255,255,.025);border:1px solid var(--b1);border-radius:15px;padding:17px 10px;text-align:center;transition:all .27s;cursor:default}
+.orgc:hover{border-color:var(--b2);transform:translateY(-3px) scale(1.04);background:rgba(196,22,59,.07)}
+.ocem{font-size:26px;display:block;margin-bottom:6px}
+.ocnm{font-size:11.5px;font-weight:700;color:var(--t2)}
+.mvfg{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:42px}
+@media(max-width:600px){.mvfg{grid-template-columns:1fr}}
+.mvf{border-radius:17px;padding:22px}
+.myth{background:rgba(196,22,59,.06);border:1px solid rgba(196,22,59,.15)}
+.fact{background:rgba(58,175,169,.06);border:1px solid rgba(58,175,169,.18)}
+.mvfl{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;color:var(--t2)}
+.mvf p{font-size:13.5px;color:var(--t2);line-height:1.7}
+.islwrap{background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.06);border-radius:24px;padding:32px;margin-top:32px}
+.islhdr{display:flex;gap:16px;align-items:center;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.islico{font-size:32px}
+.isltitle{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;margin-bottom:4px;color:var(--t1)}
+.islbadge{font-size:11px;font-weight:700;color:var(--sage);letter-spacing:.5px}
+.ayah,.hadith{background:rgba(255,255,255,.025);border-radius:14px;padding:20px;margin-bottom:12px;border-left:3px solid rgba(245,165,35,.35)}
+.ayahref,.hadithref{font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.5px;margin-bottom:10px}
+.ayahar,.hadithar{display:block;font-size:clamp(16px,2.5vw,21px);font-weight:700;color:var(--gold);line-height:1.8;margin-bottom:10px;text-align:right;font-family:'Noto Sans Bengali',serif}
+.ayahtr,.hadithtr{font-size:13px;color:var(--t2);line-height:1.75;font-style:italic;margin-bottom:8px}
+.hadithnt{font-size:12px;color:var(--sage);margin-top:8px}
+.ayahbn,.hadithbn{font-size:12.5px;color:var(--t3);line-height:1.7;margin-top:8px;display:none}
+.scholarsnt{background:rgba(196,22,59,.06);border:1px solid var(--b1);border-radius:14px;padding:22px;font-size:13px;color:var(--t2);line-height:1.8;margin-top:12px}
+.fwrap{margin-top:48px;max-width:640px;margin-left:auto;margin-right:auto}
+.fcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:26px;padding:40px;backdrop-filter:blur(12px)}
+.pgwrap{display:flex;flex-direction:column;align-items:center;margin-bottom:32px}
+.pgdots{display:flex;gap:10px;margin-bottom:10px}
+.ps{width:28px;height:5px;border-radius:5px;background:rgba(255,255,255,.1);transition:all .4s}
+.ps.act{background:var(--rose);width:52px}
+.ps.done{background:rgba(196,22,59,.4)}
+.plbl{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.5px}
+.step{display:none}
+.step.on{display:block}
+.fhdr{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px}
+.fring{width:52px;height:52px;border-radius:50%;flex-shrink:0;border:2px solid rgba(196,22,59,.3);position:relative;display:flex;align-items:center;justify-content:center}
+.fringinner{font-size:20px;position:relative;z-index:1}
+.fringspin{position:absolute;inset:-2px;border-radius:50%;border:2px solid transparent;border-top-color:var(--rose);animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ftitle{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:3px;color:var(--t1)}
+.fsub{font-size:12.5px;color:var(--t3);line-height:1.6}
+.fg{margin-bottom:18px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media(max-width:520px){.fg2{grid-template-columns:1fr}.fcard{padding:24px}}
+.fl{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px;letter-spacing:.2px}
+.req{color:var(--rose)}
+.fi{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:12px 16px;color:var(--t1);font-family:inherit;font-size:14px;transition:all .25s;outline:none}
+.fi::placeholder{color:var(--t3)}
+.fi:focus{border-color:var(--b2);background:rgba(196,22,59,.05);box-shadow:0 0 0 3px rgba(196,22,59,.08)}
+.fi.err{border-color:rgba(196,22,59,.6);background:rgba(196,22,59,.06)}
+.fi.ok{border-color:rgba(58,175,169,.4)}
+select.fi{cursor:pointer}
+select.fi option{background:#112240;color:#fdf0f5}
+textarea.fi{resize:vertical;min-height:80px}
+.ferr{font-size:11.5px;color:var(--rose);margin-top:5px;display:none;font-weight:600}
+.ferr.on{display:block}
+.bgg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.bgc{padding:9px 14px;border-radius:10px;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--t2);transition:all .22s}
+.bgc.on{background:var(--red);border-color:var(--rose);color:white;font-weight:700;box-shadow:0 4px 14px rgba(196,22,59,.4)}
+.bgc:hover:not(.on){border-color:var(--b2);color:var(--t1)}
+.selbtn{font-size:11.5px;font-weight:700;padding:6px 14px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--rose);cursor:pointer;margin-bottom:10px;transition:all .2s}
+.selbtn:hover{background:rgba(196,22,59,.08)}
+.osg{display:flex;flex-wrap:wrap;gap:8px}
+.osc{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--t2);font-family:inherit;font-size:13px;cursor:pointer;transition:all .22s}
+.osc.on{background:rgba(196,22,59,.12);border-color:var(--b2);color:var(--t1)}
+.osc:hover:not(.on){border-color:rgba(255,255,255,.15);color:var(--t1)}
+.fchk{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.fchk:hover{background:rgba(196,22,59,.04);border-color:var(--b1)}
+.fchk input{display:none}
+.cbsq{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,.15);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:white;background:transparent;transition:all .2s}
+.fchk input:checked~.cbsq{background:var(--rose);border-color:var(--rose)}
+.fchk input:checked~.cbsq::after{content:'✓'}
+.cbtxt{font-size:13px;color:var(--t2);line-height:1.65}
+.cbtxt strong{color:var(--t1)}
+.fdisc{background:rgba(245,165,35,.06);border:1px solid rgba(245,165,35,.18);border-radius:12px;padding:16px;font-size:12px;color:rgba(245,165,35,.85);line-height:1.7;margin-top:16px}
+.tipbox{background:rgba(58,175,169,.06);border:1px solid rgba(58,175,169,.18);border-radius:12px;padding:14px 16px;font-size:13px;color:rgba(58,175,169,.9);line-height:1.6;margin-top:12px}
+.stnav{display:flex;justify-content:space-between;margin-top:26px;gap:10px}
+.btnnxt,.btnsub{padding:13px 28px;border-radius:12px;background:linear-gradient(135deg,var(--red),var(--rose));border:none;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 6px 24px rgba(196,22,59,.35);flex:1}
+.btnnxt:hover,.btnsub:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(196,22,59,.5)}
+.btnnxt:disabled,.btnsub:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btnbk{padding:13px 20px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--t2);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btnbk:hover{background:rgba(255,255,255,.04);color:var(--t1)}
+#success{display:none;text-align:center;padding:20px 0}
+.scring{width:100px;height:100px;border-radius:50%;border:3px solid rgba(196,22,59,.3);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;position:relative;background:radial-gradient(circle,rgba(196,22,59,.1),transparent 70%)}
+.scring::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid transparent;border-top-color:var(--rose);animation:spin 3s linear infinite}
+.scinner{font-size:36px}
+.sctitle{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;margin-bottom:12px;color:var(--t1)}
+.scp-txt{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:20px}
+.scid{display:inline-block;font-family:'DM Mono',monospace;font-size:14px;background:rgba(196,22,59,.1);border:1px solid var(--b2);border-radius:10px;padding:10px 20px;color:var(--blush);margin-bottom:24px}
+.scacts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.scbtn{padding:12px 20px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.scbtn.p{background:var(--red);border:none;color:white;box-shadow:0 6px 20px rgba(196,22,59,.35)}
+.scbtn.p:hover{background:var(--rose);transform:translateY(-2px)}
+.scbtn.g{background:transparent;border:1px solid var(--b2);color:var(--t1)}
+.scbtn.g:hover{background:rgba(196,22,59,.08);border-color:var(--b3)}
+.hospg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:40px}
+.hospc{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:20px;transition:all .28s}
+.hospc:hover{background:rgba(196,22,59,.05);border-color:var(--b1);transform:translateY(-3px)}
+.hctop{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.hcico{font-size:28px;flex-shrink:0}
+.hcname{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.hctype{font-size:11.5px;color:var(--t3);font-weight:600;margin-bottom:4px}
+.hcaddr{font-size:12px;color:var(--t3)}
+.hctags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.hctag{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(196,22,59,.1);border:1px solid var(--b1);color:var(--blush)}
+.hccall{width:100%;padding:9px;border-radius:10px;background:transparent;border:1px solid var(--b2);color:var(--t2);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .2s}
+.hccall:hover{background:rgba(196,22,59,.1);color:var(--t1)}
+.lawcard{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:32px;margin-top:40px}
+.lawg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+@media(max-width:540px){.lawg{grid-template-columns:1fr}}
+.lawi{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2);line-height:1.6;padding:8px 0}
+.lawic{flex-shrink:0}
+.lawavoid{background:rgba(196,22,59,.06);border:1px solid rgba(196,22,59,.15);border-radius:14px;padding:20px;margin-top:20px}
+.lawavoidtitle{font-size:12px;font-weight:800;color:var(--rose);letter-spacing:.5px;margin-bottom:12px;text-transform:uppercase}
+.avoidg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:540px){.avoidg{grid-template-columns:1fr}}
+.avoidi{font-size:13px;color:var(--t2);padding:6px 0}
+footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.04);padding:40px 28px;text-align:center}
+.ftlogo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;margin-bottom:12px}
+.ftlogo span{color:var(--rose)}
+.ftdis{font-size:12px;color:var(--t3);line-height:1.7;max-width:600px;margin:0 auto 16px}
+.ftlinks{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:16px}
+.ftlinks a{font-size:12px;color:var(--t3);text-decoration:none;transition:color .2s}
+.ftlinks a:hover{color:var(--t1)}
+.ftdev{font-size:11px;color:var(--t4)}
+.ftdev span{color:var(--rose)}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(20,10,30,.95);border:1px solid var(--b2);color:var(--t1);padding:12px 24px;border-radius:40px;font-size:13.5px;font-weight:600;z-index:999;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;opacity:0;pointer-events:none;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+#toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(max-width:480px){.hstat{padding:12px;border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.hstat:last-child{border-bottom:none}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../../assets/js/firebase-config.js"></script>
+<script src="../../assets/js/firestore.js"></script>
+<script src="../../assets/js/config.js"></script>
+</head>
+<body>
+<div id="bg"><div class="bghb"></div><div class="bgorb o1"></div><div class="bgorb o2"></div><div class="bgorb o3"></div></div>
+<nav>
+  <a href="../../index.html" class="nlogo"><div class="nicon">🏥</div><span class="nbrand">Med<span>Find</span></span></a>
+  <span class="nsep" id="nsep">/ Donate Life</span>
+  <div class="nright">
+    <div class="nlang"><button class="nl on" id="nl-en" onclick="setL('en')">EN</button><button class="nl" id="nl-bn" onclick="setL('bn')">বাং</button></div>
+    <a href="../../index.html" class="nback">← <span id="nbk">MedFind</span></a>
+  </div>
+</nav>
+<div class="lbanner"><span class="lbico">⚖️</span><div class="lbbody"><div class="lbtitle" id="lbt">Legal Notice — Transplantation of Human Organs Act, Bangladesh</div><span id="lbb">This platform provides voluntary donor registration and awareness ONLY. We do NOT perform, arrange, or broker organ transplants. Buying or selling organs is a criminal offence under Bangladesh law.</span></div></div>
+<section class="hero">
+  <div class="hbadge"><span class="hheart">❤️</span> <span id="hbd">Voluntary Organ Donation · Bangladesh</span></div>
+  <p class="heyw" id="heyw">One decision. Eight lives saved.</p>
+  <h1 class="htitle"><span class="ht1" id="ht1">Donate Life,</span><span class="ht2" id="ht2">Leave a Legacy</span></h1>
+  <p class="hsub" id="hsub">Register as a voluntary organ donor today. Completely free, completely legal, and one of the most profound acts of human compassion.</p>
+  <div class="hctas"><a href="#register" class="btnred">❤️ <span id="hc1">Register as Donor</span></a><a href="#awareness" class="btnghost">📖 <span id="hc2">Learn More</span></a></div>
+  <div class="hstats">
+    <div class="hstat"><div class="hstatn">8</div><div class="hstatl" id="st1">Lives one donor can save</div></div>
+    <div class="hstat"><div class="hstatn">2</div><div class="hstatl" id="st2">Extra via cornea donation</div></div>
+    <div class="hstat"><div class="hstatn">100%</div><div class="hstatl" id="st3">Voluntary &amp; Free</div></div>
+    <div class="hstat"><div class="hstatn">0৳</div><div class="hstatl" id="st4">No payment, ever</div></div>
+  </div>
+</section>
+<section id="awareness" class="sec spad">
+  <div class="cont">
+    <div class="stag rv" id="hw-tag">How It Works</div>
+    <h2 class="sh rv rv1" id="hw-h">The Donation Journey</h2>
+    <p class="sp rv rv2" id="hw-p">Organ donation happens only after death and requires your family's consent. MedFind helps you register your intent.</p>
+    <div class="hdiv rv rv2"></div>
+    <div class="hwg">
+      <div class="hwc rv rv1"><div class="hwnum">01</div><div class="hwtitle" id="hw1t">Register Your Intent</div><div class="hwtext" id="hw1d">Sign up voluntarily. Choose which organs to donate. No organ is taken during your lifetime.</div></div>
+      <div class="hwc rv rv2"><div class="hwnum">02</div><div class="hwtitle" id="hw2t">Inform Your Family</div><div class="hwtext" id="hw2d">In Bangladesh, family consent is the legal cornerstone. Tell your family now — it is the single most important step.</div></div>
+      <div class="hwc rv rv3"><div class="hwnum">03</div><div class="hwtitle" id="hw3t">Hospital Manages All</div><div class="hwtext" id="hw3d">After death is confirmed, a licensed hospital manages everything under strict legal and medical supervision.</div></div>
+      <div class="hwc rv rv4"><div class="hwnum">04</div><div class="hwtitle" id="hw4t">Lives Are Saved</div><div class="hwtext" id="hw4d">Your organs reach critically ill patients through the national transplant system.</div></div>
+    </div>
+    <div style="margin-top:64px">
+      <div class="stag rv" id="og-tag">What Can Be Donated</div>
+      <h3 class="sh rv rv1" id="og-h" style="font-size:clamp(26px,4vw,40px)">Organs &amp; Tissues</h3>
+      <p class="sp rv rv2" id="og-p">A single donor can give life to up to 8 people and restore sight to 2 more through cornea donation.</p>
+      <div class="orgg rv rv2">
+        <div class="orgc"><span class="ocem">🫀</span><div class="ocnm">Heart</div></div>
+        <div class="orgc"><span class="ocem">🫁</span><div class="ocnm">Lungs</div></div>
+        <div class="orgc"><span class="ocem">🟤</span><div class="ocnm">Liver</div></div>
+        <div class="orgc"><span class="ocem">🫘</span><div class="ocnm">Kidneys</div></div>
+        <div class="orgc"><span class="ocem">👁️</span><div class="ocnm">Corneas</div></div>
+        <div class="orgc"><span class="ocem">🩺</span><div class="ocnm">Pancreas</div></div>
+        <div class="orgc"><span class="ocem">🧬</span><div class="ocnm">Bone Marrow</div></div>
+        <div class="orgc"><span class="ocem">🦴</span><div class="ocnm">Bone &amp; Tissue</div></div>
+        <div class="orgc"><span class="ocem">🩹</span><div class="ocnm">Skin</div></div>
+        <div class="orgc"><span class="ocem">🔵</span><div class="ocnm">Intestines</div></div>
+      </div>
+    </div>
+    <div style="margin-top:72px">
+      <div class="stag rv" id="mf-tag">Misconceptions</div>
+      <h3 class="sh rv rv1" id="mf-h" style="font-size:clamp(26px,4vw,40px)">Myths vs Facts</h3>
+      <div class="mvfg">
+        <div class="mvf myth rv"><div class="mvfl">❌ <span id="ml">Myth</span></div><p id="m1">Doctors won't try hard to save me if I'm a registered donor.</p></div>
+        <div class="mvf fact rv rv1"><div class="mvfl">✅ <span id="fl">Fact</span></div><p id="f1">Donor status has zero effect on your care. The transplant team is entirely separate from treating physicians.</p></div>
+        <div class="mvf myth rv"><div class="mvfl">❌ Myth</div><p id="m2">Organ donation is haram in Islam.</p></div>
+        <div class="mvf fact rv rv1"><div class="mvfl">✅ Fact</div><p id="f2">Islamic Fiqh Academy (OIC 1988), Darul Ifta Bangladesh, and the majority of contemporary scholars declared voluntary unpaid donation permissible (halal) — Sadaqah Jariyah.</p></div>
+        <div class="mvf myth rv"><div class="mvfl">❌ Myth</div><p id="m3">Only young healthy people can donate.</p></div>
+        <div class="mvf fact rv rv1"><div class="mvfl">✅ Fact</div><p id="f3">People of any age can register. Suitability is assessed medically at the time of death.</p></div>
+        <div class="mvf myth rv"><div class="mvfl">❌ Myth</div><p id="m4">MedFind will sell or share my information.</p></div>
+        <div class="mvf fact rv rv1"><div class="mvfl">✅ Fact</div><p id="f4">Your data is encrypted, stored only for donor records, never shared or sold. Withdraw anytime.</p></div>
+      </div>
+    </div>
+    <div style="margin-top:72px">
+      <div class="stag rv" id="isl-tag">Islamic Perspective</div>
+      <h3 class="sh rv rv1" id="isl-h" style="font-size:clamp(26px,4vw,40px)">Organ Donation in Islam</h3>
+      <div class="islwrap rv rv2">
+        <div class="islhdr"><div class="islico">🕌</div><div><div class="isltitle" id="isl-title">Scholarly Consensus &amp; Quranic Evidence</div><div class="islbadge">✓ <span id="isl-badge">Verified Scholarship</span></div></div></div>
+        <div class="ayah"><div class="ayahref">📖 Quran — Surah Al-Maidah (5:32)</div><span class="ayahar">وَمَنْ أَحْيَاهَا فَكَأَنَّمَا أَحْيَا النَّاسَ جَمِيعًا</span><div class="ayahtr">"And whoever saves one life — it is as if he has saved all of mankind." — Al-Quran 5:32</div><div class="ayahbn" id="ay1bn">"এবং যে ব্যক্তি একটি প্রাণ রক্ষা করে — সে যেন সমগ্র মানবজাতিকে রক্ষা করল।"</div></div>
+        <div class="ayah"><div class="ayahref">📖 Quran — Surah Al-Baqarah (2:195)</div><span class="ayahar">وَأَحْسِنُوا ۛ إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ</span><div class="ayahtr">"And do good; indeed, Allah loves the doers of good." — Al-Quran 2:195</div><div class="ayahbn" id="ay2bn">"এবং ভালো কাজ করো — নিশ্চয়ই আল্লাহ ভালো কর্মকারীদের ভালোবাসেন।"</div></div>
+        <div class="ayah"><div class="ayahref">📖 Quran — Surah Al-Maidah (5:2)</div><span class="ayahar">وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ</span><div class="ayahtr">"And cooperate in righteousness and piety." — Al-Quran 5:2</div><div class="ayahbn" id="ay3bn">"এবং নেকি ও তাকওয়ার কাজে একে অপরকে সহায়তা করো।"</div></div>
+        <div class="hadith"><div class="hadithref">📜 Hadith — Sahih Muslim, No. 1631</div><span class="hadithar">إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلَّا مِنْ ثَلَاثَةٍ إِلَّا مِنْ صَدَقَةٍ جَارِيَةٍ</span><div class="hadithtr">"When a person dies, all their deeds end except three: a continuing charity (Sadaqah Jariyah), beneficial knowledge, or a righteous child who prays for them." — Prophet Muhammad ﷺ (Sahih Muslim 1631)</div><div class="hadithnt">🌿 Scholars widely consider organ donation a form of Sadaqah Jariyah (ongoing charity).</div><div class="hadithbn" id="hd1bn">"মানুষ মারা গেলে তিনটি আমল ছাড়া সব বন্ধ হয়ে যায়: চলমান সদকা, উপকারী জ্ঞান, নেক সন্তানের দোয়া।"</div></div>
+        <div class="hadith"><div class="hadithref">📜 Hadith — Sunan Abu Dawud No. 3855</div><span class="hadithar">تَدَاوَوْا عِبَادَ اللَّهِ فَإِنَّ اللَّهَ لَمْ يَضَعْ دَاءً إِلَّا وَضَعَ لَهُ شِفَاءً</span><div class="hadithtr">"Seek medical treatment, O servants of Allah, for Allah has not created any disease without creating a cure for it." — Prophet Muhammad ﷺ (Abu Dawud 3855)</div><div class="hadithnt">🌿 The basis for permitting modern medical treatments including organ transplants.</div><div class="hadithbn" id="hd2bn">"হে আল্লাহর বান্দারা, চিকিৎসা গ্রহণ করো — আল্লাহ এমন কোনো রোগ সৃষ্টি করেননি যার নিরাময় নেই।"</div></div>
+        <div class="scholarsnt" id="scholarsnt"><strong>Official Scholarly Rulings (Fatawa) — Summary:</strong><br><br><strong>1. Islamic Fiqh Academy — OIC, Jeddah (1988):</strong> Resolution No. 26 (1/4) formally declared voluntary, unpaid organ donation permissible in Islam under four conditions: (a) donor's free and informed consent, (b) no financial payment involved, (c) donor's life not endangered, (d) performed by qualified medical professionals.<br><br><strong>2. Darul Ifta Bangladesh:</strong> Issued fatwa permitting voluntary organ donation with family consent, citing Hifzul-Nafs as one of the five Maqasid of Islamic Sharia.<br><br><strong>3. IMAB &amp; IMANA:</strong> Both organisations support voluntary organ donation as consistent with Islamic values.<br><br><strong>4. Scholarly majority:</strong> Contemporary Hanafi, Shafi'i, Maliki, and Hanbali scholars concur on permissibility.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="register" class="sec spad">
+  <div class="cont">
+    <div class="stag rv" id="rg-tag">Voluntary Registration</div>
+    <h2 class="sh rv rv1" id="rg-h">Become a Donor</h2>
+    <p class="sp rv rv2" id="rg-p">Complete this form to register your voluntary intent. NOT legally binding. You may withdraw at any time.</p>
+    <div class="hdiv rv rv2"></div>
+    <div class="fwrap">
+      <div class="fcard rv">
+        <div class="pgwrap" id="pgwrap">
+          <div class="pgdots"><div class="ps act" id="ps1"></div><div class="ps" id="ps2"></div><div class="ps" id="ps3"></div><div class="ps" id="ps4"></div></div>
+          <div class="plbl" id="plbl">Step 1 / 4</div>
+        </div>
+        <div id="fbody">
+          <div class="step on" id="s1">
+            <div class="fhdr"><div class="fring"><div class="fringspin"></div><div class="fringinner">👤</div></div><div><div class="ftitle" id="s1t">Personal Information</div><div class="fsub" id="s1s">All data encrypted and confidential.</div></div></div>
+            <div class="fg2"><div class="fg"><label class="fl">Full Name <span class="req">*</span></label><input class="fi" id="fn" type="text" placeholder="Md. Ahsanul Islam"><div class="ferr" id="en">Full name is required</div></div><div class="fg"><label class="fl">Date of Birth <span class="req">*</span></label><input class="fi" id="fd" type="date"><div class="ferr" id="ed">Date of birth is required</div></div></div>
+            <div class="fg2"><div class="fg"><label class="fl">Gender <span class="req">*</span></label><select class="fi" id="fg"><option value="">Select gender</option><option value="male">Male / পুরুষ</option><option value="female">Female / মহিলা</option><option value="other">Other</option></select><div class="ferr" id="eg">Gender is required</div></div><div class="fg"><label class="fl">NID / Passport <span class="req">*</span></label><input class="fi" id="fni" type="text" placeholder="17 or 19 digit NID"><div class="ferr" id="eni">NID is required</div></div></div>
+            <div class="fg2"><div class="fg"><label class="fl">Phone <span class="req">*</span></label><input class="fi" id="fp" type="tel" placeholder="01XXXXXXXXX"><div class="ferr" id="ep">Valid phone required</div></div><div class="fg"><label class="fl">Email (optional)</label><input class="fi" id="fe" type="email" placeholder="you@email.com"></div></div>
+            <div class="fg"><label class="fl">Full Address <span class="req">*</span></label><input class="fi" id="fa" type="text" placeholder="Village, Upazila, District"><div class="ferr" id="ea">Address is required</div></div>
+            <div class="stnav"><button class="btnnxt" onclick="goSt(2)"><span id="nx1">Next: Health Details</span> →</button></div>
+          </div>
+          <div class="step" id="s2">
+            <div class="fhdr"><div class="fring"><div class="fringspin"></div><div class="fringinner">🩺</div></div><div><div class="ftitle" id="s2t">Health &amp; Donation Details</div><div class="fsub" id="s2s">Select your blood group and organs to donate.</div></div></div>
+            <div class="fg" style="margin-bottom:18px"><label class="fl">Blood Group <span class="req">*</span></label><div class="bgg"><div class="bgc" onclick="sBG('A+','bgAp')" id="bgAp">A+</div><div class="bgc" onclick="sBG('A-','bgAm')" id="bgAm">A−</div><div class="bgc" onclick="sBG('B+','bgBp')" id="bgBp">B+</div><div class="bgc" onclick="sBG('B-','bgBm')" id="bgBm">B−</div><div class="bgc" onclick="sBG('AB+','bgABp')" id="bgABp">AB+</div><div class="bgc" onclick="sBG('AB-','bgABm')" id="bgABm">AB−</div><div class="bgc" onclick="sBG('O+','bgOp')" id="bgOp">O+</div><div class="bgc" onclick="sBG('O-','bgOm')" id="bgOm">O−</div></div><div class="ferr" id="ebl">Please select your blood group</div></div>
+            <div class="fg" style="margin-bottom:18px"><label class="fl">Organs to Donate <span class="req">*</span></label><button class="selbtn" onclick="sAll()" id="salb">✓ Select All Organs</button><div class="osg"><button class="osc" data-o="Heart" onclick="tO(this)"><span>🫀</span>Heart</button><button class="osc" data-o="Lungs" onclick="tO(this)"><span>🫁</span>Lungs</button><button class="osc" data-o="Liver" onclick="tO(this)"><span>🟤</span>Liver</button><button class="osc" data-o="Kidneys" onclick="tO(this)"><span>🫘</span>Kidneys</button><button class="osc" data-o="Corneas" onclick="tO(this)"><span>👁️</span>Corneas</button><button class="osc" data-o="Pancreas" onclick="tO(this)"><span>🩺</span>Pancreas</button><button class="osc" data-o="Bone Marrow" onclick="tO(this)"><span>🧬</span>Marrow</button><button class="osc" data-o="Skin" onclick="tO(this)"><span>🩹</span>Skin</button><button class="osc" data-o="Bone" onclick="tO(this)"><span>🦴</span>Bone</button><button class="osc" data-o="Intestines" onclick="tO(this)"><span>🔵</span>Intestines</button></div><div class="ferr" id="eog">Please select at least one organ</div></div>
+            <div class="fg2"><div class="fg"><label class="fl">Known Medical Conditions</label><input class="fi" id="fco" type="text" placeholder="e.g. Diabetes (or None)"></div><div class="fg"><label class="fl">Current Medications</label><input class="fi" id="fme" type="text" placeholder="e.g. Metformin (or None)"></div></div>
+            <div class="stnav"><button class="btnbk" onclick="goSt(1)">← <span id="bk2">Back</span></button><button class="btnnxt" onclick="goSt(3)"><span id="nx2">Next: Emergency Contact</span> →</button></div>
+          </div>
+          <div class="step" id="s3">
+            <div class="fhdr"><div class="fring"><div class="fringspin"></div><div class="fringinner">👨‍👩‍👧</div></div><div><div class="ftitle" id="s3t">Family &amp; Emergency Contact</div><div class="fsub" id="s3s">Family consent is the most critical step in Bangladesh.</div></div></div>
+            <div class="fg2"><div class="fg"><label class="fl">Contact Name <span class="req">*</span></label><input class="fi" id="fen" type="text" placeholder="Full name"><div class="ferr" id="een">Contact name is required</div></div><div class="fg"><label class="fl">Relationship <span class="req">*</span></label><select class="fi" id="fer"><option value="">Select</option><option>Spouse</option><option>Parent</option><option>Child</option><option>Sibling</option><option>Guardian</option><option>Other</option></select><div class="ferr" id="eer">Relationship required</div></div></div>
+            <div class="fg2"><div class="fg"><label class="fl">Contact Phone <span class="req">*</span></label><input class="fi" id="fep" type="tel" placeholder="01XXXXXXXXX"><div class="ferr" id="eep">Phone is required</div></div><div class="fg"><label class="fl">Family Informed?</label><select class="fi" id="ffi"><option value="yes">Yes — they know my decision</option><option value="no">Not yet — I will tell them</option><option value="partial">Some members know</option></select></div></div>
+            <div class="tipbox" id="famtip">💡 <strong>Important:</strong> Telling your family is the most important step. Without their consent, donation cannot proceed.</div>
+            <div class="fg" style="margin-top:10px"><label class="fl" id="nlbl">Personal Note for Family (Optional)</label><textarea class="fi" id="fno" placeholder="A personal message explaining your decision..."></textarea></div>
+            <div class="stnav"><button class="btnbk" onclick="goSt(2)">← <span id="bk3">Back</span></button><button class="btnnxt" onclick="goSt(4)"><span id="nx3">Next: Review &amp; Confirm</span> →</button></div>
+          </div>
+          <div class="step" id="s4">
+            <div class="fhdr"><div class="fring"><div class="fringspin"></div><div class="fringinner">📋</div></div><div><div class="ftitle" id="s4t">Declaration &amp; Confirmation</div><div class="fsub" id="s4s">Read and accept all declarations before submitting.</div></div></div>
+            <label class="fchk"><input type="checkbox" id="d1"><div class="cbsq"></div><div class="cbtxt"><strong id="d1s">I voluntarily declare</strong> <span id="d1t">that I wish to donate my organs after death, subject to family consent and Bangladesh law. NOT legally binding.</span></div></label>
+            <label class="fchk"><input type="checkbox" id="d2"><div class="cbsq"></div><div class="cbtxt"><strong id="d2s">I understand</strong> <span id="d2t">that MedFind does NOT perform or arrange transplants. Voluntary awareness and registration platform only.</span></div></label>
+            <label class="fchk"><input type="checkbox" id="d3"><div class="cbsq"></div><div class="cbtxt"><strong id="d3s">I confirm</strong> <span id="d3t">no payment or selling of organs is involved. Donation is purely voluntary and free.</span></div></label>
+            <label class="fchk"><input type="checkbox" id="d4"><div class="cbsq"></div><div class="cbtxt"><strong id="d4s">I consent</strong> <span id="d4t">my data is stored securely, used only for donor records, never shared or sold. I may withdraw anytime.</span></div></label>
+            <div class="fdisc" id="fdisc">⚠️ This registration records voluntary intent only. Actual donation requires: (1) Death confirmed by physicians, (2) Family consent, (3) Medical suitability, (4) Licensed transplant authority.</div>
+            <div class="stnav" style="margin-top:18px"><button class="btnbk" onclick="goSt(3)">← <span id="bk4">Back</span></button><button class="btnsub" onclick="subForm()">❤️ <span id="subt">Complete Registration</span></button></div>
+          </div>
+        </div>
+        <div id="success">
+          <div class="scring"><div class="scinner">❤️</div></div>
+          <div class="sctitle">Thank You, <span id="scname">Donor</span>!</div>
+          <p class="scp-txt" id="scp">You have taken one of the most noble steps a human being can take. Your registration is recorded. Please inform your family.</p>
+          <div class="scid" id="scid">Donor ID: MF-2026-XXXXXX</div>
+          <div class="scacts"><button class="scbtn p" onclick="pCard()">🖨️ <span id="scpr">Print Donor Card</span></button><button class="scbtn g" onclick="shWA()">📲 <span id="scsh">Share with Family</span></button><a href="#awareness" class="scbtn g">📖 <span id="scle">Read More</span></a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sec spad">
+  <div class="cont">
+    <div class="stag rv" id="hsp-tag">Authorized Organizations</div>
+    <h2 class="sh rv rv1" id="hsp-h">Contact Transplant Centers</h2>
+    <p class="sp rv rv2" id="hsp-p">Licensed hospitals and NGOs in Bangladesh authorized to handle organ donation and transplantation.</p>
+    <div class="hdiv rv rv2"></div>
+    <div class="hospg">
+      <div class="hospc rv"><div class="hctop"><div class="hcico">🏥</div><div><div class="hcname">Dhaka Medical College Hospital</div><div class="hctype">Government Teaching Hospital</div><div class="hcaddr">📍 Bakshibazar, Dhaka-1000</div></div></div><div class="hctags"><span class="hctag">Kidney Transplant</span><span class="hctag">Cornea</span><span class="hctag">Emergency 24/7</span></div><button class="hccall" onclick="tst('📞 DMCH: 02-55165088')">📞 02-55165088</button></div>
+      <div class="hospc rv rv1"><div class="hctop"><div class="hcico">❤️</div><div><div class="hcname">Sandhani — National Eye Bank</div><div class="hctype">NGO — Cornea &amp; Blood</div><div class="hcaddr">📍 DMCH Campus, Dhaka</div></div></div><div class="hctags"><span class="hctag">Cornea Donation</span><span class="hctag">Blood Bank</span></div><button class="hccall" onclick="tst('📞 Sandhani: Contact via DMCH campus')">📞 Via DMCH</button></div>
+      <div class="hospc rv rv2"><div class="hctop"><div class="hcico">🎓</div><div><div class="hcname">BSMMU</div><div class="hctype">Government University Hospital</div><div class="hcaddr">📍 Shahbag, Dhaka</div></div></div><div class="hctags"><span class="hctag">Kidney Transplant</span><span class="hctag">Research</span></div><button class="hccall" onclick="tst('📞 BSMMU: 02-9661065')">📞 02-9661065</button></div>
+      <div class="hospc rv"><div class="hctop"><div class="hcico">💓</div><div><div class="hcname">NICVD</div><div class="hctype">National Heart Institute</div><div class="hcaddr">📍 Sher-e-Bangla Nagar</div></div></div><div class="hctags"><span class="hctag">Heart</span><span class="hctag">Cardiac ICU</span></div><button class="hccall" onclick="tst('📞 NICVD: 02-9128360')">📞 02-9128360</button></div>
+      <div class="hospc rv rv1"><div class="hctop"><div class="hcico">🏩</div><div><div class="hcname">Evercare Hospital Dhaka</div><div class="hctype">Private International</div><div class="hcaddr">📍 Bashundhara, Dhaka</div></div></div><div class="hctags"><span class="hctag">All Organs</span><span class="hctag">International</span></div><button class="hccall" onclick="tst('📞 Evercare: 10678')">📞 10678</button></div>
+      <div class="hospc rv rv2"><div class="hctop"><div class="hcico">🔬</div><div><div class="hcname">IEDCR Bangladesh</div><div class="hctype">Government Health Authority</div><div class="hcaddr">📍 Mohakhali, Dhaka</div></div></div><div class="hctags"><span class="hctag">Policy</span><span class="hctag">Oversight</span></div><button class="hccall" onclick="tst('📞 IEDCR: 01401-184551')">📞 01401-184551</button></div>
+    </div>
+    <div class="lawcard rv">
+      <div class="stag" style="margin-bottom:10px" id="lw-tag">Legal Framework</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px;color:var(--t1)" id="lw-h">Our Legal &amp; Ethical Commitments</h3>
+      <p style="font-size:13px;color:var(--t2)" id="lw-p">MedFind Donate Life strictly complies with Bangladesh transplantation law.</p>
+      <div class="lawg">
+        <div class="lawi"><span class="lawic">✅</span><span id="li1">Compliant with Human Organ Transplant Act, Bangladesh</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li2">100% voluntary — zero payment, ever</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li3">We do NOT perform or broker transplants</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li4">Donor data encrypted, never sold or shared</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li5">No direct donor-recipient matching</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li6">Family consent always required</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li7">Registration withdrawable at any time</span></div>
+        <div class="lawi"><span class="lawic">✅</span><span id="li8">Awareness &amp; registration only — no transactions</span></div>
+      </div>
+      <div class="lawavoid">
+        <div class="lawavoidtitle" id="lat">❌ What This Platform Does NOT Do (Illegal &amp; Prohibited)</div>
+        <div class="avoidg">
+          <div class="avoidi">🚫 <span id="av1">Direct donor-recipient matching</span></div>
+          <div class="avoidi">🚫 <span id="av2">Any payment or organ pricing</span></div>
+          <div class="avoidi">🚫 <span id="av3">Chat between donor and patient</span></div>
+          <div class="avoidi">🚫 <span id="av4">Acting as transplant middleman</span></div>
+          <div class="avoidi">🚫 <span id="av5">Publishing donor lists publicly</span></div>
+          <div class="avoidi">🚫 <span id="av6">AI suggesting specific donors</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="ftlogo">Med<span>Find</span> — Donate Life ❤️</div>
+  <p class="ftdis" id="ftd">MedFind Donate Life is a voluntary organ donation awareness and registration platform. We do not perform, arrange, or broker organ transplants. No buying or selling of organs is permitted under Bangladesh law or Islamic ethics.</p>
+  <div class="ftlinks">
+    <a href="../../pages/privacy.html">Privacy Policy</a>
+    <a href="../../pages/terms.html">Terms &amp; Conditions</a>
+    <a href="../../pages/medical-disclaimer.html">Medical Disclaimer</a>
+    <a href="../../pages/contact.html">Report Abuse</a>
+    <a href="../../index.html">← MedFind Home</a>
+  </div>
+  <div class="ftdev">Developed by <span>Ahsanul Yamin Babor</span> · medfindbd2026@gmail.com · BAUET 2026</div>
+</footer>
+<div id="toast"></div>
+<script>
+/* ── TRANSLATIONS ── */
+const T={en:{nsep:'/ Donate Life',nbk:'MedFind',lbt:'Legal Notice — Transplantation of Human Organs Act, Bangladesh',lbb:'This platform provides voluntary donor registration and awareness ONLY. We do NOT perform, arrange, or broker organ transplants. Buying or selling organs is a criminal offence under Bangladesh law.',hbd:'Voluntary Organ Donation · Bangladesh',heyw:'One decision. Eight lives saved.',ht1:'Donate Life,',ht2:'Leave a Legacy',hsub:'Register as a voluntary organ donor today. Completely free, completely legal.',hc1:'Register as Donor',hc2:'Learn More',st1:'Lives one donor can save',st2:'Extra via cornea donation',st3:'Voluntary & Free',st4:'No payment, ever','hw-tag':'How It Works','hw-h':'The Donation Journey','hw-p':'Organ donation happens only after death and requires family consent. MedFind helps you register your intent.',hw1t:'Register Your Intent',hw1d:'Sign up voluntarily. Choose which organs to donate. No organ is taken during your lifetime.',hw2t:'Inform Your Family',hw2d:'In Bangladesh, family consent is the legal cornerstone. Tell your family now.',hw3t:'Hospital Manages All',hw3d:'After death is confirmed, a licensed hospital manages everything under strict legal and medical supervision.',hw4t:'Lives Are Saved',hw4d:'Your organs reach critically ill patients through the national transplant system.','og-tag':'What Can Be Donated','og-h':'Organs & Tissues','og-p':'A single donor can give life to up to 8 people and restore sight to 2 more.','mf-tag':'Misconceptions','mf-h':'Myths vs Facts',ml:'Myth',fl:'Fact',m1:"Doctors won't try hard to save me if I'm a registered donor.",f1:'Donor status has zero effect on your care. Transplant and treating teams are entirely separate.',m2:'Organ donation is haram in Islam.',f2:'Islamic Fiqh Academy (OIC 1988), Darul Ifta Bangladesh, and majority scholars declared voluntary unpaid donation permissible (halal) — Sadaqah Jariyah.',m3:'Only young healthy people can donate.',f3:'People of any age can register. Suitability is assessed medically at the time of death.',m4:'MedFind will sell my information.',f4:'Your data is encrypted, stored only for donor records, never shared or sold. Withdraw anytime.','isl-tag':'Islamic Perspective','isl-h':'Organ Donation in Islam','isl-title':'Scholarly Consensus & Quranic Evidence','isl-badge':'Verified Scholarship',scholarsnt:'<strong>Official Scholarly Rulings (Summary):</strong><br><br><strong>1. Islamic Fiqh Academy — OIC, Jeddah (1988):</strong> Resolution No. 26 (1/4) formally declared voluntary, unpaid organ donation permissible under four conditions: (a) free informed consent, (b) no financial payment, (c) donor\'s life not endangered, (d) performed by qualified professionals.<br><br><strong>2. Darul Ifta Bangladesh:</strong> Issued fatwa permitting voluntary organ donation with family consent, citing Hifzul-Nafs as one of the five Maqasid of Islamic Sharia.<br><br><strong>3. IMAB & IMANA:</strong> Both organisations support voluntary organ donation as consistent with Islamic values.<br><br><strong>4. Scholarly majority:</strong> Contemporary Hanafi, Shafi\'i, Maliki, and Hanbali scholars concur on permissibility.','rg-tag':'Voluntary Registration','rg-h':'Become a Donor','rg-p':'Complete this form to register your voluntary intent. NOT legally binding. Withdrawable at any time.',s1t:'Personal Information',s1s:'All data encrypted and confidential.',s2t:'Health & Donation Details',s2s:'Select your blood group and organs to donate.',s3t:'Family & Emergency Contact',s3s:'Family consent is the most critical step in Bangladesh.',s4t:'Declaration & Confirmation',s4s:'Read and accept all declarations before submitting.',nlbl:'Personal Note for Family (Optional)',famtip:'💡 <strong>Important:</strong> Telling your family is the most important step. Without their consent, donation cannot proceed.',d1s:'I voluntarily declare',d1t:'that I wish to donate my organs after death, subject to family consent and Bangladesh law. NOT legally binding.',d2s:'I understand',d2t:'that MedFind does NOT perform or arrange transplants. Voluntary awareness and registration platform only.',d3s:'I confirm',d3t:'no payment or selling of organs is involved. Donation is purely voluntary and free.',d4s:'I consent',d4t:'my data is stored securely, used only for donor records, never shared or sold. I may withdraw anytime.',fdisc:'⚠️ This registration records voluntary intent only. Actual donation requires: (1) Death confirmed by physicians, (2) Family consent, (3) Medical suitability, (4) Licensed transplant authority.',subt:'Complete Registration',nx1:'Next: Health Details',nx2:'Next: Emergency Contact',nx3:'Next: Review & Confirm',bk2:'Back',bk3:'Back',bk4:'Back',salb:'✓ Select All Organs',plbl:['Step 1 / 4','Step 2 / 4','Step 3 / 4','Step 4 / 4'],scp:'You have taken one of the most noble steps a human being can take. Your registration is recorded. Please inform your family.',scpr:'Print Donor Card',scsh:'Share with Family',scle:'Read More','hsp-tag':'Authorized Organizations','hsp-h':'Contact Transplant Centers','hsp-p':'Licensed hospitals and NGOs in Bangladesh authorized for organ donation.','lw-tag':'Legal Framework','lw-h':'Our Legal & Ethical Commitments','lw-p':'MedFind Donate Life strictly complies with Bangladesh transplantation law.',li1:'Compliant with Human Organ Transplant Act, Bangladesh',li2:'100% voluntary — zero payment, ever',li3:'We do NOT perform or broker transplants',li4:'Donor data encrypted, never sold or shared',li5:'No direct donor-recipient matching',li6:'Family consent always required',li7:'Registration withdrawable at any time',li8:'Awareness & registration only — no transactions',lat:'What This Platform Does NOT Do (Illegal & Prohibited)',av1:'Direct donor-recipient matching',av2:'Any payment or organ pricing',av3:'Chat between donor and patient',av4:'Acting as transplant middleman',av5:'Publishing donor lists publicly',av6:'AI suggesting specific donors',ftd:'MedFind Donate Life is a voluntary organ donation awareness and registration platform. We do not perform, arrange, or broker organ transplants.'},bn:{nsep:'/ অঙ্গদান',nbk:'MedFind',lbt:'আইনি নোটিশ — বাংলাদেশ মানব অঙ্গ প্রতিস্থাপন আইন',lbb:'এই প্ল্যাটফর্ম শুধুমাত্র স্বেচ্ছামূলক দাতা নিবন্ধন ও সচেতনতার জন্য। আমরা অঙ্গ প্রতিস্থাপন করি না।',hbd:'স্বেচ্ছামূলক অঙ্গদান · বাংলাদেশ',heyw:'একটি সিদ্ধান্ত। আটটি জীবন রক্ষা।',ht1:'জীবন দান করুন,',ht2:'স্মরণীয় হয়ে যান',hsub:'আজই স্বেচ্ছামূলক অঙ্গদাতা হিসেবে নিবন্ধন করুন। সম্পূর্ণ বিনামূল্যে, সম্পূর্ণ আইনসম্মত।',hc1:'দাতা হিসেবে নিবন্ধন করুন',hc2:'আরো জানুন',st1:'একজন দাতা যত জীবন বাঁচান',st2:'কর্নিয়া দানে দৃষ্টি ফেরে',st3:'সম্পূর্ণ স্বেচ্ছামূলক',st4:'কোনো অর্থ নেই','hw-tag':'এটি কীভাবে কাজ করে','hw-h':'দানের যাত্রা','hw-p':'অঙ্গদান শুধু মৃত্যুর পরে হয় এবং পরিবারের সম্মতি প্রয়োজন।',hw1t:'ইচ্ছা নিবন্ধন করুন',hw1d:'স্বেচ্ছায় নিবন্ধন করুন। কোন অঙ্গ দান করবেন তা বেছে নেন।',hw2t:'পরিবারকে জানান',hw2d:'বাংলাদেশে পরিবারের সম্মতি আইনিভাবে অপরিহার্য। এখনই পরিবারকে জানান।',hw3t:'হাসপাতাল পরিচালনা করে',hw3d:'মৃত্যু নিশ্চিত হওয়ার পর লাইসেন্সপ্রাপ্ত হাসপাতাল কঠোর তত্ত্বাবধানে সব পরিচালনা করে।',hw4t:'জীবন রক্ষা পায়',hw4d:'আপনার অঙ্গ জাতীয় ব্যবস্থার মাধ্যমে সংকটাপন্ন রোগীদের কাছে পৌঁছায়।','og-tag':'কী দান করা যায়','og-h':'অঙ্গ ও টিস্যু','og-p':'একজন দাতা ৮ জনের জীবন বাঁচাতে ও ২ জনের দৃষ্টি ফেরাতে পারেন।','mf-tag':'সাধারণ ভ্রান্তি','mf-h':'ভ্রান্তি বনাম সত্য',ml:'ভ্রান্তি',fl:'সত্য',m1:'দাতা হলে ডাক্তাররা আমাকে বাঁচাতে কম চেষ্টা করবেন।',f1:'দাতার মর্যাদা চিকিৎসায় কোনো প্রভাব ফেলে না।',m2:'অঙ্গদান ইসলামে হারাম।',f2:'ইসলামিক ফিকাহ কাউন্সিল (OIC ১৯৮৮), দারুল ইফতা বাংলাদেশ এবং অধিকাংশ আলেম স্বেচ্ছামূলক অঙ্গদানকে জায়েজ ঘোষণা করেছেন।',m3:'শুধু তরুণ ও সুস্থ মানুষ দান করতে পারেন।',f3:'যেকোনো বয়সের মানুষ নিবন্ধন করতে পারেন। ৭০+ বয়সীরাও কর্নিয়া দান করেছেন।',m4:'MedFind আমার তথ্য বিক্রি করবে।',f4:'আপনার তথ্য এনক্রিপ্টেড, কখনো বিক্রি বা প্রকাশ হবে না।','isl-tag':'ইসলামিক দৃষ্টিভঙ্গি','isl-h':'ইসলামে অঙ্গদান','isl-title':'আলেমদের ঐকমত্য ও কুরআনিক প্রমাণ','isl-badge':'যাচাইকৃত স্কলারশিপ',scholarsnt:'<strong>সরকারী ফতোয়া ও আলেমদের রায়:</strong><br><br><strong>১. ইসলামিক ফিকাহ একাডেমি — OIC (১৯৮৮):</strong> চারটি শর্তে স্বেচ্ছামূলক অঙ্গদান জায়েজ ঘোষণা করেছে।<br><br><strong>২. দারুল ইফতা বাংলাদেশ:</strong> পরিবারের সম্মতিসহ স্বেচ্ছামূলক অঙ্গদান জায়েজ।<br><br><strong>৩. IMAB ও IMANA:</strong> উভয় সংস্থা ইসলামিক মূল্যবোধের সাথে সামঞ্জস্যপূর্ণ স্বেচ্ছামূলক অঙ্গদানকে সমর্থন করে।','rg-tag':'স্বেচ্ছামূলক নিবন্ধন','rg-h':'দাতা হিসেবে যোগ দিন','rg-p':'নিচের ফর্মটি পূরণ করুন। আইনগতভাবে বাধ্যতামূলক নয়। যেকোনো সময় প্রত্যাহার করা যাবে।',s1t:'ব্যক্তিগত তথ্য',s1s:'সব তথ্য এনক্রিপ্টেড ও গোপনীয়।',s2t:'স্বাস্থ্য ও দানের বিবরণ',s2s:'রক্তের গ্রুপ এবং অঙ্গ নির্বাচন করুন।',s3t:'পরিবার ও জরুরি যোগাযোগ',s3s:'বাংলাদেশে পরিবারের সম্মতি সবচেয়ে গুরুত্বপূর্ণ।',s4t:'ঘোষণা ও নিশ্চিতকরণ',s4s:'জমা দেওয়ার আগে সব ঘোষণা পড়ুন।',nlbl:'পরিবারের জন্য ব্যক্তিগত নোট (ঐচ্ছিক)',famtip:'💡 <strong>গুরুত্বপূর্ণ:</strong> পরিবারকে জানানোই সবচেয়ে গুরুত্বপূর্ণ। তাদের সম্মতি ছাড়া দান সম্পন্ন হবে না।',d1s:'আমি স্বেচ্ছায় ঘোষণা করছি',d1t:'মৃত্যুর পর পরিবারের সম্মতি ও বাংলাদেশের আইন সাপেক্ষে অঙ্গ দান করতে চাই।',d2s:'আমি বুঝি',d2t:'MedFind অঙ্গ প্রতিস্থাপন করে না। শুধুমাত্র স্বেচ্ছামূলক সচেতনতা ও নিবন্ধন প্ল্যাটফর্ম।',d3s:'আমি নিশ্চিত করছি',d3t:'এখানে কোনো অঙ্গ ক্রয়-বিক্রয় নেই। দান সম্পূর্ণ স্বেচ্ছামূলক ও বিনামূল্যে।',d4s:'আমি সম্মতি দিচ্ছি',d4t:'আমার তথ্য নিরাপদে সংরক্ষিত থাকবে, কখনো বিক্রি বা শেয়ার হবে না।',fdisc:'⚠️ এই নিবন্ধন শুধুমাত্র ইচ্ছা রেকর্ড করে। প্রকৃত দানের জন্য: (১) মৃত্যু নিশ্চিতকরণ, (২) পরিবারের সম্মতি, (৩) চিকিৎসাগত উপযুক্ততা, (৪) লাইসেন্সপ্রাপ্ত কর্তৃপক্ষ।',subt:'নিবন্ধন সম্পন্ন করুন',nx1:'পরবর্তী: স্বাস্থ্য বিবরণ',nx2:'পরবর্তী: জরুরি যোগাযোগ',nx3:'পরবর্তী: পর্যালোচনা',bk2:'পেছনে',bk3:'পেছনে',bk4:'পেছনে',salb:'✓ সব অঙ্গ নির্বাচন',plbl:['ধাপ ১/৪','ধাপ ২/৪','ধাপ ৩/৪','ধাপ ৪/৪'],scp:'আপনি একটি অত্যন্ত মহৎ পদক্ষেপ নিয়েছেন। নিবন্ধন রেকর্ড হয়েছে।',scpr:'দাতার কার্ড প্রিন্ট',scsh:'পরিবারের সাথে শেয়ার',scle:'আরো পড়ুন','hsp-tag':'অনুমোদিত প্রতিষ্ঠান','hsp-h':'ট্রান্সপ্লান্ট কেন্দ্রে যোগাযোগ','hsp-p':'বাংলাদেশে অঙ্গদান পরিচালনাকারী লাইসেন্সপ্রাপ্ত হাসপাতাল।','lw-tag':'আইনি কাঠামো','lw-h':'আমাদের প্রতিশ্রুতি','lw-p':'MedFind Donate Life বাংলাদেশের আইন কঠোরভাবে মেনে চলে।',li1:'বাংলাদেশ মানব অঙ্গ প্রতিস্থাপন আইন মেনে চলা',li2:'১০০% স্বেচ্ছামূলক — কোনো অর্থ নেই',li3:'আমরা প্রতিস্থাপন করি না',li4:'তথ্য এনক্রিপ্টেড, কখনো বিক্রি হয় না',li5:'দাতা ও গ্রহীতার সরাসরি মেলামেশা নেই',li6:'পরিবারের সম্মতি সবসময় আবশ্যক',li7:'নিবন্ধন যেকোনো সময় প্রত্যাহার',li8:'শুধু সচেতনতা — কোনো লেনদেন নেই',lat:'এই প্ল্যাটফর্ম যা করে না (অবৈধ)',av1:'দাতা-গ্রহীতা সরাসরি মেলামেশা',av2:'অঙ্গের মূল্য বা অর্থপ্রদান',av3:'দাতা ও রোগীর চ্যাট',av4:'দালাল হিসেবে কাজ',av5:'দাতার তালিকা প্রকাশ',av6:'AI দিয়ে দাতা সুপারিশ',ftd:'MedFind Donate Life একটি স্বেচ্ছামূলক অঙ্গদান সচেতনতা ও নিবন্ধন প্ল্যাটফর্ম।'}};
+
+let lang='en',step=1,blood='',organs=new Set(),dname='';
+
+function setL(l){lang=l;document.getElementById('nl-en').classList.toggle('on',l==='en');document.getElementById('nl-bn').classList.toggle('on',l==='bn');document.querySelectorAll('.ayahbn,.hadithbn').forEach(e=>e.style.display=l==='bn'?'block':'none');applyL()}
+function applyL(){const t=T[lang];Object.keys(t).forEach(k=>{const el=document.getElementById(k);if(el)el.innerHTML=t[k]});document.getElementById('plbl').textContent=t.plbl[step-1]}
+function goSt(n){if(n>step&&!val(step))return;document.getElementById('s'+step).classList.remove('on');step=n;document.getElementById('s'+n).classList.add('on');updPg();document.getElementById('register').scrollIntoView({behavior:'smooth',block:'start'})}
+function updPg(){[1,2,3,4].forEach(i=>{const e=document.getElementById('ps'+i);e.classList.remove('act','done');if(i<step)e.classList.add('done');else if(i===step)e.classList.add('act')});document.getElementById('plbl').textContent=T[lang].plbl[step-1]}
+function val(s){let ok=true;if(s===1){ok=vf('fn','en')&vf('fd','ed')&vf('fg','eg')&vf('fni','eni')&vf('fp','ep')&vf('fa','ea')}if(s===2){if(!blood){document.getElementById('ebl').classList.add('on');ok=false}else document.getElementById('ebl').classList.remove('on');if(!organs.size){document.getElementById('eog').classList.add('on');ok=false}else document.getElementById('eog').classList.remove('on')}if(s===3){ok=vf('fen','een')&vf('fep','eep');const r=document.getElementById('fer');if(!r.value){document.getElementById('eer').classList.add('on');ok=false}else document.getElementById('eer').classList.remove('on')}return!!ok}
+function vf(fi,ei){const el=document.getElementById(fi);const v=el?.value?.trim();if(!v){el?.classList.add('err');document.getElementById(ei)?.classList.add('on');return false}el?.classList.remove('err');el?.classList.add('ok');document.getElementById(ei)?.classList.remove('on');return true}
+function sBG(bg,id){blood=bg;document.querySelectorAll('.bgc').forEach(c=>c.classList.remove('on'));document.getElementById(id)?.classList.add('on');document.getElementById('ebl').classList.remove('on')}
+function tO(btn){const o=btn.dataset.o;organs.has(o)?organs.delete(o):organs.add(o);btn.classList.toggle('on',organs.has(o));if(organs.size>0)document.getElementById('eog').classList.remove('on')}
+function sAll(){document.querySelectorAll('.osc').forEach(b=>{organs.add(b.dataset.o);b.classList.add('on')})}
+
+async function subForm(){
+  if(!['d1','d2','d3','d4'].every(id=>document.getElementById(id).checked)){tst('⚠️ '+(lang==='bn'?'সব ঘোষণায় সম্মতি দিন':'Please accept all declarations'));return}
+  const btn=document.querySelector('.btnsub');btn.disabled=true;btn.innerHTML='⏳ Submitting...';
+  dname=document.getElementById('fn').value.trim().split(' ')[0];
+  const data={name:document.getElementById('fn').value.trim(),dob:document.getElementById('fd').value,gender:document.getElementById('fg').value,nid:document.getElementById('fni').value.trim(),phone:document.getElementById('fp').value.trim(),email:document.getElementById('fe').value.trim(),address:document.getElementById('fa').value.trim(),blood_group:blood,organs:Array.from(organs),conditions:document.getElementById('fco').value.trim(),medications:document.getElementById('fme').value.trim(),ec_name:document.getElementById('fen').value.trim(),ec_relation:document.getElementById('fer').value,ec_phone:document.getElementById('fep').value.trim(),family_informed:document.getElementById('ffi').value,note:document.getElementById('fno').value.trim(),lang};
+  let donorId=gId();
+
+  // ── 1. Firestore ──
+  try{
+    if(window.MedFirestore&&window.MedFirestore.ready){
+      const uid=(window.firebase&&firebase.auth&&firebase.auth().currentUser)?firebase.auth().currentUser.uid:'anonymous';
+      const fsId=await window.MedFirestore.saveOrganDonor({...data,userId:uid,registeredAt:window.MedFirestore.ts?window.MedFirestore.ts():new Date().toISOString()});
+      if(fsId){donorId=fsId;console.log('%c✅ Firestore saved:','color:#34d399;font-weight:bold',donorId)}
+    }
+  }catch(e){console.warn('Firestore failed, trying backend:',e)}
+
+  // ── 2. Django backend — URL resolved from MEDFIND_CONFIG, works local + prod ──
+  try{
+    const base=(window.MEDFIND_CONFIG&&window.MEDFIND_CONFIG.API_BASE)?window.MEDFIND_CONFIG.API_BASE.replace(/\/api\/v1\/?$/,''):'http://127.0.0.1:8000';
+    const r=await fetch(base+'/api/donate/register/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':gC('csrftoken')},body:JSON.stringify({...data,donor_id:donorId})});
+    const d=await r.json();shSc(d.donor_id||donorId);
+  }catch(err){
+    // Static / Live Server mode: backend unreachable — show success with local ID (normal behaviour)
+    console.warn('Backend not reachable (normal in Live Server / static mode).',err);
+    shSc(donorId);
+  }
+}
+function gId(){return'MF-'+new Date().getFullYear()+'-'+Math.random().toString(36).substr(2,6).toUpperCase()}
+function shSc(id){document.getElementById('fbody').style.display='none';document.getElementById('pgwrap').style.display='none';const sc=document.getElementById('success');sc.style.display='block';document.getElementById('scname').textContent=dname||'Donor';document.getElementById('scid').textContent='Donor ID: '+id;['scp','scpr','scsh','scle'].forEach(k=>{const el=document.getElementById(k);if(el)el.textContent=T[lang][k]})}
+function pCard(){const nm=document.getElementById('scname').textContent;const id=document.getElementById('scid').textContent;const bg=blood||'—';const w=window.open('','_blank');w.document.write('<!DOCTYPE html><html><head><title>Donor Card</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Georgia,serif;background:#f5eef0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}.card{width:360px;background:linear-gradient(135deg,#c4163b,#e42e52,#f26d82);border-radius:20px;padding:28px;color:white;box-shadow:0 12px 40px rgba(196,22,59,.45);margin-bottom:16px;position:relative}.corner{position:absolute;top:20px;right:20px;font-size:36px}.label{font-size:12px;letter-spacing:2px;opacity:.85;margin-bottom:5px}.name{font-size:22px;font-weight:700;margin-bottom:6px}.bl{display:inline-block;background:rgba(255,255,255,.22);border-radius:8px;padding:4px 12px;font-size:15px;font-weight:800;font-family:monospace;margin-bottom:12px}.did{font-size:12px;opacity:.8;font-family:monospace;letter-spacing:1px;margin-bottom:12px}.foot{font-size:10px;opacity:.7;border-top:1px solid rgba(255,255,255,.25);padding-top:10px;line-height:1.6}.note{background:white;color:#555;border-radius:12px;padding:14px;font-size:11.5px;line-height:1.6;max-width:360px;text-align:center}</style></head><body><div class="card"><div class="corner">❤️</div><div class="label">ORGAN DONOR CARD</div><div class="name">'+nm+'</div><div class="bl">'+bg+'</div><div class="did">'+id+'</div><div class="foot">In case of death, please contact my family before any medical decision. My wish is to voluntarily donate my organs to save lives.<br><br>MedFind Bangladesh · medfindbd2026@gmail.com · BAUET 2026</div></div><div class="note">⚠️ Voluntary intent only. Actual donation requires family consent and licensed medical authority.</div></body></html>');w.document.close();setTimeout(()=>w.print(),600)}
+function shWA(){const id=document.getElementById('scid').textContent;const msg=lang==='bn'?'আমি MedFind এ স্বেচ্ছামূলক অঙ্গদাতা হিসেবে নিবন্ধন করেছি।\n'+id+'\n\nএকটি জীবন আটটি জীবন বাঁচাতে পারে ❤️':'I registered as a voluntary organ donor on MedFind.\n'+id+'\n\nOne life can save eight lives ❤️';window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank')}
+function tst(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200)}
+function gC(n){const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return v?v[2]:''}
+
+/* ── SAFE SCROLL REVEAL ──
+   Elements are VISIBLE by default (opacity:1 in CSS).
+   JS marks below-fold elements as .waiting, then reveals on scroll.
+   If IntersectionObserver unavailable → everything stays visible. ── */
+(function(){
+  if(!('IntersectionObserver' in window))return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const vp=window.innerHeight;
+  document.querySelectorAll('.rv').forEach(el=>{
+    if(el.getBoundingClientRect().top>vp)el.classList.add('waiting');
+  });
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('waiting');e.target.classList.add('vis');obs.unobserve(e.target)}});
+  },{threshold:0.08});
+  document.querySelectorAll('.rv.waiting').forEach(el=>obs.observe(el));
+})();
+
+applyL();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+def banker_algorithm():
+    # P0, P1, P2, P3, P4 are the names of Process
+
+    n = 5  # Indicates the Number of processes
+    r = 3  # Indicates the Number of resources
+    alloc = [[0, 1, 0],  # P0 // This is Allocation Matrix
+              [2, 0, 0],  # P1
+              [3, 0, 2],  # P2
+              [2, 1, 1],  # P3
+              [0, 0, 2]]  # P4
+
+    max = [[7, 5, 3],  # P0 // MAX Matrix
+            [3, 2, 2],  # P1
+            [9, 0, 2],  # P2
+            [2, 2, 2],  # P3
+            [4, 3, 3]]  # P4
+
+    avail = [3, 3, 2]  # These are Available Resources
+
+    f = [0] * n
+    ans = [0] * n
+    ind = 0
+    need = [[0] * r for _ in range(n)]
+
+    for i in range(n):
+        for j in range(r):
+            need[i][j] = max[i][j] - alloc[i][j]
+
+    y = 0
+    for k in range(n):
+        for i in range(n):
+            if f[i] == 0:
+                flag = 0
+                for j in range(r):
+                    if need[i][j] > avail[j]:
+                        flag = 1
+                        break
+
+                if flag == 0:
+                    ans[ind] = i
+                    ind += 1
+                    for y in range(r):
+                        avail[y] += alloc[i][y]
+                    f[i] = 1
+
+    print("The SAFE Sequence is as follows")
+    for i in range(n - 1):
+        print(f' P{ans[i]} ->', end='')
+    print(f' P{ans[n - 1]}')
+
+banker_algorithm()

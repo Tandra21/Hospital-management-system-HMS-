@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Inventory - MedFind</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f1f44;
+            --muted: #55607e;
+            --blue: #1e6fd9;
+            --blue-bright: #2d8ef7;
+            --border: rgba(30,111,217,0.18);
+            --bg: #eef4fb;
+            --card: #ffffff;
+            --shadow: rgba(15,23,42,0.08);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(180deg, #f6f9ff 0%, #eef4fb 100%);
+            color: #0f1f44;
+            min-height: 100vh;
+        }
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--navy); }
+        .nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
+        .nav-links a { text-decoration: none; color: var(--muted); font-weight: 600; }
+        .nav-links a:hover { color: var(--blue); }
+        .container { width: min(1180px, 100%); margin: 0 auto; padding: 28px 24px 56px; }
+        .hero { display: grid; gap: 14px; margin-bottom: 32px; }
+        .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.1rem, 3vw, 3rem); margin: 0; }
+        .hero p { margin: 0; color: var(--muted); max-width: 760px; line-height: 1.7; }
+        .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 28px; }
+        .search-bar { flex: 1; min-width: 240px; border: 1px solid var(--border); border-radius: 999px; padding: 12px 18px; font-size: 0.95rem; color: var(--navy); outline: none; }
+        .search-bar:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(30,111,217,0.08); }
+        .category-list { display: flex; flex-wrap: wrap; gap: 10px; }
+        .cat-btn { border: 1px solid var(--border); border-radius: 999px; background: #ffffff; color: var(--muted); padding: 10px 16px; cursor: pointer; transition: all 0.25s; }
+        .cat-btn:hover, .cat-btn.active { border-color: var(--blue); color: var(--blue); background: rgba(30,111,217,0.08); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 24px; }
+        .med-card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 16px; position: relative; box-shadow: 0 18px 45px rgba(15,23,42,0.06); transition: transform 0.3s, border-color 0.3s; }
+        .med-card:hover { transform: translateY(-4px); border-color: rgba(30,111,217,0.35); }
+        .stock-badge { position: absolute; top: 20px; right: 20px; padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+        .in-stock { background: rgba(14,159,110,0.12); color: #067a4e; }
+        .low-stock { background: rgba(255,170,0,0.14); color: #b36500; }
+        .med-icon { width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; font-size: 1.45rem; background: rgba(30,111,217,0.08); }
+        .med-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--navy); }
+        .med-generic { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+        .med-category-tag { display: inline-flex; gap: 6px; align-items: center; padding: 7px 12px; border-radius: 999px; font-size: 0.78rem; color: var(--blue); border: 1px solid rgba(30,111,217,0.18); background: rgba(30,111,217,0.08); }
+        .med-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; }
+        .med-price { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--navy); }
+        .add-btn { width: 42px; height: 42px; border: none; border-radius: 14px; display: grid; place-items: center; color: #ffffff; font-size: 1.2rem; background: linear-gradient(135deg, var(--blue), var(--blue-bright)); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(30,111,217,0.25); }
+        .add-btn.added { background: linear-gradient(135deg, #0e9f6e, #05d69e); }
+        .cart-btn { position: fixed; right: 24px; bottom: 24px; z-index: 30; background: linear-gradient(135deg, var(--blue), var(--blue-bright)); color: white; border: none; border-radius: 18px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 14px 30px rgba(30,111,217,0.25); }
+        .cart-count { background: white; color: var(--blue); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; }
+        .cart-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.35); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .cart-overlay.open { opacity: 1; pointer-events: all; }
+        .cart-panel { position: fixed; right: 0; top: 0; bottom: 0; width: min(420px, 100%); background: #ffffff; transform: translateX(100%); transition: transform 0.3s ease; display: flex; flex-direction: column; box-shadow: -12px 0 36px rgba(15,23,42,0.12); }
+        .cart-panel.open { transform: translateX(0); }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; padding: 24px; border-bottom: 1px solid var(--border); }
+        .cart-title { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800; }
+        .close-btn { border: none; background: #f5f8ff; color: var(--muted); width: 38px; height: 38px; border-radius: 12px; cursor: pointer; }
+        .cart-items { padding: 20px 24px; overflow-y: auto; flex: 1; }
+        .cart-item { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(30,111,217,0.08); }
+        .cart-item-icon { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: rgba(30,111,217,0.08); font-size: 1.15rem; }
+        .cart-item-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+        .cart-item-price { color: var(--blue); font-size: 0.88rem; }
+        .qty-control { display: flex; align-items: center; gap: 8px; background: #f1f6ff; border: 1px solid var(--border); border-radius: 12px; padding: 6px 10px; }
+        .qty-btn { border: none; background: transparent; color: var(--blue); font-size: 1rem; cursor: pointer; }
+        .qty-num { min-width: 20px; text-align: center; font-weight: 700; }
+        .remove-btn { border: none; background: transparent; color: var(--muted); cursor: pointer; }
+        .cart-footer { padding: 24px; border-top: 1px solid var(--border); }
+        .cart-total { display: flex; justify-content: space-between; margin-bottom: 18px; color: var(--muted); }
+        .cart-total-amount { font-family: 'Syne', sans-serif; font-size: 1.45rem; font-weight: 800; color: var(--blue); }
+        .order-btn { width: 100%; padding: 16px; border: none; border-radius: 16px; background: linear-gradient(135deg, var(--blue), var(--blue-bright)); color: white; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .order-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.35); opacity: 0; pointer-events: none; transition: opacity 0.25s; display: grid; place-items: center; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal { width: min(520px, 90vw); background: #ffffff; border-radius: 24px; box-shadow: 0 45px 80px rgba(15,23,42,0.12); overflow: hidden; transform: translateY(20px) scale(0.98); transition: transform 0.25s ease; }
+        .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+        .modal-header { display: flex; align-items: center; gap: 18px; padding: 28px 28px 0; }
+        .modal-icon { width: 62px; height: 62px; border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem; background: rgba(30,111,217,0.08); }
+        .modal-med-title { font-size: 1.35rem; margin-bottom: 6px; font-family: 'Syne', sans-serif; }
+        .modal-generic { color: var(--muted); margin-bottom: 10px; }
+        .modal-category { display: inline-flex; padding: 6px 12px; border-radius: 999px; color: var(--blue); border: 1px solid rgba(30,111,217,0.18); background: rgba(30,111,217,0.08); }
+        .modal-close { border: none; background: #f5f8ff; width: 36px; height: 36px; border-radius: 12px; cursor: pointer; color: var(--muted); }
+        .modal-body { padding: 24px 28px 28px; }
+        .info-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-bottom: 22px; }
+        .info-box { background: #f7f9ff; border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+        .info-label { display: block; margin-bottom: 8px; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; }
+        .info-value { font-size: 0.95rem; font-weight: 700; color: var(--navy); }
+        .info-value.price { color: var(--blue); font-size: 1.1rem; }
+        .section-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin: 18px 0 8px; }
+        .section-text { color: #485c79; line-height: 1.75; font-size: 0.95rem; }
+        .side-effects-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .side-tag { border-radius: 999px; padding: 6px 10px; font-size: 0.78rem; background: rgba(255,107,107,0.12); color: #c45e5e; }
+        .modal-add-btn { width: 100%; border: none; border-radius: 16px; padding: 16px; background: linear-gradient(135deg, var(--blue), var(--blue-bright)); color: white; font-weight: 700; cursor: pointer; margin-top: 18px; }
+        .modal-add-btn.added { background: linear-gradient(135deg, #0e9f6e, #05d69e); }
+        .success-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, #0e9f6e, #05d69e); color: white; padding: 14px 24px; border-radius: 999px; font-weight: 700; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 50; }
+        .success-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        @media (max-width: 820px) { .info-grid { grid-template-columns: 1fr; } .controls { flex-direction: column; align-items: stretch; } .cart-panel { width: 100%; } }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">MedFind</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/doctor-search/">Doctor Search</a>
+        <a href="/medicine-inventory/">Medicine Inventory</a>
+    </div>
+</header>
+<div class="container">
+    <section class="hero">
+        <h1>Medicine Inventory</h1>
+        <p>সকল ওষুধের স্টক, দাম এবং গুরুত্বপূর্ণ তথ্য এখন MongoDB-ভিত্তিক ব্যাকএন্ড থেকে লোড করা হচ্ছে।</p>
+    </section>
+    <div class="controls">
+        <input id="searchInput" class="search-bar" type="text" placeholder="Search medicines by name or generic...">
+        <div class="category-list" id="categories"></div>
+    </div>
+    <div class="grid" id="medGrid"></div>
+</div>
+<button class="cart-btn" onclick="openCart()">🛒 Cart <span class="cart-count" id="cartCount">0</span></button>
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+        <div class="cart-title">Your Cart</div>
+        <button class="close-btn" onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+        <div class="cart-total">
+            <span>Total</span>
+            <span class="cart-total-amount" id="cartTotal">৳0</span>
+        </div>
+        <button class="order-btn" id="orderBtn" onclick="placeOrder()" disabled>Place order</button>
+    </div>
+</div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal" id="medModal"></div>
+</div>
+<div class="success-toast" id="successToast">Order placed successfully!</div>
+<script>
+    const API_BASE = '';
+    const categories = ['all','Antibiotic','Pain Relief','Antacid','Vitamin','Antidiabetic','Antihistamine','Antihypertensive','Antifungal'];
+    let medicines = [];
+    let cart = {};
+    let currentFilter = 'all';
+
+    function renderCategories() {
+        const wrapper = document.getElementById('categories');
+        wrapper.innerHTML = categories.map(cat => `
+            <button class="cat-btn ${cat === 'all' ? 'active' : ''}" onclick="filterCat('${cat}', this)">${cat === 'all' ? 'All' : cat}</button>
+        `).join('');
+    }
+
+    async function loadMedicines() {
+        try {
+            const response = await fetch(`${API_BASE}/api/medicines/`);
+            if (!response.ok) throw new Error('API unavailable');
+            medicines = await response.json();
+        } catch (err) {
+            console.warn('Backend API unavailable, falling back to local inventory.', err);
+            medicines = defaultMedicines;
+        }
+        applyFilters();
+    }
+
+    function renderGrid(data) {
+        const grid = document.getElementById('medGrid');
+        if (!data.length) {
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:70px;color:var(--muted);">কোনো ওষুধ পাওয়া যায়নি</div>`;
+            return;
+        }
+        grid.innerHTML = data.map(m => `
+            <div class="med-card" onclick="openModal('${m._id || m.id}')">
+                <span class="stock-badge ${m.stock === 'In Stock' ? 'in-stock' : 'low-stock'}">${m.stock}</span>
+                <div class="med-icon">${m.icon}</div>
+                <div>
+                    <div class="med-name">${m.name}</div>
+                    <div class="med-generic">${m.generic}</div>
+                </div>
+                <div class="med-category-tag">${m.category}</div>
+                <div class="med-footer">
+                    <div class="med-price">৳${m.price}<span style="font-size:0.8rem;color:var(--muted);font-weight:500"> / ${m.unit}</span></div>
+                    <button class="add-btn ${cart[m._id] ? 'added' : ''}" id="addBtn${m._id}"
+                        onclick="event.stopPropagation(); addToCart('${m._id}')">
+                        ${cart[m._id] ? '✓' : '+'}
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterCat(cat, el) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        currentFilter = cat;
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        let data = medicines;
+        if (currentFilter !== 'all') {
+            data = data.filter(m => m.category === currentFilter);
+        }
+        if (q) {
+            data = data.filter(m => m.name.toLowerCase().includes(q) || m.generic.toLowerCase().includes(q));
+        }
+        renderGrid(data);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    function addToCart(id) {
+        const med = medicines.find(m => (m._id || m.id) === id);
+        if (!med) return;
+        if (cart[id]) {
+            cart[id].qty += 1;
+        } else {
+            cart[id] = { id, name: med.name, price: med.price, icon: med.icon, qty: 1 };
+        }
+        updateCartUI();
+        const btn = document.getElementById('addBtn' + id);
+        if (btn) {
+            btn.classList.add('added');
+            btn.textContent = '✓';
+        }
+    }
+
+    function updateCartUI() {
+        const count = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+        document.getElementById('cartCount').textContent = count;
+        document.getElementById('cartTotal').textContent = '৳' + Object.values(cart).reduce((sum, item) => sum + item.qty * item.price, 0);
+        document.getElementById('orderBtn').disabled = count === 0;
+        renderCartItems();
+    }
+
+    function renderCartItems() {
+        const items = Object.values(cart);
+        const container = document.getElementById('cartItems');
+        if (!items.length) {
+            container.innerHTML = `<div style="padding: 60px 24px; text-align:center; color:var(--muted);">কার্ট খালি<br><span style="display:block;margin-top:8px;font-size:0.9rem;">ওষুধ যোগ করুন</span></div>`;
+            return;
+        }
+        container.innerHTML = items.map(item => `
+            <div class="cart-item">
+                <div class="cart-item-icon">${item.icon}</div>
+                <div>
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">৳${item.price} × ${item.qty} = ৳${item.price * item.qty}</div>
+                </div>
+                <div class="qty-control">
+                    <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                    <span class="qty-num">${item.qty}</span>
+                    <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                </div>
+                <button class="remove-btn" onclick="removeItem('${item.id}')">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function changeQty(id, delta) {
+        if (!cart[id]) return;
+        cart[id].qty += delta;
+        if (cart[id].qty <= 0) delete cart[id];
+        updateCartUI();
+    }
+
+    function removeItem(id) {
+        delete cart[id];
+        updateCartUI();
+    }
+
+    function openCart() {
+        document.getElementById('cartPanel').classList.add('open');
+        document.getElementById('cartOverlay').classList.add('open');
+        renderCartItems();
+    }
+
+    function closeCart() {
+        document.getElementById('cartPanel').classList.remove('open');
+        document.getElementById('cartOverlay').classList.remove('open');
+    }
+
+    async function placeOrder() {
+        const items = Object.values(cart);
+        if (!items.length) return;
+        const total = items.reduce((sum, item) => sum + item.qty * item.price, 0);
+        try {
+            const response = await fetch(`${API_BASE}/api/medicine-order/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items, total_amount: total }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Order failed');
+            cart = {};
+            updateCartUI();
+            closeCart();
+            showToast('Order placed successfully!');
+        } catch (err) {
+            showToast(err.message || 'Order submission failed');
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('successToast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    function openModal(id) {
+        const med = medicines.find(m => (m._id || m.id) === id);
+        if (!med) return;
+        const inCart = !!cart[id];
+        document.getElementById('medModal').innerHTML = `
+            <div class="modal-header">
+                <div class="modal-icon">${med.icon}</div>
+                <div>
+                    <div class="modal-med-title">${med.name}</div>
+                    <div class="modal-generic">${med.generic}</div>
+                    <span class="modal-category">${med.category}</span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span class="info-label">Price</span>
+                        <span class="info-value price">৳${med.price} / ${med.unit}</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-label">Availability</span>
+                        <span class="info-value" style="color:${med.stock === 'In Stock' ? '#0e9f6e' : '#b36500'}">${med.stock}</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-label">Description</div>
+                    <div class="section-text">${med.description}</div>
+                </div>
+                <div>
+                    <div class="section-label">Dosage</div>
+                    <div class="section-text">${med.dosage}</div>
+                </div>
+                <div>
+                    <div class="section-label">Warnings</div>
+                    <div class="section-text">${med.warnings}</div>
+                </div>
+                <div>
+                    <div class="section-label">Side effects</div>
+                    <div class="side-effects-list">${med.sideEffects.map(effect => `<span class="side-tag">${effect}</span>`).join('')}</div>
+                </div>
+                <button class="modal-add-btn ${inCart ? 'added' : ''}" onclick="addToCart('${id}'); this.classList.add('added'); this.textContent = '✓ Added to cart';">
+                    ${inCart ? '✓ Added to cart' : '+ Add to cart'}
+                </button>
+            </div>
+        `;
+        document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+    }
+
+    function closeModalOutside(event) {
+        if (event.target.id === 'modalOverlay') closeModal();
+    }
+
+    const defaultMedicines = [
+        { _id:'1', name:'Napa Extra', generic:'Paracetamol + Caffeine', category:'Pain Relief', icon:'💊', price:15, unit:'strip', stock:'In Stock', description:'মাথাব্যথা, জ্বর ও ব্যথায় দ্রুত উপশম।', dosage:'১-২ ট্যাবলেট ৪-৬ ঘন্টা পর পর।', warnings:'কিডনি রোগীরা সতর্ক থাকবেন। অ্যালকোহলের সাথে ব্যবহার এড়িয়ে চলুন।', sideEffects:['বমি','মাথা ঘোরা','অনিদ্রা'] },
+        { _id:'2', name:'Seclo 20', generic:'Omeprazole', category:'Antacid', icon:'🧪', price:80, unit:'strip', stock:'In Stock', description:'গ্যাস্ট্রিক ও বুকজ্বালা উপশমে ব্যবহৃত।', dosage:'দিনে একবার, খাবারের আগে।', warnings:'দীর্ঘমেয়াদে হাড়ের ঘনত্ব কমতে পারে।', sideEffects:['মাথা ব্যথা','ডায়রিয়া','পেট ফাঁপা'] },
+        { _id:'3', name:'Amoxicillin 500', generic:'Amoxicillin Trihydrate', category:'Antibiotic', icon:'💉', price:120, unit:'strip', stock:'In Stock', description:'ব্যাকটেরিয়াল ইনফেকশন চিকিৎসায় ব্যবহৃত এন্টিবায়োটিক।', dosage:'৫০০mg দিনে ৩ বার, ৫-৭ দিন।', warnings:'পেনিসিলিন এলার্জি থাকলে ব্যবহার করবেন না।', sideEffects:['ডায়রিয়া','বমি','র‍্যাশ'] },
+        { _id:'4', name:'Metformin 500', generic:'Metformin HCl', category:'Antidiabetic', icon:'🩺', price:50, unit:'strip', stock:'Low Stock', description:'টাইপ ২ ডায়াবেটিস নিয়ন্ত্রণে ব্যবহৃত।', dosage:'৫০০mg দিনে ২ বার, খাবারের সাথে।', warnings:'কিডনি রোগে সতর্কতার সাথে ব্যবহার।', sideEffects:['বমি','পেটে অস্বস্তি','ক্ষুধামন্দা'] },
+        { _id:'5', name:'Cetirizine 10', generic:'Cetirizine HCl', category:'Antihistamine', icon:'🌿', price:35, unit:'strip', stock:'In Stock', description:'অ্যালার্জি ও হাঁচির জন্য দ্রুত কার্যকর ওষুধ।', dosage:'দিনে একবার রাতে।', warnings:'গাড়ি চালানোর আগে সতর্ক থাকুন।', sideEffects:['ঘুমঘুম ভাব','মুখ শুকানো','মাথা ব্যথা'] },
+        { _id:'6', name:'Amlodipine 5', generic:'Amlodipine Besylate', category:'Antihypertensive', icon:'❤️', price:60, unit:'strip', stock:'In Stock', description:'উচ্চ রক্তচাপ নিয়ন্ত্রণে ব্যবহৃত।', dosage:'৫mg দিনে একবার।', warnings:'হঠাৎ বন্ধ করবেন না। গর্ভাবস্থায় ব্যবহার ডাক্তারের পরামর্শে।', sideEffects:['পা ফোলা','মাথা ঘোরা','মুখ লাল হওয়া'] },
+        { _id:'7', name:'Fluconazole 150', generic:'Fluconazole', category:'Antifungal', icon:'🍄', price:90, unit:'capsule', stock:'In Stock', description:'ফাঙ্গাল ইনফেকশনের চিকিৎসায় ব্যবহৃত।', dosage:'১৫০mg একবার।', warnings:'লিভার সমস্যায় সতর্কতার সাথে ব্যবহার।', sideEffects:['মাথা ব্যথা','বমি','পেট ব্যথা'] },
+        { _id:'8', name:'Vitamin D3 1000IU', generic:'Cholecalciferol', category:'Vitamin', icon:'☀️', price:250, unit:'bottle', stock:'In Stock', description:'হাড় ও ইমিউন সিস্টেম শক্তিশালী করে।', dosage:'দিনে একবার খাবারের সাথে।', warnings:'অতিরিক্ত ডোজে ক্যালসিয়াম বাড়তে পারে।', sideEffects:['বমি','ক্লান্তি'] },
+    ];
+
+    renderCategories();
+    loadMedicines();
+</script>
+</body>
+</html>

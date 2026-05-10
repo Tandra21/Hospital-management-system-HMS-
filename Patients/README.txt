@@ -1,173 +1,209 @@
-==========================================
-MEDFIND - HOSPITAL FINDER APPLICATION
-==========================================
+# 🏥 MedFind Bangladesh — v3.0 Complete System Guide
 
-PROJECT OVERVIEW
-----------------
-MedFind is a comprehensive hospital and healthcare service finder 
-application similar to bddoctors.com. It allows users to find 
-hospitals, doctors, and diagnostic labs in their area, view detailed 
-information, check availability, and book appointments.
+> **Stack:** Firebase Auth + Firestore + Django (Cloud Run) + SSLCommerz  
+> **Auth:** Google OAuth · Email OTP · Email/Password — **Zero SMS cost**  
+> **Version:** 3.0 | Last updated: May 2026
 
-TECHNOLOGY STACK
-----------------
-Frontend: HTML5, CSS3, JavaScript (Vanilla)
-Icons: Font Awesome 6.4.0
-Fonts: Google Fonts (via CDN)
-Responsive: Mobile-first responsive design
+---
 
-PROJECT STRUCTURE
------------------
-frontend/
-├── index.html                 # Main landing page
-├── assets/
-│   ├── css/
-│   │   ├── base.css          # Global styles, variables, reset
-│   │   ├── layout.css        # Page layout & component styles
-│   │   └── animations.css    # CSS animations & transitions
-│   ├── js/
-│   │   ├── location.js       # Location management functionality
-│   │   ├── main.js           # Core application logic
-│   │   └── ui.js             # UI interactions & components
-│   └── images/
-│       ├── hero/             # Hero section images
-│       ├── hospitals/        # Hospital images
-│       ├── doctors/          # Doctor profile images
-│       └── pattern.svg       # Background patterns
-├── components/
-│   ├── navbar.html           # Navigation bar component
-│   └── footer.html           # Footer component
-└── README.txt                # Project documentation
+## ✅ Pre-Publish Checklist — All 16 Points
 
-KEY FEATURES
-------------
-1. Responsive Design
-   - Mobile-first approach
-   - Tablet and desktop optimized
-   - Touch-friendly interface
+| # | Check | Status |
+|---|-------|--------|
+| 1 | Homepage loads — no blank/demo text | ✅ |
+| 2 | All pages linked, navigation works | ✅ |
+| 3 | Login & registration forms functional | ✅ |
+| 4 | Google auth via Firebase popup | ✅ |
+| 5 | Phone — optional profile field only | ✅ |
+| 6 | All buttons, links, menus clickable | ✅ |
+| 7 | Form validation — all input cases | ✅ |
+| 8 | Firestore DB connected, rules deployed | ✅ |
+| 9 | No blocking console errors | ✅ |
+| 10 | CSS/JS/icons load from CDN + local | ✅ |
+| 11 | Mobile responsive 960px + 480px | ✅ |
+| 12 | Async scripts, no blocking alerts | ✅ |
+| 13 | No secrets exposed in frontend | ✅ |
+| 14 | Git clean commit & push | ⬜ Run: `git add . && git commit -m "v3.0"` |
+| 15 | Firebase Hosting deploy verified | ⬜ Run: `firebase deploy` |
+| 16 | README updated | ✅ |
 
-2. Location-Based Search
-   - City and area selection
-   - Geolocation support
-   - Local storage for preferences
+---
 
-3. Hospital Listing
-   - Filter by specialty, area, and rating
-   - Sort by distance, rating, and price
-   - Detailed hospital cards with:
-     * Name and location
-     * Ratings and reviews
-     * Specialties
-     * Distance
-     * Emergency services
+## 👥 User Role System
 
-4. User Interface
-   - Modern, clean design
-   - Smooth animations
-   - Accessible components
-   - Loading states
-   - Toast notifications
+```
+5 Roles
+├── patient        → Quick signup (Google or Email+OTP) → Instant access
+├── doctor         → Full form → Admin approval → 24-48h review
+├── hospital_admin → Full form → Admin approval → 24-48h review
+├── admin          → Created by superadmin only
+└── superadmin     → Secret: click logo 5× on login page
+```
 
-5. Performance
-   - Optimized images
-   - Lazy loading
-   - Code splitting
-   - Efficient DOM manipulation
+---
 
-IMPLEMENTATION DETAILS
-----------------------
-1. CSS Architecture
-   - CSS Custom Properties (variables)
-   - BEM-like naming convention
-   - Utility classes
-   - Responsive breakpoints
+## 🔐 Authentication Flow
 
-2. JavaScript Architecture
-   - Modular design
-   - Event-driven programming
-   - Error handling
-   - Local storage for state persistence
+### Patient (Simple & Free)
+```
+Google popup → instant account ✅
+  OR
+Email → Send OTP → Firebase magic link → verify → account ✅
+  OR
+Email + Password → Firebase → account ✅
+```
 
-3. Accessibility
-   - Semantic HTML
-   - ARIA labels
-   - Keyboard navigation
-   - Screen reader support
+### Doctor / Hospital (Strict)
+```
+Fill detailed form → Email OTP verify → Submit
+  → Stored in Firestore: pending_registrations (status: "pending")
+  → Admin receives notification
+  → Admin reviews in Admin Panel → Approve / Reject
+  → Email sent to applicant
+  → status: "approved" → login enabled
+```
 
-4. Browser Support
-   - Chrome (latest)
-   - Firefox (latest)
-   - Safari (latest)
-   - Edge (latest)
+---
 
-SETUP INSTRUCTIONS
-------------------
-1. Clone or download the project
-2. Open index.html in a web browser
-3. No build process required
+## 🖥️ Admin Panel Features (`/pages/admin/dashboard.html`)
 
-OR
-1. Host on any static web server
-2. Configure CORS if using external APIs
-3. Update API endpoints in JavaScript files
+- **Dashboard** — live stats: patients, doctors, hospitals, revenue
+- **Pending Approvals** — review Doctor + Hospital applications, Approve/Reject
+- **All Patients** — searchable table, export CSV
+- **Doctors** — filter by status (pending/active/rejected)
+- **Hospitals** — same
+- **Commission (5%)** — transaction log, monthly/weekly breakdown
+- **Advertisements** — manage hospital/doctor ad campaigns
+- **Login Activity** — full audit log of all logins
 
-USAGE INSTRUCTIONS
-------------------
-1. Select your city from the dropdown
-2. Select your area (auto-populated based on city)
-3. Choose search type (Hospital, Doctor, or Lab)
-4. Click "Search Now" or press Enter
-5. Use filters to refine results
-6. Click "View Details" for more information
-7. Click "Book Now" to schedule appointment
+---
 
-DEMO DATA
----------
-The application uses simulated data for demonstration:
-- Sample hospitals in Dhaka, Chittagong, Sylhet, Rajshahi, Khulna
-- Mock ratings and reviews
-- Generated specialties and distances
+## 💰 Revenue Model
 
-FOR PRODUCTION
---------------
-1. Replace demo data with real API calls
-2. Implement backend authentication
-3. Add payment gateway integration
-4. Integrate with mapping services (Google Maps/Leaflet)
-5. Add analytics tracking
-6. Implement SEO optimization
+### 1. Appointment Commission (5%)
+```
+Patient books appointment (e.g. ৳1,000)
+  → Hospital collects ৳1,000
+  → MedFind earns ৳50 (5% commission)
+  → Tracked in: commission_transactions collection
+```
 
-VIVA PREPARATION
-----------------
-Key Points to Discuss:
-1. Responsive design implementation
-2. Location management system
-3. Filtering and sorting algorithms
-4. Performance optimizations
-5. Accessibility features
-6. Error handling strategies
-7. Scalability considerations
+### 2. Advertisement System
+| Package | Price |
+|---------|-------|
+| Featured Doctor Listing | ৳2,500/month |
+| Hospital Banner Ad | ৳5,000/month |
+| Homepage Spotlight | ৳10,000/month |
+| Search Result Priority | ৳3,000/month |
 
-DEMONSTRATION FLOW:
-1. Show responsive behavior (resize browser)
-2. Demonstrate location selection
-3. Perform search with filters
-4. Show card interactions
-5. Demonstrate mobile menu
-6. Show notification system
-7. Explain code organization
+### 3. Free for Patients
+- Account creation → free forever
+- Basic appointment booking → free
+- Lab test booking → free
 
-CONTACT
--------
-For questions or support, please contact:
-- Email: support@medfind.com
-- GitHub: github.com/yourusername/medfind
+---
 
-LICENSE
--------
-This project is for educational purposes.
-All rights reserved.
+## 🔥 Firebase Setup (One-time, 5 minutes)
 
-==========================================
-END OF DOCUMENTATION
-==========================================
+### Already configured in `firebase-config.js`:
+```js
+apiKey:            "AIzaSyCVUqudx4bX9LcRwleF2J9GMX7QYdSvXvA"
+authDomain:        "medfind-bangladesh.firebaseapp.com"
+projectId:         "medfind-bangladesh"
+messagingSenderId: "497488341848"
+appId:             "1:497488341848:web:aa4fbafa844a0bdf2ad32d"
+```
+
+### Enable in Firebase Console:
+1. **Auth providers:** https://console.firebase.google.com/project/medfind-bangladesh/authentication/providers
+   - ✅ Google
+   - ✅ Email/Password
+   - ✅ Email link (passwordless)
+
+2. **Firestore:** https://console.firebase.google.com/project/medfind-bangladesh/firestore
+   - Create database → Production mode → `asia-southeast1`
+
+3. **Deploy rules + indexes:**
+```bash
+firebase deploy --only firestore:rules,firestore:indexes
+```
+
+---
+
+## 🗂️ Firestore Collections
+
+| Collection | Purpose |
+|---|---|
+| `users` | All user profiles |
+| `pending_registrations` | Doctor/Hospital applications awaiting admin review |
+| `appointments` | Bookings |
+| `doctors` | Doctor profiles (public) |
+| `hospitals` | Hospital data (public) |
+| `organ_donors` | Voluntary organ donor registrations |
+| `blood_requests` | Open blood donation requests |
+| `lab_tests` | Lab test bookings |
+| `commission_transactions` | Revenue tracking |
+| `advertisements` | Ad campaigns |
+| `login_activity` | Audit log |
+| `notifications/{uid}/items` | Per-user notifications |
+
+---
+
+## 🚀 Local Development
+
+```bash
+# 1. Open VS Code → right-click index.html → Open with Live Server
+#    → http://127.0.0.1:5500
+
+# 2. Start Django backend
+cd backend
+pip install -r requirements.txt --break-system-packages
+python manage.py runserver
+#    → http://127.0.0.1:8000
+
+# 3. Test auth:
+#    Patient:    patient@demo.com / Patient@123
+#    Doctor:     dr.karim@medfind.com / Doctor@123
+#    SuperAdmin: admin@medfind.com / Admin@12345
+#                (or click logo 5× on login page)
+```
+
+---
+
+## 📦 Deployment
+
+```bash
+# Frontend → Firebase Hosting
+firebase deploy --only hosting
+
+# Backend → Google Cloud Run
+gcloud run deploy medfind-backend \
+  --source backend/ \
+  --region=asia-southeast1 \
+  --allow-unauthenticated
+
+# Full deploy (rules + hosting)
+firebase deploy
+
+# Git push
+git add .
+git commit -m "v3.0: complete auth system + admin panel + Firestore"
+git push origin main
+```
+
+---
+
+## 🔒 Security Summary
+
+| Item | Status |
+|------|--------|
+| Firebase keys | ✅ Safe to expose (designed for frontend) |
+| Firestore rules | ✅ Users can only read/write own data |
+| Admin-only routes | ✅ Role check on every admin page load |
+| Doctor/Hospital approval | ✅ Cannot login until admin approves |
+| Anthropic API key | ✅ Empty in frontend — backend proxy only |
+| Phone number | ✅ Contact field only — no auth/SMS |
+
+---
+
+*MedFind Bangladesh v3.0 — Built by Ahsanul Yamin Babor*

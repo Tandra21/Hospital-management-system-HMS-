@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Health Articles Bangladesh - Evidence-based health tips, medical news, and wellness guides in Bengali and English.">
+<title>Health Articles & Medical News - MedFind</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary:#2563eb;--secondary:#0d9488;--white:#fff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;--danger:#ef4444;--success:#10b981;--warning:#f59e0b; }
+        * { margin:0;padding:0;box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif;background:#f8fafc;color:var(--gray-800); }
+
+        /* NAV */
+        .navbar { background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;box-shadow:0 1px 3px rgba(0,0,0,.08); }
+        .nav-brand { display:flex;align-items:center;gap:.75rem;text-decoration:none; }
+        .nav-brand-icon { width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem; }
+        .nav-brand-text { font-size:1.3rem;font-weight:700;color:var(--primary); }
+        .nav-links { display:flex;align-items:center;gap:1.5rem; }
+        .nav-links a { text-decoration:none;color:var(--gray-700);font-size:.9rem;font-weight:500;transition:.2s; }
+        .nav-links a:hover { color:var(--primary); }
+        .nav-btn { background:var(--primary);color:#fff;padding:.5rem 1.25rem;border-radius:8px;font-size:.875rem;font-weight:600;text-decoration:none;transition:.2s; }
+        .nav-btn:hover { background:#1d4ed8;color:#fff; }
+
+        /* HERO */
+        .articles-hero { background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#0d9488 100%);padding:4rem 2rem;text-align:center;color:#fff;position:relative;overflow:hidden; }
+        .articles-hero::before { content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        .hero-content { position:relative;max-width:750px;margin:0 auto; }
+        .hero-badge { display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);padding:.4rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;margin-bottom:1.5rem; }
+        .articles-hero h1 { font-size:2.8rem;font-weight:800;margin-bottom:1rem;line-height:1.2; }
+        .articles-hero p { font-size:1.1rem;opacity:.9;margin-bottom:2rem; }
+        .hero-search { max-width:550px;margin:0 auto;display:flex;gap:.5rem;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:.5rem; }
+        .hero-search input { flex:1;background:none;border:none;outline:none;color:#fff;font-size:.95rem;padding:.5rem; }
+        .hero-search input::placeholder { color:rgba(255,255,255,.7); }
+        .hero-search button { background:var(--white);color:var(--primary);border:none;padding:.6rem 1.5rem;border-radius:10px;font-weight:600;cursor:pointer;transition:.2s; }
+        .hero-search button:hover { background:#f0f9ff; }
+        .hero-stats { display:flex;justify-content:center;gap:3rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.2); }
+        .hero-stat { text-align:center; }
+        .hero-stat-num { font-size:1.8rem;font-weight:800; }
+        .hero-stat-label { font-size:.8rem;opacity:.8;margin-top:.2rem; }
+
+        /* CATEGORIES FILTER */
+        .categories-bar { background:var(--white);border-bottom:1px solid var(--gray-200);padding:1rem 2rem;position:sticky;top:70px;z-index:99; }
+        .categories-scroll { display:flex;gap:.75rem;overflow-x:auto;scrollbar-width:none;max-width:1400px;margin:0 auto; }
+        .categories-scroll::-webkit-scrollbar { display:none; }
+        .cat-pill { display:flex;align-items:center;gap:.5rem;padding:.5rem 1.25rem;border-radius:100px;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-700);font-size:.85rem;font-weight:500;cursor:pointer;transition:.2s;white-space:nowrap; }
+        .cat-pill:hover, .cat-pill.active { background:var(--primary);color:#fff;border-color:var(--primary); }
+        .cat-pill i { font-size:.8rem; }
+
+        /* MAIN LAYOUT */
+        .articles-main { max-width:1400px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:1fr 320px;gap:2rem; }
+
+        /* FEATURED ARTICLE */
+        .featured-section { margin-bottom:2rem; }
+        .section-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem; }
+        .section-title { font-size:1.2rem;font-weight:700;color:var(--gray-900);display:flex;align-items:center;gap:.5rem; }
+        .section-title::before { content:'';width:4px;height:20px;background:var(--primary);border-radius:2px;display:inline-block; }
+        .view-all { color:var(--primary);font-size:.875rem;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:.3rem; }
+        .featured-card { background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.06);display:grid;grid-template-columns:1fr 1fr;transition:.3s; }
+        .featured-card:hover { box-shadow:0 8px 30px rgba(37,99,235,.15);transform:translateY(-2px); }
+        .featured-img { background:linear-gradient(135deg,#1e3a5f,#2563eb);min-height:320px;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden; }
+        .featured-img::after { content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='20'/%3E%3C/svg%3E") center/cover; }
+        .featured-icon { font-size:5rem;color:rgba(255,255,255,.3);z-index:1;position:relative; }
+        .featured-body { padding:2rem; }
+        .article-meta { display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap; }
+        .article-cat { background:#dbeafe;color:var(--primary);padding:.25rem .75rem;border-radius:100px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+        .article-cat.emergency { background:#fee2e2;color:#dc2626; }
+        .article-cat.mental { background:#f3e8ff;color:#7c3aed; }
+        .article-cat.women { background:#fce7f3;color:#be185d; }
+        .article-cat.child { background:#fef3c7;color:#92400e; }
+        .article-cat.nutrition { background:#d1fae5;color:#065f46; }
+        .article-date { color:var(--gray-500);font-size:.8rem; }
+        .article-reading { color:var(--gray-500);font-size:.8rem;display:flex;align-items:center;gap:.3rem; }
+        .featured-body h2 { font-size:1.6rem;font-weight:700;margin-bottom:.75rem;line-height:1.3; }
+        .featured-body p { color:var(--gray-600);line-height:1.7;margin-bottom:1.25rem; }
+        .read-btn { display:inline-flex;align-items:center;gap:.5rem;background:var(--primary);color:#fff;padding:.65rem 1.5rem;border-radius:10px;font-weight:600;text-decoration:none;font-size:.9rem;transition:.2s; }
+        .read-btn:hover { background:#1d4ed8; }
+
+        /* ARTICLES GRID */
+        .articles-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-bottom:2rem; }
+        .article-card { background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:.3s;cursor:pointer; }
+        .article-card:hover { box-shadow:0 8px 25px rgba(37,99,235,.12);transform:translateY(-3px); }
+        .article-card-img { height:180px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative; }
+        .article-card-img.gen { background:linear-gradient(135deg,#dbeafe,#bfdbfe); }
+        .article-card-img.emerg { background:linear-gradient(135deg,#fee2e2,#fecaca); }
+        .article-card-img.mental { background:linear-gradient(135deg,#f3e8ff,#e9d5ff); }
+        .article-card-img.women { background:linear-gradient(135deg,#fce7f3,#fbcfe8); }
+        .article-card-img.child { background:linear-gradient(135deg,#fef3c7,#fde68a); }
+        .article-card-img.nutrition { background:linear-gradient(135deg,#d1fae5,#a7f3d0); }
+        .article-card-body { padding:1.25rem; }
+        .article-card-body h3 { font-size:1rem;font-weight:600;margin:.5rem 0 .5rem;line-height:1.4; }
+        .article-card-body p { color:var(--gray-600);font-size:.85rem;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+        .article-footer { display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;border-top:1px solid var(--gray-100);margin-top:.5rem; }
+        .article-author { display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--gray-600); }
+        .author-avatar { width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700; }
+        .article-like { display:flex;align-items:center;gap:.3rem;color:var(--gray-500);font-size:.8rem;cursor:pointer; }
+        .article-like:hover { color:var(--danger); }
+
+        /* SIDEBAR */
+        .sidebar { display:flex;flex-direction:column;gap:1.5rem; }
+        .sidebar-card { background:var(--white);border-radius:16px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.06); }
+        .sidebar-card-title { font-size:1rem;font-weight:700;margin-bottom:1.25rem;color:var(--gray-900); }
+        .trending-list { display:flex;flex-direction:column;gap:.75rem; }
+        .trending-item { display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;padding:.5rem;border-radius:10px;transition:.2s; }
+        .trending-item:hover { background:var(--gray-50); }
+        .trending-num { font-size:1.5rem;font-weight:800;color:var(--gray-200);min-width:32px; }
+        .trending-info h4 { font-size:.875rem;font-weight:600;line-height:1.4;margin-bottom:.25rem; }
+        .trending-info span { font-size:.75rem;color:var(--gray-500); }
+        .quick-tips { display:flex;flex-direction:column;gap:.75rem; }
+        .tip-item { display:flex;gap:.75rem;align-items:flex-start;padding:.75rem;background:var(--gray-50);border-radius:10px; }
+        .tip-icon { width:36px;height:36px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0; }
+        .tip-icon.green { background:var(--success); }
+        .tip-icon.orange { background:var(--warning); }
+        .tip-icon.red { background:var(--danger); }
+        .tip-text { font-size:.83rem;color:var(--gray-700);line-height:1.5; }
+        .tip-text strong { display:block;font-weight:600;color:var(--gray-900);margin-bottom:.2rem; }
+        .health-alert { background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fbbf24;border-radius:12px;padding:1rem; }
+        .health-alert-head { display:flex;align-items:center;gap:.5rem;font-weight:700;color:#92400e;margin-bottom:.5rem; }
+        .health-alert p { font-size:.83rem;color:#78350f;line-height:1.5; }
+        .newsletter-form { display:flex;flex-direction:column;gap:.75rem; }
+        .newsletter-form input { width:100%;padding:.65rem 1rem;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.875rem;outline:none;transition:.2s; }
+        .newsletter-form input:focus { border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+        .newsletter-form button { background:var(--primary);color:#fff;border:none;padding:.7rem;border-radius:10px;font-weight:600;cursor:pointer;transition:.2s; }
+        .newsletter-form button:hover { background:#1d4ed8; }
+
+        /* LOAD MORE */
+        .load-more-section { text-align:center;padding:2rem 0; }
+        .load-more-btn { background:var(--white);color:var(--primary);border:2px solid var(--primary);padding:.8rem 2.5rem;border-radius:12px;font-weight:600;cursor:pointer;font-size:.95rem;transition:.2s; }
+        .load-more-btn:hover { background:var(--primary);color:#fff; }
+
+        /* BREAKING NEWS TICKER */
+        .news-ticker { background:linear-gradient(90deg,#ef4444,#dc2626);color:#fff;padding:.5rem 0;overflow:hidden; }
+        .ticker-inner { display:flex;align-items:center;gap:2rem;animation:ticker 30s linear infinite; }
+        .ticker-label { background:rgba(0,0,0,.3);padding:.25rem .75rem;border-radius:4px;font-size:.8rem;font-weight:700;white-space:nowrap; }
+        .ticker-item { font-size:.85rem;white-space:nowrap;display:flex;align-items:center;gap:.5rem; }
+        @keyframes ticker { 0%{transform:translateX(100vw)}100%{transform:translateX(-100%)} }
+
+        /* FOOTER */
+        footer { background:var(--gray-900);color:var(--gray-300);text-align:center;padding:2rem;margin-top:3rem; }
+
+        /* HIDDEN CLASS */
+        .article-card.hidden { display:none; }
+
+        @media(max-width:1024px) { .articles-main{grid-template-columns:1fr;} .featured-card{grid-template-columns:1fr;} .featured-img{min-height:200px;} }
+        @media(max-width:768px) { .articles-grid{grid-template-columns:1fr;} .articles-hero h1{font-size:2rem;} .hero-stats{gap:1.5rem;} }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="../index.html" class="nav-brand"><img src="../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;">
+    </a>
+    <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="hospital/list.html">Hospitals</a>
+        <a href="doctors/search.html">Doctors</a>
+        <a href="health-articles.html" style="color:var(--primary)">Health Articles</a>
+        <a href="billing/pharmacy.html">Pharmacy</a>
+    </div>
+    <a href="patients/dashboard.html" class="nav-btn"><i class="fas fa-user-circle"></i> My Dashboard</a>
+</nav>
+
+<!-- BREAKING NEWS TICKER -->
+<div class="news-ticker">
+    <div class="ticker-inner">
+        <span class="ticker-label">🔴 BREAKING HEALTH NEWS</span>
+        <span class="ticker-item"><i class="fas fa-circle" style="font-size:.4rem"></i> WHO issues updated guidelines on dengue prevention for South Asia — 2025</span>
+        <span class="ticker-item"><i class="fas fa-circle" style="font-size:.4rem"></i> Bangladesh MOH launches nationwide maternal health campaign — April 2025</span>
+        <span class="ticker-item"><i class="fas fa-circle" style="font-size:.4rem"></i> New AI diagnostic tools approved for district hospitals across Bangladesh</span>
+        <span class="ticker-item"><i class="fas fa-circle" style="font-size:.4rem"></i> Heat wave advisory: Stay hydrated — temperatures expected above 40°C this week</span>
+        <span class="ticker-item"><i class="fas fa-circle" style="font-size:.4rem"></i> National immunization week: Free vaccines available at all upazila health centers</span>
+    </div>
+</div>
+
+<!-- HERO -->
+<div class="articles-hero">
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-newspaper"></i> Updated Daily — Medical News & Health Awareness</div>
+        <h1>Health Articles & Medical Insights</h1>
+        <p>Expert-reviewed medical information, health awareness, and latest healthcare news from Bangladesh and around the world.</p>
+        <div class="hero-search">
+            <input type="text" id="heroSearch" placeholder="Search articles, health topics, symptoms...">
+            <button onclick="searchArticles()"><i class="fas fa-search"></i> Search</button>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat"><div class="hero-stat-num">200+</div><div class="hero-stat-label">Health Articles</div></div>
+            <div class="hero-stat"><div class="hero-stat-num">50+</div><div class="hero-stat-label">Expert Authors</div></div>
+            <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">Categories</div></div>
+            <div class="hero-stat"><div class="hero-stat-num">Daily</div><div class="hero-stat-label">New Content</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- CATEGORY FILTER BAR -->
+<div class="categories-bar">
+    <div class="categories-scroll">
+        <button class="cat-pill active" onclick="filterCat('all',this)"><i class="fas fa-th"></i> All Articles</button>
+        <button class="cat-pill" onclick="filterCat('general',this)"><i class="fas fa-notes-medical"></i> General Health</button>
+        <button class="cat-pill" onclick="filterCat('emergency',this)"><i class="fas fa-ambulance"></i> Emergency</button>
+        <button class="cat-pill" onclick="filterCat('mental',this)"><i class="fas fa-brain"></i> Mental Health</button>
+        <button class="cat-pill" onclick="filterCat('child',this)"><i class="fas fa-baby"></i> Child Care</button>
+        <button class="cat-pill" onclick="filterCat('women',this)"><i class="fas fa-female"></i> Women's Health</button>
+        <button class="cat-pill" onclick="filterCat('nutrition',this)"><i class="fas fa-apple-alt"></i> Nutrition</button>
+        <button class="cat-pill" onclick="filterCat('diabetes',this)"><i class="fas fa-syringe"></i> Diabetes</button>
+        <button class="cat-pill" onclick="filterCat('dengue',this)"><i class="fas fa-virus"></i> Dengue & COVID</button>
+        <button class="cat-pill" onclick="filterCat('general',this)"><i class="fas fa-heart"></i> Cardiology</button>
+        <button class="cat-pill" onclick="filterCat('senior',this)"><i class="fas fa-user-clock"></i> Senior Care</button>
+        <button class="cat-pill" onclick="filterCat('skin',this)"><i class="fas fa-allergies"></i> Skin & Allergy</button>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="articles-main">
+    <div class="articles-content">
+
+        <!-- FEATURED ARTICLE -->
+        <div class="featured-section">
+            <div class="section-header">
+                <div class="section-title">Featured Story</div>
+                <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="featured-card">
+                <div class="featured-img">
+                    <i class="fas fa-virus-covid featured-icon"></i>
+                </div>
+                <div class="featured-body">
+                    <div class="article-meta">
+                        <span class="article-cat emergency">Emergency</span>
+                        <span class="article-date"><i class="fas fa-calendar-alt"></i> April 16, 2025</span>
+                        <span class="article-reading"><i class="fas fa-clock"></i> 8 min read</span>
+                    </div>
+                    <h2>Dengue Fever Surge in Bangladesh 2025: Prevention, Symptoms & What To Do</h2>
+                    <p>Bangladesh is experiencing a significant rise in dengue cases in 2025. Health authorities urge citizens to take preventive steps, recognize early symptoms, and seek immediate medical care. Learn how to protect your family and community from this mosquito-borne illness.</p>
+                    <p>The Aedes aegypti mosquito breeds in clean stagnant water. Eliminating breeding spots is the single most effective prevention measure available to households.</p>
+                    <a href="#" class="read-btn"><i class="fas fa-book-reader"></i> Read Full Article</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARTICLES GRID -->
+        <div class="section-header">
+            <div class="section-title">Latest Articles</div>
+            <span style="font-size:.85rem;color:var(--gray-500)" id="articleCount">Showing 12 articles</span>
+        </div>
+
+        <div class="articles-grid" id="articlesGrid">
+            <!-- GENERAL HEALTH -->
+            <div class="article-card" data-cat="general">
+                <div class="article-card-img gen"><i class="fas fa-heartbeat" style="color:#2563eb"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat">General Health</span><span class="article-date">Apr 15, 2025</span></div>
+                    <h3>10 Evidence-Based Habits for a Healthier Heart in 2025</h3>
+                    <p>Cardiologists share the most impactful daily habits that reduce heart disease risk by up to 40%, backed by the latest research from Bangladesh cardiac centers.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">DR</div>Dr. Rahman, MD</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 124</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="emergency">
+                <div class="article-card-img emerg"><i class="fas fa-ambulance" style="color:#dc2626"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat emergency">Emergency</span><span class="article-date">Apr 14, 2025</span></div>
+                    <h3>First Aid Guide: What To Do in a Medical Emergency Before the Ambulance Arrives</h3>
+                    <p>Critical steps that can save lives during cardiac arrest, choking, severe bleeding, or trauma — essential knowledge for every Bangladeshi household.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">JK</div>Dr. Jahan, Emergency</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 248</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="mental">
+                <div class="article-card-img mental"><i class="fas fa-brain" style="color:#7c3aed"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat mental">Mental Health</span><span class="article-date">Apr 13, 2025</span></div>
+                    <h3>Managing Work-Life Stress: A Practical Guide for Urban Bangladeshis</h3>
+                    <p>Mental health professionals explain the growing mental health crisis in Bangladesh's cities and offer practical, culturally appropriate coping strategies.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">SH</div>Dr. Sultana, Psychiatry</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 183</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="child">
+                <div class="article-card-img child"><i class="fas fa-baby" style="color:#d97706"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat child">Child Care</span><span class="article-date">Apr 12, 2025</span></div>
+                    <h3>Childhood Vaccination Schedule 2025: Complete Guide for Bangladeshi Parents</h3>
+                    <p>Updated EPI schedule, new vaccine additions, and answers to common parent concerns about immunization safety and efficacy for children under 5.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">NA</div>Dr. Nadia, Pediatrics</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 312</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="women">
+                <div class="article-card-img women"><i class="fas fa-female" style="color:#be185d"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat women">Women's Health</span><span class="article-date">Apr 11, 2025</span></div>
+                    <h3>Cervical Cancer Prevention: Importance of HPV Screening for Women in Bangladesh</h3>
+                    <p>Why cervical cancer remains the leading cancer killer of women in Bangladesh — and how early HPV screening and the vaccine can dramatically change outcomes.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">RK</div>Dr. Rina, Gynecology</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 277</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="nutrition">
+                <div class="article-card-img nutrition"><i class="fas fa-apple-alt" style="color:#065f46"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat nutrition">Nutrition</span><span class="article-date">Apr 10, 2025</span></div>
+                    <h3>Diabetes-Friendly Bangladeshi Diet: Eating Well Without Giving Up Your Favorite Foods</h3>
+                    <p>A nutritionist's guide to managing blood sugar through traditional Bangladeshi foods — rice, dal, fish, and vegetables — with practical portion-control strategies.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">MF</div>Fatema, Nutritionist</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 391</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="general">
+                <div class="article-card-img gen"><i class="fas fa-lungs" style="color:#2563eb"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat">General Health</span><span class="article-date">Apr 9, 2025</span></div>
+                    <h3>Dhaka's Air Pollution Crisis: Protecting Your Respiratory Health in 2025</h3>
+                    <p>With AQI readings repeatedly exceeding 200 in Dhaka, doctors offer guidance on protecting children, elderly, and those with asthma and COPD from long-term lung damage.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">AK</div>Dr. Akash, Pulmonology</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 156</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="mental">
+                <div class="article-card-img mental"><i class="fas fa-bed" style="color:#7c3aed"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat mental">Mental Health</span><span class="article-date">Apr 8, 2025</span></div>
+                    <h3>Sleep Disorders in Bangladesh: Why Millions Are Not Getting Enough Rest</h3>
+                    <p>A sleep medicine specialist explains the alarming rise in insomnia, sleep apnea, and circadian rhythm disorders — and the serious health consequences of chronic sleep deprivation.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">TI</div>Dr. Tanvir, Neurology</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 209</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="child">
+                <div class="article-card-img child"><i class="fas fa-child" style="color:#d97706"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat child">Child Care</span><span class="article-date">Apr 7, 2025</span></div>
+                    <h3>Screen Time and Child Development: How Much Is Too Much for Your Child?</h3>
+                    <p>Pediatric experts explain the link between excessive screen time and delayed language development, sleep disturbances, and behavioral issues in children under 10.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">PD</div>Dr. Priya, Child Dev.</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 334</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="general">
+                <div class="article-card-img gen"><i class="fas fa-tint" style="color:#2563eb"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat">General Health</span><span class="article-date">Apr 6, 2025</span></div>
+                    <h3>Kidney Disease: Silent Signs You Should Never Ignore</h3>
+                    <p>Bangladesh has one of the highest rates of chronic kidney disease in Asia. Nephrologists warn that most patients don't know they have it until 70% of kidney function is already lost.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">MA</div>Dr. Moin, Nephrology</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 445</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="women">
+                <div class="article-card-img women"><i class="fas fa-baby-carriage" style="color:#be185d"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat women">Women's Health</span><span class="article-date">Apr 5, 2025</span></div>
+                    <h3>Safe Pregnancy in Bangladesh: Antenatal Care and What Every Expectant Mother Needs to Know</h3>
+                    <p>Obstetric specialists outline the essential antenatal checkups, danger signs, nutrition requirements, and the importance of institutional delivery for safe motherhood.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">LB</div>Dr. Laila, OB/GYN</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 287</div>
+                </div>
+            </div>
+
+            <div class="article-card" data-cat="nutrition">
+                <div class="article-card-img nutrition"><i class="fas fa-weight" style="color:#065f46"></i></div>
+                <div class="article-card-body">
+                    <div class="article-meta"><span class="article-cat nutrition">Nutrition</span><span class="article-date">Apr 4, 2025</span></div>
+                    <h3>Obesity Epidemic in Bangladesh: Why Waistlines Are Growing and What You Can Do</h3>
+                    <p>Bangladesh is undergoing a rapid nutrition transition. Endocrinologists explain why rates of obesity, type 2 diabetes, and metabolic syndrome are skyrocketing — and evidence-based solutions.</p>
+                </div>
+                <div class="article-footer">
+                    <div class="article-author"><div class="author-avatar">FK</div>Dr. Farida, Endocrinology</div>
+                    <div class="article-like" onclick="likeArticle(this)"><i class="far fa-heart"></i> 521</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOAD MORE -->
+        <div class="load-more-section">
+            <button class="load-more-btn" onclick="loadMore()"><i class="fas fa-plus"></i> Load More Articles</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <!-- TRENDING -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-title"><i class="fas fa-fire" style="color:#ef4444"></i> Trending Now</div>
+            <div class="trending-list">
+                <div class="trending-item">
+                    <span class="trending-num">01</span>
+                    <div class="trending-info">
+                        <h4>Dengue Prevention 2025: Full Guide</h4>
+                        <span><i class="fas fa-eye"></i> 14.2K views today</span>
+                    </div>
+                </div>
+                <div class="trending-item">
+                    <span class="trending-num">02</span>
+                    <div class="trending-info">
+                        <h4>Kidney Stone Symptoms You Shouldn't Ignore</h4>
+                        <span><i class="fas fa-eye"></i> 9.8K views today</span>
+                    </div>
+                </div>
+                <div class="trending-item">
+                    <span class="trending-num">03</span>
+                    <div class="trending-info">
+                        <h4>Heat Stroke First Aid: Summer Emergency Guide</h4>
+                        <span><i class="fas fa-eye"></i> 8.1K views today</span>
+                    </div>
+                </div>
+                <div class="trending-item">
+                    <span class="trending-num">04</span>
+                    <div class="trending-info">
+                        <h4>Post-COVID Long Hauler Syndrome: Latest Research</h4>
+                        <span><i class="fas fa-eye"></i> 6.5K views today</span>
+                    </div>
+                </div>
+                <div class="trending-item">
+                    <span class="trending-num">05</span>
+                    <div class="trending-info">
+                        <h4>Child Nutrition: Iron Deficiency in Bangladesh</h4>
+                        <span><i class="fas fa-eye"></i> 5.9K views today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTH ALERT -->
+        <div class="sidebar-card">
+            <div class="health-alert">
+                <div class="health-alert-head"><i class="fas fa-exclamation-triangle"></i> Health Alert — April 2025</div>
+                <p>Dengue cases in Dhaka division have increased by <strong>180%</strong> compared to the same period last year. Use mosquito repellent, eliminate standing water, and wear full-sleeve clothing.</p>
+            </div>
+        </div>
+
+        <!-- DAILY TIPS -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-title"><i class="fas fa-lightbulb" style="color:var(--warning)"></i> Daily Health Tips</div>
+            <div class="quick-tips">
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="fas fa-tint"></i></div>
+                    <div class="tip-text"><strong>Stay Hydrated</strong> Drink 8–10 glasses of water daily. In summer, increase to 12. Avoid sugary drinks.</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon green"><i class="fas fa-walking"></i></div>
+                    <div class="tip-text"><strong>Move Daily</strong> 30 minutes of walking reduces heart disease risk by 35%. You don't need a gym.</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon orange"><i class="fas fa-moon"></i></div>
+                    <div class="tip-text"><strong>Sleep 7–8 Hours</strong> Chronic sleep deprivation increases diabetes and heart disease risk significantly.</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon red"><i class="fas fa-smoking-ban"></i></div>
+                    <div class="tip-text"><strong>Quit Smoking</strong> Smoking causes 1 in 5 deaths in Bangladesh. It's never too late to quit.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEWSLETTER -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-title"><i class="fas fa-envelope" style="color:var(--primary)"></i> Health Newsletter</div>
+            <p style="font-size:.85rem;color:var(--gray-600);margin-bottom:1rem">Get weekly health updates, medical news, and doctor-reviewed tips directly to your inbox.</p>
+            <div class="newsletter-form">
+                <input type="text" placeholder="Your full name">
+                <input type="email" placeholder="Your email address">
+                <button><i class="fas fa-paper-plane"></i> Subscribe — It's Free</button>
+            </div>
+        </div>
+
+        <!-- EMERGENCY CONTACTS -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-title"><i class="fas fa-phone-alt" style="color:var(--danger)"></i> Emergency Hotlines</div>
+            <div style="display:flex;flex-direction:column;gap:.6rem">
+                <a href="tel:999" style="display:flex;justify-content:space-between;text-decoration:none;color:var(--gray-800);padding:.6rem;background:#fee2e2;border-radius:8px;font-size:.875rem;font-weight:600"><span><i class="fas fa-ambulance"></i> National Emergency</span><span style="color:#dc2626">999</span></a>
+                <a href="tel:16000" style="display:flex;justify-content:space-between;text-decoration:none;color:var(--gray-800);padding:.6rem;background:#dbeafe;border-radius:8px;font-size:.875rem;font-weight:600"><span><i class="fas fa-hospital"></i> Health Helpline</span><span style="color:#2563eb">16000</span></a>
+                <a href="tel:10921" style="display:flex;justify-content:space-between;text-decoration:none;color:var(--gray-800);padding:.6rem;background:#d1fae5;border-radius:8px;font-size:.875rem;font-weight:600"><span><i class="fas fa-brain"></i> Mental Health Line</span><span style="color:#059669">16921</span></a>
+                <a href="tel:109" style="display:flex;justify-content:space-between;text-decoration:none;color:var(--gray-800);padding:.6rem;background:#f3e8ff;border-radius:8px;font-size:.875rem;font-weight:600"><span><i class="fas fa-female"></i> Women's Helpline</span><span style="color:#7c3aed">109</span></a>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<footer>
+    <p>© 2025 MedFind Healthcare Platform · Bangladesh. All medical content reviewed by certified physicians. Not a substitute for professional medical advice.</p>
+</footer>
+
+<script>
+function filterCat(cat, btn) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.article-card');
+    let count = 0;
+    cards.forEach(card => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+            card.classList.remove('hidden');
+            count++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+    document.getElementById('articleCount').textContent = `Showing ${count} articles`;
+}
+
+function likeArticle(el) {
+    const icon = el.querySelector('i');
+    const parts = el.textContent.trim().split(' ');
+    const num = parseInt(parts[parts.length - 1]) + 1;
+    icon.className = 'fas fa-heart';
+    icon.style.color = '#ef4444';
+    el.innerHTML = `<i class="fas fa-heart" style="color:#ef4444"></i> ${num}`;
+}
+
+function searchArticles() {
+    const query = (document.getElementById('heroSearch') || document.getElementById('searchInput'))?.value.toLowerCase().trim() || '';
+    const cards = document.querySelectorAll('.article-card');
+    let count = 0;
+    if (!query) {
+        // Reset to current active category filter
+        const activePill = document.querySelector('.cat-pill.active');
+        const cat = activePill ? activePill.getAttribute('onclick').match(/'([^']+)'/)?.[1] || 'all' : 'all';
+        cards.forEach(card => {
+            const show = cat === 'all' || card.dataset.cat === cat;
+            card.classList.toggle('hidden', !show);
+            if (show) count++;
+        });
+    } else {
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const show = text.includes(query);
+            card.classList.toggle('hidden', !show);
+            if (show) count++;
+        });
+    }
+    const countEl = document.getElementById('articleCount');
+    if (countEl) countEl.textContent = 'Showing ' + count + ' articles';
+}
+
+function loadMore() {
+    const grid = document.getElementById('articlesGrid') || document.querySelector('.articles-grid');
+    if (!grid) return;
+    const visible = grid.querySelectorAll('.article-card:not(.hidden)').length;
+    if (window.MFC) MFC.toast('Loaded more articles!', 'info');
+    else console.log('Load more: /api/v1/articles/?page=2');
+}
+
+// Real-time clock
+setInterval(() => {
+    const now = new Date();
+    document.title = `Health Articles - MedFind [${now.toLocaleTimeString('en-BD')}]`;
+}, 60000);
+</script>
+<script src="../../assets/js/components.js"></script>
+<script src="../../services/api.js"></script>
+</body>
+</html>

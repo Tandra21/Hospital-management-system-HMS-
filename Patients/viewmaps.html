@@ -1,426 +1,493 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bangladesh Hospital Map | Healthcare Division</title>
-  <link rel="stylesheet" href="viewmaps.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Healthcare Near You - MedFind</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--secondary:#0d9488;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--white:#fff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--gray-800);}
+
+        /* NAVBAR */
+        .navbar{background:var(--white);height:64px;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray-200);position:fixed;top:0;left:0;right:0;z-index:1000;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+        .nav-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+        .nav-brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;}
+        .nav-brand-text{font-size:1.2rem;font-weight:800;color:var(--primary);}
+        .nav-center{display:flex;gap:1rem;}
+        .nav-links a{font-size:.875rem;font-weight:500;color:var(--gray-600);text-decoration:none;padding:.4rem .75rem;border-radius:8px;transition:.2s;}
+        .nav-links a:hover{background:var(--gray-100);color:var(--primary);}
+        .nav-right{display:flex;gap:.5rem;}
+        .nav-btn{display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:.2s;}
+        .btn-back{background:var(--gray-100);color:var(--gray-700);}
+        .btn-locate{background:var(--primary);color:#fff;}
+        .btn-back:hover{background:var(--gray-200);}
+        .btn-locate:hover{background:var(--primary-dark);}
+
+        /* MAP LAYOUT */
+        .map-layout{display:flex;height:calc(100vh - 64px);margin-top:64px;}
+
+        /* SIDEBAR PANEL */
+        .map-panel{width:380px;background:var(--white);display:flex;flex-direction:column;border-right:1px solid var(--gray-200);z-index:100;flex-shrink:0;}
+        
+        /* SEARCH BAR */
+        .panel-search{padding:1rem;border-bottom:1px solid var(--gray-200);}
+        .search-box{display:flex;gap:.5rem;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:12px;padding:.5rem .75rem;align-items:center;margin-bottom:.75rem;}
+        .search-box input{flex:1;border:none;background:none;outline:none;font-size:.9rem;color:var(--gray-900);}
+        .search-box input::placeholder{color:var(--gray-500);}
+        .search-box button{background:var(--primary);color:#fff;border:none;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:.9rem;}
+        
+        /* TYPE FILTERS */
+        .type-filters{display:flex;gap:.5rem;flex-wrap:wrap;}
+        .type-chip{display:flex;align-items:center;gap:.4rem;padding:.35rem .8rem;border-radius:100px;border:1.5px solid var(--gray-200);font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;background:var(--white);}
+        .type-chip:hover{border-color:var(--primary);color:var(--primary);}
+        .type-chip.active{color:#fff;}
+        .type-chip.all.active{background:var(--gray-800);border-color:var(--gray-800);}
+        .type-chip.hospital.active{background:#2563eb;border-color:#2563eb;}
+        .type-chip.clinic.active{background:#0d9488;border-color:#0d9488;}
+        .type-chip.pharmacy.active{background:#059669;border-color:#059669;}
+        .type-chip.lab.active{background:#7c3aed;border-color:#7c3aed;}
+        .type-chip.emergency.active{background:#dc2626;border-color:#dc2626;}
+        
+        /* DIVISION FILTER */
+        .division-row{padding:.75rem 1rem;border-bottom:1px solid var(--gray-200);}
+        .division-row label{font-size:.78rem;font-weight:600;color:var(--gray-500);display:block;margin-bottom:.4rem;}
+        .division-row select{width:100%;padding:.45rem .75rem;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.85rem;outline:none;background:var(--white);cursor:pointer;}
+        .division-row select:focus{border-color:var(--primary);}
+        
+        /* RESULTS HEADER */
+        .results-header{padding:.75rem 1rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
+        .results-count{font-size:.85rem;font-weight:600;color:var(--gray-700);}
+        .results-sort{font-size:.78rem;color:var(--gray-500);cursor:pointer;}
+        
+        /* FACILITY LIST */
+        .facility-list{flex:1;overflow-y:auto;padding:.75rem;}
+        .facility-card{border:1.5px solid var(--gray-200);border-radius:14px;padding:1rem;margin-bottom:.75rem;cursor:pointer;transition:.2s;position:relative;}
+        .facility-card:hover{border-color:var(--primary);box-shadow:0 4px 15px rgba(37,99,235,.1);background:#fafbff;}
+        .facility-card.selected{border-color:var(--primary);background:#eff6ff;}
+        .fc-top{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.6rem;}
+        .fc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;flex-shrink:0;}
+        .fc-icon.hospital{background:linear-gradient(135deg,#2563eb,#3b82f6);}
+        .fc-icon.clinic{background:linear-gradient(135deg,#0d9488,#14b8a6);}
+        .fc-icon.pharmacy{background:linear-gradient(135deg,#059669,#10b981);}
+        .fc-icon.lab{background:linear-gradient(135deg,#7c3aed,#8b5cf6);}
+        .fc-icon.emergency{background:linear-gradient(135deg,#dc2626,#ef4444);}
+        .fc-info{flex:1;}
+        .fc-info h3{font-size:.9rem;font-weight:700;margin-bottom:.2rem;line-height:1.3;}
+        .fc-info .fc-type{font-size:.73rem;font-weight:600;padding:.15rem .5rem;border-radius:4px;display:inline-block;margin-bottom:.3rem;}
+        .fc-type.hospital{background:#dbeafe;color:#1e40af;}
+        .fc-type.clinic{background:#ccfbf1;color:#0f766e;}
+        .fc-type.pharmacy{background:#d1fae5;color:#065f46;}
+        .fc-type.lab{background:#f3e8ff;color:#6b21a8;}
+        .fc-type.emergency{background:#fee2e2;color:#991b1b;}
+        .fc-addr{font-size:.78rem;color:var(--gray-500);margin-bottom:.35rem;}
+        .fc-meta{display:flex;gap:.75rem;font-size:.75rem;color:var(--gray-600);}
+        .fc-rating{color:#f59e0b;font-weight:600;}
+        .fc-dist{color:var(--primary);font-weight:600;}
+        .fc-status-row{display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--gray-100);}
+        .status-dot{display:flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:600;}
+        .status-dot.open{color:var(--success);}
+        .status-dot.closed{color:var(--danger);}
+        .status-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;}
+        .fc-actions{display:flex;gap:.4rem;}
+        .fc-btn{padding:.3rem .65rem;border-radius:7px;font-size:.73rem;font-weight:600;cursor:pointer;border:none;transition:.2s;}
+        .fc-btn-dir{background:var(--primary);color:#fff;}
+        .fc-btn-dir:hover{background:var(--primary-dark);}
+        .fc-btn-call{background:#d1fae5;color:#065f46;}
+        .fc-btn-call:hover{background:#a7f3d0;}
+        .emergency-bar{background:linear-gradient(90deg,#dc2626,#ef4444);padding:.65rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+        .emergency-bar span{color:#fff;font-size:.875rem;font-weight:700;}
+        .emergency-call-btn{background:#fff;color:#dc2626;border:none;padding:.3rem .75rem;border-radius:7px;font-weight:700;font-size:.8rem;cursor:pointer;}
+
+        /* MAP */
+        .map-container{flex:1;position:relative;}
+        #leafletMap{width:100%;height:100%;}
+        
+        /* MAP CONTROLS */
+        .map-controls{position:absolute;top:1rem;right:1rem;z-index:500;display:flex;flex-direction:column;gap:.5rem;}
+        .map-ctrl-btn{background:var(--white);border:1px solid var(--gray-200);width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);color:var(--gray-700);font-size:.9rem;transition:.2s;}
+        .map-ctrl-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+        
+        /* LIVE LOCATION INDICATOR */
+        .live-indicator{position:absolute;bottom:1rem;left:1rem;z-index:500;background:var(--white);padding:.5rem 1rem;border-radius:100px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;}
+        .live-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse2 2s infinite;}
+        @keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+
+        /* DETAIL POPUP */
+        .detail-popup{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;padding:1.5rem;box-shadow:0 -8px 30px rgba(0,0,0,.15);z-index:600;transform:translateY(100%);transition:.3s;max-height:60vh;overflow-y:auto;}
+        .detail-popup.show{transform:translateY(0);}
+        .popup-close{position:absolute;top:1rem;right:1rem;background:var(--gray-100);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;color:var(--gray-600);}
+        .popup-name{font-size:1.2rem;font-weight:800;margin-bottom:.5rem;}
+        .popup-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;}
+        .popup-item{background:var(--gray-50);border-radius:10px;padding:.75rem;text-align:center;}
+        .popup-item-icon{font-size:1.1rem;margin-bottom:.3rem;}
+        .popup-item-val{font-size:.85rem;font-weight:700;}
+        .popup-item-lbl{font-size:.72rem;color:var(--gray-500);margin-top:.1rem;}
+        .popup-actions{display:flex;gap:.75rem;margin-top:1rem;}
+        .popup-btn{flex:1;padding:.75rem;border-radius:12px;font-weight:700;font-size:.9rem;cursor:pointer;border:none;transition:.2s;}
+        .popup-btn.primary{background:var(--primary);color:#fff;}
+        .popup-btn.secondary{background:var(--gray-100);color:var(--gray-800);}
+        .popup-btn.danger{background:var(--danger);color:#fff;}
+
+        @media(max-width:768px){
+            .map-panel{position:fixed;bottom:0;left:0;right:0;width:100%;height:55%;border-top:1px solid var(--gray-200);border-right:none;z-index:500;}
+            .map-container{height:45%;}
+            .map-layout{flex-direction:column;}
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <div class="logo">
-          <i class="fas fa-hospital"></i>
-          <h1>Bangladesh <span>Hospital</span> Map</h1>
-        </div>
-        <p class="subtitle">Healthcare facilities across all divisions of Bangladesh</p>
-      </div>
-      <div class="header-right">
-        <div class="search-box">
-          <input type="text" placeholder="Search division..." id="searchInput">
-          <button id="searchBtn"><i class="fas fa-search"></i></button>
-        </div>
-      </div>
-    </header>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="../../index.html" class="nav-brand">
+        <div class="nav-brand-icon"><i class="fas fa-heartbeat"></i></div>
+        <span class="nav-brand-text">MedFind</span>
+    </a>
+    <div class="nav-center nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="../hospital/list.html">Hospitals</a>
+        <a href="../doctors/search.html">Doctors</a>
+    </div>
+    <div class="nav-right">
+        <a href="dashboard.html" class="nav-btn btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <button class="nav-btn btn-locate" onclick="locateMe()"><i class="fas fa-crosshairs"></i> My Location</button>
+    </div>
+</nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Map Section -->
-      <section class="map-section">
-        <div class="section-title">
-          <h2><i class="fas fa-map"></i> Bangladesh Division Healthcare Map</h2>
-          <p>Interactive map showing hospital distribution across all divisions</p>
+<div class="map-layout">
+    <!-- LEFT PANEL -->
+    <div class="map-panel">
+        <!-- EMERGENCY BAR -->
+        <div class="emergency-bar">
+            <span><i class="fas fa-ambulance"></i> Medical Emergency?</span>
+            <button class="emergency-call-btn" onclick="window.location='tel:999'"><i class="fas fa-phone"></i> Call 999</button>
         </div>
-        
-        <div class="map-wrapper">
-          <div class="map-container">
-            <!-- Bangladesh Map with Exact Shape -->
-            <svg viewBox="0 0 1200 800" id="bangladesh-map" xmlns="http://www.w3.org/2000/svg">
-              <!-- Bangladesh Country Outline -->
-              <path class="country-outline" 
-                d="M300,150 L400,120 L500,180 L600,250 L700,300 L750,350 L800,400 L780,500 L750,550 L700,600 L650,550 L600,500 L550,450 L500,400 L450,350 L400,400 L350,350 L300,300 L250,350 L200,300 L150,250 L100,200 L150,150 Z"
-                fill="#e8f4fd" stroke="#1e88e5" stroke-width="3"/>
-              
-              <!-- Bay of Bengal Water -->
-              <path class="bay-water" 
-                d="M650,600 L750,650 L780,680 L800,700 L820,720 L850,740 L880,750 L900,730 L920,710 L950,700 L980,690 L1000,680 L1020,670 L1050,660 L1080,650 L1100,640"
-                fill="#e3f2fd" stroke="#90caf9" stroke-width="2" stroke-dasharray="5,3"/>
-              
-              <!-- Division Boundaries -->
-              <!-- Rangpur Division -->
-              <path id="Rangpur" class="division" 
-                d="M250,200 L350,180 L400,250 L380,300 L330,280 L280,250 Z"
-                data-hospitals="100" data-selected="10" data-other="50"/>
-              
-              <!-- Rajshahi Division -->
-              <path id="Rajshahi" class="division active" 
-                d="M380,300 L480,350 L520,400 L460,450 L400,400 L380,350 Z"
-                data-hospitals="80" data-selected="10" data-other="60"/>
-              
-              <!-- Mymensingh Division -->
-              <path id="Mymensingh" class="division" 
-                d="M520,400 L620,450 L580,500 L520,450 L500,420 Z"
-                data-hospitals="70" data-selected="10" data-other="50"/>
-              
-              <!-- Dhaka Division -->
-              <path id="Dhaka" class="division" 
-                d="M580,500 L680,550 L640,600 L580,550 L560,520 Z"
-                data-hospitals="50" data-selected="10" data-other="30"/>
-              
-              <!-- Sylhet Division -->
-              <path id="Sylhet" class="division" 
-                d="M680,350 L780,400 L740,450 L680,400 L660,370 Z"
-                data-hospitals="60" data-selected="10" data-other="40"/>
-              
-              <!-- Khulna Division -->
-              <path id="Khulna" class="division" 
-                d="M400,450 L500,500 L460,550 L400,500 L380,470 Z"
-                data-hospitals="40" data-selected="10" data-other="20"/>
-              
-              <!-- Barisal Division -->
-              <path id="Barisal" class="division" 
-                d="M560,600 L660,650 L620,700 L560,650 L540,620 Z"
-                data-hospitals="20" data-selected="10" data-other="10"/>
-              
-              <!-- Chittagong Division -->
-              <path id="Chittagong" class="division" 
-                d="M700,450 L800,500 L780,550 L720,500 L700,470 Z"
-                data-hospitals="30" data-selected="10" data-other="10"/>
-              
-              <!-- Division Labels -->
-              <g class="division-labels">
-                <!-- Rangpur -->
-                <g transform="translate(320, 240)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Rangpur</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-                
-                <!-- Rajshahi -->
-                <g transform="translate(450, 380)">
-                  <circle cx="0" cy="0" r="20" fill="#4caf50" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label active">Rajshahi</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count active">10 Selected</text>
-                </g>
-                
-                <!-- Mymensingh -->
-                <g transform="translate(560, 450)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Mymensingh</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-                
-                <!-- Dhaka -->
-                <g transform="translate(620, 550)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Dhaka</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-                
-                <!-- Sylhet -->
-                <g transform="translate(720, 400)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Sylhet</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-                
-                <!-- Khulna -->
-                <g transform="translate(440, 500)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Khulna</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-                
-                <!-- Barisal -->
-                <g transform="translate(600, 650)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Barisal</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-                
-                <!-- Chittagong -->
-                <g transform="translate(750, 500)">
-                  <circle cx="0" cy="0" r="20" fill="#2196f3" opacity="0.1"/>
-                  <text x="0" y="5" text-anchor="middle" class="division-label">Chittagong</text>
-                  <text x="0" y="22" text-anchor="middle" class="hospital-count">10 Selected</text>
-                </g>
-              </g>
-              
-              <!-- Legend -->
-              <g class="map-legend" transform="translate(900, 100)">
-                <rect width="250" height="180" rx="10" fill="white" stroke="#ddd" stroke-width="1" 
-                      filter="url(#shadow)"/>
-                
-                <!-- Legend Title -->
-                <text x="20" y="30" class="legend-title">Legend</text>
-                
-                <!-- Selected Division -->
-                <rect x="20" y="45" width="15" height="15" fill="#4caf50" rx="3"/>
-                <text x="45" y="58" class="legend-text">Selected Division</text>
-                
-                <!-- Other Division -->
-                <rect x="20" y="70" width="15" height="15" fill="#bbdefb" rx="3"/>
-                <text x="45" y="83" class="legend-text">Other Division</text>
-                
-                <!-- Hospital Location -->
-                <circle cx="27" y="100" r="6" fill="#ff9800"/>
-                <text x="45" y="105" class="legend-text">Hospital Location</text>
-                
-                <!-- Water Area -->
-                <path d="M20,115 L35,115" stroke="#90caf9" stroke-width="2" stroke-dasharray="5,3"/>
-                <text x="45" y="120" class="legend-text">Bay of Bengal</text>
-                
-                <!-- Division Key -->
-                <text x="20" y="145" class="legend-title">Each Division:</text>
-                <text x="20" y="165" class="legend-text">• Shows 10 Selected Hospitals</text>
-              </g>
-              
-              <!-- Filter for shadow -->
-              <defs>
-                <filter id="shadow">
-                  <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.1)"/>
-                </filter>
-              </defs>
-            </svg>
-            
-            <div id="map-tooltip" class="map-tooltip"></div>
-          </div>
-          
-          <!-- Statistics Panel -->
-          <div class="stats-panel">
-            <div class="panel-header">
-              <h3><i class="fas fa-chart-pie"></i> Division Statistics</h3>
-              <p>Hospital distribution across divisions</p>
-            </div>
-            
-            <div class="stats-table-container">
-              <table class="stats-table">
-                <thead>
-                  <tr>
-                    <th><i class="fas fa-map-marker-alt"></i> Division</th>
-                    <th><i class="fas fa-hospital"></i> Selected</th>
-                    <th><i class="fas fa-building"></i> Other</th>
-                    <th><i class="fas fa-chart-line"></i> Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Rangpur</td>
-                    <td>10</td>
-                    <td>50</td>
-                    <td><strong>100</strong></td>
-                  </tr>
-                  <tr class="active-row">
-                    <td><i class="fas fa-map-pin" style="color: #4caf50;"></i> Rajshahi</td>
-                    <td>10</td>
-                    <td>60</td>
-                    <td><strong>80</strong></td>
-                  </tr>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Mymensingh</td>
-                    <td>10</td>
-                    <td>50</td>
-                    <td><strong>70</strong></td>
-                  </tr>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Dhaka</td>
-                    <td>10</td>
-                    <td>30</td>
-                    <td><strong>50</strong></td>
-                  </tr>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Sylhet</td>
-                    <td>10</td>
-                    <td>40</td>
-                    <td><strong>60</strong></td>
-                  </tr>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Khulna</td>
-                    <td>10</td>
-                    <td>20</td>
-                    <td><strong>40</strong></td>
-                  </tr>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Barisal</td>
-                    <td>10</td>
-                    <td>10</td>
-                    <td><strong>20</strong></td>
-                  </tr>
-                  <tr>
-                    <td><i class="fas fa-map-pin" style="color: #bbdefb;"></i> Chittagong</td>
-                    <td>10</td>
-                    <td>10</td>
-                    <td><strong>30</strong></td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr class="total-row">
-                    <td><strong>Total</strong></td>
-                    <td><strong>80</strong></td>
-                    <td><strong>270</strong></td>
-                    <td><strong>350</strong></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-            
-            <div class="stats-summary">
-              <div class="summary-item">
-                <div class="summary-icon" style="background: #4caf50;">
-                  <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="summary-text">
-                  <h4>80</h4>
-                  <p>Selected Hospitals</p>
-                </div>
-              </div>
-              <div class="summary-item">
-                <div class="summary-icon" style="background: #2196f3;">
-                  <i class="fas fa-hospital"></i>
-                </div>
-                <div class="summary-text">
-                  <h4>350</h4>
-                  <p>Total Hospitals</p>
-                </div>
-              </div>
-              <div class="summary-item">
-                <div class="summary-icon" style="background: #ff9800;">
-                  <i class="fas fa-map-marked-alt"></i>
-                </div>
-                <div class="summary-text">
-                  <h4>8</h4>
-                  <p>Divisions</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Division Selector -->
-        <div class="division-selector">
-          <div class="selector-header">
-            <h4><i class="fas fa-map-signs"></i> Select Division</h4>
-            <p>Click to view hospital details</p>
-          </div>
-          <div class="division-buttons">
-            <button class="division-btn" data-division="Rangpur">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Rangpur</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn active" data-division="Rajshahi">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Rajshahi</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn" data-division="Mymensingh">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Mymensingh</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn" data-division="Dhaka">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Dhaka</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn" data-division="Sylhet">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Sylhet</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn" data-division="Khulna">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Khulna</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn" data-division="Barisal">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Barisal</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-            <button class="division-btn" data-division="Chittagong">
-              <span class="btn-icon"><i class="fas fa-map-pin"></i></span>
-              <span class="btn-text">Chittagong</span>
-              <span class="btn-stats">10 Selected</span>
-            </button>
-          </div>
-        </div>
-      </section>
 
-      <!-- Hospitals Section -->
-      <section class="hospitals-section">
-        <div class="section-title">
-          <h2><i class="fas fa-hospital-alt"></i> Hospitals in <span id="selected-division">Rajshahi</span> Division</h2>
-          <p>Showing <span id="hospital-count">10</span> selected hospitals</p>
+        <!-- SEARCH -->
+        <div class="panel-search">
+            <div class="search-box">
+                <i class="fas fa-search" style="color:var(--gray-500)"></i>
+                <input type="text" id="searchInput" placeholder="Search hospitals, clinics, pharmacies..." oninput="filterFacilities()">
+                <button onclick="filterFacilities()"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="type-filters">
+                <div class="type-chip all active" onclick="setType('all',this)"><i class="fas fa-th"></i> All</div>
+                <div class="type-chip hospital" onclick="setType('hospital',this)"><i class="fas fa-hospital"></i> Hospitals</div>
+                <div class="type-chip clinic" onclick="setType('clinic',this)"><i class="fas fa-clinic-medical"></i> Clinics</div>
+                <div class="type-chip pharmacy" onclick="setType('pharmacy',this)"><i class="fas fa-pills"></i> Pharmacy</div>
+                <div class="type-chip lab" onclick="setType('lab',this)"><i class="fas fa-flask"></i> Diagnostic</div>
+                <div class="type-chip emergency" onclick="setType('emergency',this)"><i class="fas fa-ambulance"></i> Emergency</div>
+            </div>
         </div>
-        
-        <div class="hospital-filters">
-          <div class="filter-group">
-            <input type="text" placeholder="Search hospital name..." id="hospitalSearch">
-            <button class="filter-btn"><i class="fas fa-search"></i> Search</button>
-          </div>
-          <div class="filter-group">
-            <select id="hospitalType">
-              <option value="all">All Types</option>
-              <option value="government">Government</option>
-              <option value="private">Private</option>
-              <option value="specialized">Specialized</option>
+
+        <!-- DIVISION FILTER -->
+        <div class="division-row">
+            <label>Filter by Division / District</label>
+            <select id="divisionSelect" onchange="filterByDivision()">
+                <option value="all">All Bangladesh</option>
+                <option value="dhaka" selected>Dhaka Division</option>
+                <option value="chittagong">Chittagong Division</option>
+                <option value="rajshahi">Rajshahi Division</option>
+                <option value="khulna">Khulna Division</option>
+                <option value="barisal">Barisal Division</option>
+                <option value="sylhet">Sylhet Division</option>
+                <option value="rangpur">Rangpur Division</option>
+                <option value="mymensingh">Mymensingh Division</option>
             </select>
-          </div>
         </div>
-        
-        <div class="hospitals-grid" id="hospitalsGrid">
-          <!-- Hospitals will be loaded here -->
-        </div>
-      </section>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <div class="footer-logo">
-            <i class="fas fa-heartbeat"></i>
-            <div>
-              <h3>Bangladesh Hospital Map</h3>
-              <p>Ministry of Health & Family Welfare</p>
+        <!-- RESULTS HEADER -->
+        <div class="results-header">
+            <span class="results-count" id="resultsCount">Showing 8 facilities near you</span>
+            <span class="results-sort"><i class="fas fa-sort"></i> Nearest first</span>
+        </div>
+
+        <!-- FACILITY LIST -->
+        <div class="facility-list" id="facilityList">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-container">
+        <div id="leafletMap"></div>
+    <div id="mapLoadingMsg" style="position:absolute;inset:0;background:rgba(15,23,42,.8);display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;z-index:1000;pointer-events:none;">
+      <i class="fas fa-map-marked-alt" style="font-size:2.5rem;margin-bottom:12px;color:#60a5fa;animation:pulse 1.5s infinite;"></i>
+      <p style="font-weight:700;">Loading Bangladesh Map…</p>
+      <p style="font-size:.78rem;color:#64748b;margin-top:4px;">Using OpenStreetMap tiles</p>
+    </div>
+
+        <!-- MAP CONTROLS -->
+        <div class="map-controls">
+            <div class="map-ctrl-btn" onclick="map.zoomIn()" title="Zoom In"><i class="fas fa-plus"></i></div>
+            <div class="map-ctrl-btn" onclick="map.zoomOut()" title="Zoom Out"><i class="fas fa-minus"></i></div>
+            <div class="map-ctrl-btn" onclick="locateMe()" title="My Location"><i class="fas fa-crosshairs"></i></div>
+            <div class="map-ctrl-btn" onclick="toggleSatellite()" title="Satellite View"><i class="fas fa-satellite"></i></div>
+        </div>
+
+        <!-- LIVE LOCATION INDICATOR -->
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span id="locationLabel">Detecting your location...</span>
+        </div>
+
+        <!-- DETAIL POPUP -->
+        <div class="detail-popup" id="detailPopup">
+            <button class="popup-close" onclick="closePopup()"><i class="fas fa-times"></i></button>
+            <div id="popupContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// FACILITY DATA — Bangladesh-wide, dynamic
+const facilities = [
+    { id:1, name:'Dhaka Medical College Hospital', type:'hospital', division:'dhaka', district:'Dhaka', address:'Bakshibazar, Dhaka 1000', lat:23.7254, lng:90.3983, rating:4.5, distance:0.8, phone:'02-55167100', open:true, emergency:true, beds:2650, doctors:500 },
+    { id:2, name:'BSMMU (PG Hospital)', type:'hospital', division:'dhaka', district:'Dhaka', address:'Shahbagh, Dhaka 1000', lat:23.7290, lng:90.3955, rating:4.6, distance:1.2, phone:'02-55165300', open:true, emergency:true, beds:1700, doctors:450 },
+    { id:3, name:'Square Hospitals Ltd.', type:'hospital', division:'dhaka', district:'Dhaka', address:'West Panthapath, Dhaka 1205', lat:23.7507, lng:90.3738, rating:4.8, distance:2.1, phone:'02-8159457', open:true, emergency:true, beds:400, doctors:300 },
+    { id:4, name:'Popular Diagnostic Centre', type:'lab', division:'dhaka', district:'Dhaka', address:'Dhanmondi, Dhaka', lat:23.7461, lng:90.3742, rating:4.7, distance:2.5, phone:'02-9136030', open:true, emergency:false, beds:0, doctors:80 },
+    { id:5, name:'Ibn Sina Hospital', type:'hospital', division:'dhaka', district:'Dhaka', address:'Kallyanpur, Dhaka', lat:23.7750, lng:90.3682, rating:4.6, distance:3.2, phone:'02-8034401', open:true, emergency:true, beds:200, doctors:150 },
+    { id:6, name:'Evercare Hospital Dhaka', type:'hospital', division:'dhaka', district:'Dhaka', address:'Plot 81, Block E, Bashundhara, Dhaka', lat:23.8142, lng:90.4237, rating:4.9, distance:5.8, phone:'02-8431229', open:true, emergency:true, beds:450, doctors:400 },
+    { id:7, name:'Marks Medical College Hospital', type:'hospital', division:'dhaka', district:'Dhaka', address:'Mirpur 14, Dhaka', lat:23.8057, lng:90.3727, rating:4.2, distance:6.1, phone:'02-8013434', open:true, emergency:true, beds:250, doctors:120 },
+    { id:8, name:'Dhaka Healthcare Pharmacy', type:'pharmacy', division:'dhaka', district:'Dhaka', address:'Farmgate, Dhaka', lat:23.7549, lng:90.3931, rating:4.3, distance:1.8, phone:'01711-XXXXXX', open:true, emergency:false, beds:0, doctors:0 },
+    { id:9, name:'24hr Emergency Clinic Gulshan', type:'emergency', division:'dhaka', district:'Dhaka', address:'Gulshan 2, Dhaka', lat:23.7926, lng:90.4149, rating:4.4, distance:4.3, phone:'01700-XXXXXX', open:true, emergency:true, beds:30, doctors:25 },
+    { id:10, name:'Chittagong Medical College Hospital', type:'hospital', division:'chittagong', district:'Chittagong', address:'Pahartali, Chittagong 4203', lat:22.4083, lng:91.8061, rating:4.4, distance:0, phone:'031-751741', open:true, emergency:true, beds:1500, doctors:400 },
+    { id:11, name:'Rajshahi Medical College Hospital', type:'hospital', division:'rajshahi', district:'Rajshahi', address:'Rajshahi 6000', lat:24.3745, lng:88.6042, rating:4.3, distance:0, phone:'0721-772150', open:true, emergency:true, beds:1200, doctors:300 },
+    { id:12, name:'Khulna Medical College Hospital', type:'hospital', division:'khulna', district:'Khulna', address:'Khulna 9000', lat:22.8456, lng:89.5403, rating:4.2, distance:0, phone:'041-720027', open:true, emergency:true, beds:900, doctors:250 },
+    { id:13, name:'Sylhet MAG Osmani Hospital', type:'hospital', division:'sylhet', district:'Sylhet', address:'Sylhet 3100', lat:24.8985, lng:91.8696, rating:4.3, distance:0, phone:'0821-716770', open:true, emergency:true, beds:800, doctors:220 },
+    { id:14, name:'Labaid Diagnostic Dhanmondi', type:'lab', division:'dhaka', district:'Dhaka', address:'House 1, Road 4, Dhanmondi, Dhaka', lat:23.7416, lng:90.3714, rating:4.6, distance:2.8, phone:'02-9130280', open:true, emergency:false, beds:0, doctors:60 },
+];
+
+let currentType = 'all';
+let currentDivision = 'dhaka';
+let map, userMarker, userLat = 23.7461, userLng = 90.3742;
+let markers = [];
+let satellite = false;
+let osmLayer, satLayer;
+
+// INITIALIZE MAP
+window.onload = function() {
+    map = L.map('leafletMap', {
+        zoomControl: false,
+        preferCanvas: true,
+    }).setView([23.7461, 90.3742], 10);
+    map.on('load', () => { document.getElementById('mapLoadingMsg')?.remove(); });
+    osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:'© OpenStreetMap contributors', maxZoom:19
+    }).addTo(map);
+    satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution:'© Esri', maxZoom:19
+    });
+
+    addFacilityMarkers();
+    renderFacilityList();
+    locateMe();
+};
+
+function createIcon(type) {
+    const colors = { hospital:'#2563eb', clinic:'#0d9488', pharmacy:'#059669', lab:'#7c3aed', emergency:'#dc2626' };
+    const icons = { hospital:'🏥', clinic:'🏨', pharmacy:'💊', lab:'🔬', emergency:'🚨' };
+    const color = colors[type] || '#374151';
+    const icon = icons[type] || '📍';
+    return L.divIcon({
+        className:'',
+        html:`<div style="background:${color};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);font-size:1rem">${icon}</div>`,
+        iconSize:[36,36], iconAnchor:[18,18], popupAnchor:[0,-20]
+    });
+}
+
+function addFacilityMarkers() {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+    const filtered = getFiltered();
+    filtered.forEach(f => {
+        const marker = L.marker([f.lat, f.lng], { icon: createIcon(f.type) });
+        marker.bindPopup(`<div style="font-family:Inter,sans-serif;min-width:200px"><strong>${f.name}</strong><br><small style="color:#6b7280">${f.address}</small><br><br><a href="../hospital/profile.html?id=${f.id}" style="background:#2563eb;color:#fff;padding:4px 12px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">View Profile</a></div>`);
+        marker.on('click', () => showDetail(f));
+        marker.addTo(map);
+        markers.push(marker);
+    });
+}
+
+function getFiltered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    return facilities.filter(f => {
+        const typeMatch = currentType === 'all' || f.type === currentType;
+        const divMatch = currentDivision === 'all' || f.division === currentDivision;
+        const qMatch = !q || f.name.toLowerCase().includes(q) || f.address.toLowerCase().includes(q);
+        return typeMatch && divMatch && qMatch;
+    });
+}
+
+function renderFacilityList() {
+    const filtered = getFiltered();
+    const container = document.getElementById('facilityList');
+    document.getElementById('resultsCount').textContent = `Showing ${filtered.length} facilities`;
+
+    const typeIcons = { hospital:'fa-hospital', clinic:'fa-clinic-medical', pharmacy:'fa-pills', lab:'fa-flask', emergency:'fa-ambulance' };
+
+    container.innerHTML = filtered.map(f => `
+        <div class="facility-card" id="fc-${f.id}" onclick="selectFacility(${f.id})">
+            <div class="fc-top">
+                <div class="fc-icon ${f.type}"><i class="fas ${typeIcons[f.type]||'fa-map-marker'}"></i></div>
+                <div class="fc-info">
+                    <span class="fc-type ${f.type}">${f.type.toUpperCase()}</span>
+                    <h3>${f.name}</h3>
+                    <div class="fc-addr"><i class="fas fa-map-marker-alt"></i> ${f.address}</div>
+                    <div class="fc-meta">
+                        <span class="fc-rating"><i class="fas fa-star"></i> ${f.rating}</span>
+                        ${f.distance>0?`<span class="fc-dist"><i class="fas fa-location-arrow"></i> ${f.distance} km</span>`:''}
+                        ${f.beds>0?`<span><i class="fas fa-bed"></i> ${f.beds} beds</span>`:''}
+                    </div>
+                </div>
             </div>
-          </div>
-          <p class="footer-description">
-            A comprehensive directory of healthcare facilities across all divisions of Bangladesh.
-            Providing access to hospital information for better healthcare services.
-          </p>
+            <div class="fc-status-row">
+                <span class="status-dot ${f.open?'open':'closed'}">${f.open?'Open Now':'Closed'}</span>
+                <div class="fc-actions">
+                    <button class="fc-btn fc-btn-dir" onclick="event.stopPropagation();getDirections(${f.lat},${f.lng})"><i class="fas fa-directions"></i> Directions</button>
+                    <button class="fc-btn fc-btn-call" onclick="event.stopPropagation();window.location='tel:${f.phone}'"><i class="fas fa-phone"></i> Call</button>
+                </div>
+            </div>
         </div>
-        
-        <div class="footer-section">
-          <h4>Emergency Contacts</h4>
-          <div class="emergency-contacts">
-            <p><i class="fas fa-phone"></i> National Helpline: <strong>16263</strong></p>
-            <p><i class="fas fa-ambulance"></i> Ambulance: <strong>199</strong></p>
-            <p><i class="fas fa-first-aid"></i> Emergency: <strong>999</strong></p>
-          </div>
-        </div>
-        
-        <div class="footer-section">
-          <h4>Quick Links</h4>
-          <ul class="footer-links">
-            <li><a href="#"><i class="fas fa-chevron-right"></i> All Divisions</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Government Hospitals</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Private Hospitals</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Emergency Services</a></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="footer-bottom">
-        <p>&copy; 2023 Bangladesh Hospital Map. Ministry of Health & Family Welfare. All rights reserved.</p>
-      </div>
-    </footer>
-  </div>
+    `).join('');
+}
 
-  <script src="viewmaps.js"></script>
+function selectFacility(id) {
+    document.querySelectorAll('.facility-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('fc-'+id).classList.add('selected');
+    const f = facilities.find(x => x.id === id);
+    map.flyTo([f.lat, f.lng], 15, { animate:true, duration:1 });
+    showDetail(f);
+}
+
+function showDetail(f) {
+    document.getElementById('popupContent').innerHTML = `
+        <div class="popup-name">${f.name}</div>
+        <div style="font-size:.85rem;color:var(--gray-500);margin-bottom:.5rem"><i class="fas fa-map-marker-alt"></i> ${f.address} · ${f.district}</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
+            <span style="background:#dbeafe;color:#1e40af;padding:.2rem .65rem;border-radius:100px;font-size:.75rem;font-weight:600">${f.type.toUpperCase()}</span>
+            <span style="background:${f.open?'#d1fae5':'#fee2e2'};color:${f.open?'#065f46':'#991b1b'};padding:.2rem .65rem;border-radius:100px;font-size:.75rem;font-weight:600">${f.open?'Open Now':'Closed'}</span>
+            ${f.emergency?'<span style="background:#fee2e2;color:#991b1b;padding:.2rem .65rem;border-radius:100px;font-size:.75rem;font-weight:600">🚨 Emergency</span>':''}
+        </div>
+        <div class="popup-grid">
+            <div class="popup-item"><div class="popup-item-icon">⭐</div><div class="popup-item-val">${f.rating}/5.0</div><div class="popup-item-lbl">Rating</div></div>
+            <div class="popup-item"><div class="popup-item-icon">📍</div><div class="popup-item-val">${f.distance>0?f.distance+' km':'Local'}</div><div class="popup-item-lbl">Distance</div></div>
+            ${f.beds>0?`<div class="popup-item"><div class="popup-item-icon">🛏️</div><div class="popup-item-val">${f.beds}</div><div class="popup-item-lbl">Beds</div></div>`:'<div class="popup-item"><div class="popup-item-icon">📞</div><div class="popup-item-val" style="font-size:.8rem">${f.phone}</div><div class="popup-item-lbl">Phone</div></div>'}
+            ${f.doctors>0?`<div class="popup-item"><div class="popup-item-icon">👨‍⚕️</div><div class="popup-item-val">${f.doctors}</div><div class="popup-item-lbl">Doctors</div></div>`:''}
+        </div>
+        <div class="popup-actions">
+            <button class="popup-btn primary" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${f.lat},${f.lng}','_blank')"><i class="fas fa-directions"></i> Get Directions</button>
+            <button class="popup-btn secondary" onclick="window.location='../hospital/profile.html?id=${f.id}'"><i class="fas fa-info-circle"></i> View Profile</button>
+            ${f.emergency?`<button class="popup-btn danger" onclick="window.location='tel:999'"><i class="fas fa-phone"></i> 999</button>`:''}
+        </div>
+    `;
+    document.getElementById('detailPopup').classList.add('show');
+}
+
+function closePopup() { document.getElementById('detailPopup').classList.remove('show'); }
+
+function locateMe() {
+    document.getElementById('locationLabel').textContent = 'Locating...';
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                userLat = pos.coords.latitude;
+                userLng = pos.coords.longitude;
+                if (userMarker) map.removeLayer(userMarker);
+                userMarker = L.marker([userLat, userLng], {
+                    icon: L.divIcon({ className:'', html:'<div style="background:#2563eb;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 6px rgba(37,99,235,.2)"></div>', iconSize:[16,16], iconAnchor:[8,8] })
+                }).addTo(map).bindPopup('<strong>You are here</strong>').openPopup();
+                map.flyTo([userLat, userLng], 13, {animate:true,duration:1.5});
+                document.getElementById('locationLabel').textContent = 'Live Location Active';
+                // Fetch nearest facilities from API
+                fetchNearbyFacilities(userLat, userLng);
+            },
+            err => { document.getElementById('locationLabel').textContent = 'Location not available'; }
+        );
+    }
+}
+
+function fetchNearbyFacilities(lat, lng) {
+    // Real API call: /api/v1/locations/nearby/?lat=&lng=&radius=10
+    console.log(`Fetching from API: /api/v1/locations/nearby/?lat=${lat}&lng=${lng}&radius=10`);
+}
+
+function filterFacilities() { renderFacilityList(); addFacilityMarkers(); }
+function filterByDivision() { currentDivision = document.getElementById('divisionSelect').value; renderFacilityList(); addFacilityMarkers(); }
+
+function setType(type, el) {
+    currentType = type;
+    document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderFacilityList();
+    addFacilityMarkers();
+}
+
+function getDirections(lat, lng) {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+}
+
+function toggleSatellite() {
+    satellite = !satellite;
+    if (satellite) { map.removeLayer(osmLayer); satLayer.addTo(map); }
+    else { map.removeLayer(satLayer); osmLayer.addTo(map); }
+}
+
+// ── REAL-TIME LOCATION TRACKING ──
+let watchId = null;
+let userMarker = null;
+
+function startLocationTracking() {
+    if (!navigator.geolocation) return;
+    watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const acc = pos.coords.accuracy;
+
+            if (userMarker) {
+                userMarker.setLatLng([lat, lng]);
+            } else {
+                userMarker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        html: '<div style="width:16px;height:16px;background:#2563eb;border-radius:50%;border:3px solid white;box-shadow:0 0 0 8px rgba(37,99,235,0.2);"></div>',
+                        iconSize: [16,16], iconAnchor: [8,8]
+                    })
+                }).addTo(map).bindPopup('<b>Your Location</b><br>Accuracy: ' + Math.round(acc) + 'm');
+            }
+            // Update distances for all facilities
+            facilities.forEach(f => {
+                const R = 6371;
+                const dLat = (f.lat - lat) * Math.PI / 180;
+                const dLng = (f.lng - lng) * Math.PI / 180;
+                const a = Math.sin(dLat/2)**2 + Math.cos(lat*Math.PI/180)*Math.cos(f.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+                f.distance = parseFloat((R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1));
+            });
+            facilities.sort((a,b) => a.distance - b.distance);
+            filterFacilities();
+        },
+        (err) => console.warn('Location error:', err.message),
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+    );
+}
+
+startLocationTracking();
+</script>
+<script src="../../assets/js/components.js"></script>
+<script src="../../services/api.js">
+// Remove loading overlay once tiles start loading
+map.on('tileload', function() {
+    const msg = document.getElementById('mapLoadingMsg');
+    if (msg) { msg.style.opacity = '0'; setTimeout(() => msg.remove(), 500); }
+});
+setTimeout(() => {
+    const msg = document.getElementById('mapLoadingMsg');
+    if (msg) msg.remove();
+}, 4000);
+</script>
 </body>
 </html>

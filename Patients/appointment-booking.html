@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment - MedFind</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--accent:#7c3aed;--secondary:#10b981;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;--white:#fff;--danger:#ef4444;--warning:#f59e0b;--success:#10b981;--shadow-md:0 4px 16px rgba(0,0,0,0.08);--shadow-xl:0 20px 40px rgba(0,0,0,0.12);--radius-lg:16px;--radius-xl:24px;--transition:all 0.3s ease;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--gray-50);color:var(--gray-800);}
+    .container{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+
+    .page-hero{background:linear-gradient(135deg,#0f172a,#1e293b,#2d1b69);color:white;padding:2.5rem 0;}
+    .page-hero h1{font-size:1.8rem;font-weight:800;margin-bottom:6px;}
+    .page-hero p{color:#94a3b8;}
+
+    /* Steps */
+    .steps-bar{background:white;border-bottom:1px solid var(--gray-200);padding:1.2rem 0;}
+    .steps{display:flex;align-items:center;justify-content:center;gap:0;max-width:700px;margin:0 auto;padding:0 2rem;}
+    .step{display:flex;align-items:center;gap:10px;flex:1;}
+    .step-num{width:36px;height:36px;border-radius:50%;background:var(--gray-200);color:var(--gray-500);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0;transition:var(--transition);}
+    .step.active .step-num{background:linear-gradient(135deg,var(--primary),var(--accent));color:white;}
+    .step.done .step-num{background:var(--success);color:white;}
+    .step-label{font-size:0.85rem;font-weight:500;color:var(--gray-400);}
+    .step.active .step-label,.step.done .step-label{color:var(--gray-700);}
+    .step-line{flex:1;height:2px;background:var(--gray-200);margin:0 8px;}
+    .step-line.done{background:var(--success);}
+
+    .booking-layout{display:grid;grid-template-columns:1fr 380px;gap:2rem;padding:2.5rem 0 4rem;}
+
+    /* Main Panel */
+    .booking-main{}
+    .card{background:white;border-radius:var(--radius-xl);box-shadow:var(--shadow-md);border:1px solid var(--gray-200);margin-bottom:1.5rem;overflow:hidden;}
+    .card-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:12px;}
+    .card-header h3{font-size:1rem;font-weight:700;color:var(--gray-800);}
+    .card-header .icon{width:38px;height:38px;border-radius:10px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;}
+    .card-body{padding:1.5rem;}
+
+    /* Doctor mini card */
+    .doc-mini{display:flex;gap:1rem;align-items:center;}
+    .doc-mini-img{width:70px;height:70px;border-radius:14px;object-fit:cover;background:var(--gray-100);}
+    .doc-mini-info h4{font-size:1rem;font-weight:700;margin-bottom:4px;}
+    .doc-mini-info .spec{display:inline-block;background:var(--primary-light);color:var(--primary);padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;margin-bottom:6px;}
+    .doc-mini-info p{color:var(--gray-500);font-size:0.85rem;}
+
+    /* Calendar */
+    .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+    .cal-nav{background:none;border:1.5px solid var(--gray-200);border-radius:8px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
+    .cal-nav:hover{border-color:var(--primary);color:var(--primary);}
+    .cal-title{font-weight:700;font-size:1rem;color:var(--gray-900);}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
+    .cal-dow{font-size:0.75rem;font-weight:600;color:var(--gray-400);padding:6px 0;}
+    .cal-day{padding:10px 4px;border-radius:10px;cursor:pointer;font-size:0.88rem;transition:var(--transition);border:1.5px solid transparent;}
+    .cal-day:hover:not(.disabled):not(.other){background:var(--primary-light);color:var(--primary);}
+    .cal-day.today{font-weight:700;color:var(--primary);}
+    .cal-day.selected{background:linear-gradient(135deg,var(--primary),var(--accent));color:white;font-weight:700;}
+    .cal-day.disabled{color:var(--gray-300);cursor:not-allowed;}
+    .cal-day.other{color:var(--gray-300);}
+
+    /* Time slots */
+    .time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .time-slot{padding:10px;border:1.5px solid var(--gray-200);border-radius:10px;text-align:center;cursor:pointer;font-size:0.83rem;font-weight:500;transition:var(--transition);}
+    .time-slot:hover:not(.booked){border-color:var(--primary);background:var(--primary-light);color:var(--primary);}
+    .time-slot.selected{background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border-color:transparent;}
+    .time-slot.booked{background:var(--gray-100);color:var(--gray-300);cursor:not-allowed;text-decoration:line-through;}
+
+    /* Form */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-group label{font-size:0.85rem;font-weight:600;color:var(--gray-700);}
+    .form-group input,.form-group select,.form-group textarea{padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:0.9rem;font-family:'Inter',sans-serif;transition:var(--transition);}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,0.12);}
+    .form-group textarea{min-height:90px;resize:vertical;}
+
+    /* Sidebar summary */
+    .summary-card{background:white;border-radius:var(--radius-xl);box-shadow:var(--shadow-md);border:1px solid var(--gray-200);padding:1.5rem;position:sticky;top:80px;}
+    .summary-title{font-size:1rem;font-weight:700;margin-bottom:1.2rem;color:var(--gray-900);padding-bottom:10px;border-bottom:1px solid var(--gray-100);}
+    .summary-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;}
+    .summary-row .label{font-size:0.85rem;color:var(--gray-500);}
+    .summary-row .value{font-size:0.88rem;font-weight:600;color:var(--gray-800);text-align:right;}
+    .summary-divider{height:1px;background:var(--gray-100);margin:14px 0;}
+    .summary-total{display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;color:var(--gray-900);}
+    .summary-total span:last-child{color:var(--primary);}
+    .btn-confirm{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:1.2rem;transition:var(--transition);}
+    .btn-confirm:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.3);}
+    .btn-confirm:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+    .policy-note{font-size:0.78rem;color:var(--gray-400);text-align:center;margin-top:10px;line-height:1.5;}
+
+    /* Success modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;display:none;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:white;border-radius:var(--radius-xl);padding:2.5rem;max-width:440px;width:90%;text-align:center;}
+    .modal-icon{width:70px;height:70px;border-radius:50%;background:var(--success);color:white;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;}
+    .modal h2{font-size:1.5rem;font-weight:800;margin-bottom:10px;color:var(--gray-900);}
+    .modal p{color:var(--gray-500);line-height:1.6;margin-bottom:1.5rem;}
+    .modal-ref{background:var(--gray-50);border-radius:10px;padding:10px 16px;font-family:monospace;font-weight:700;color:var(--primary);font-size:1.1rem;margin-bottom:1.5rem;}
+    .btn-done{padding:12px 32px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border:none;border-radius:30px;font-weight:700;cursor:pointer;}
+
+    @media(max-width:900px){.booking-layout{grid-template-columns:1fr;}.summary-card{position:static;}.time-grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr;}.time-grid{grid-template-columns:repeat(2,1fr);}.steps{gap:0;}.step-label{display:none;}}
+  </style>
+</head>
+<body>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Book an Appointment</h1>
+    <p>Select your preferred date, time, and complete your booking</p>
+  </div>
+</div>
+
+<div class="steps-bar">
+  <div class="steps">
+    <div class="step active" id="step1el"><div class="step-num">1</div><div class="step-label">Select Date & Time</div></div>
+    <div class="step-line" id="line1"></div>
+    <div class="step" id="step2el"><div class="step-num">2</div><div class="step-label">Your Details</div></div>
+    <div class="step-line" id="line2"></div>
+    <div class="step" id="step3el"><div class="step-num">3</div><div class="step-label">Confirm</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="booking-layout">
+    <div class="booking-main">
+
+      <!-- Doctor Info -->
+      <div class="card">
+        <div class="card-header"><div class="icon"><i class="fas fa-user-md"></i></div><h3>Selected Doctor</h3></div>
+        <div class="card-body">
+          <div class="doc-mini">
+            <img class="doc-mini-img" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=140&h=140&fit=crop&q=80" alt="Doctor">
+            <div class="doc-mini-info">
+              <h4 id="docName">Prof. Dr. Ahmed Hossain</h4>
+              <span class="spec" id="docSpec">Cardiologist</span>
+              <p><i class="fas fa-hospital-alt"></i> <span id="docHosp">United Hospital, Dhaka</span></p>
+              <p style="margin-top:4px;"><i class="fas fa-tag" style="color:var(--primary);"></i> <strong style="color:var(--primary);">৳<span id="docFee">800</span></strong> / consultation</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card" id="step1">
+        <div class="card-header"><div class="icon"><i class="fas fa-calendar-alt"></i></div><h3>Select Date</h3></div>
+        <div class="card-body">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="cal-title" id="calTitle"></div>
+            <button class="cal-nav" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </div>
+
+      <!-- Time Slots -->
+      <div class="card" id="step1b">
+        <div class="card-header"><div class="icon"><i class="fas fa-clock"></i></div><h3>Select Time Slot</h3></div>
+        <div class="card-body">
+          <div style="font-size:0.85rem;color:var(--gray-500);margin-bottom:1rem;">
+            <i class="fas fa-info-circle" style="color:var(--primary);"></i>
+            Available slots for <strong id="selectedDateLabel">—</strong>
+          </div>
+          <div class="time-grid" id="timeGrid">
+            <div style="color:var(--gray-400);font-size:0.88rem;grid-column:1/-1;padding:1rem 0;">Please select a date first</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient Details -->
+      <div class="card" id="step2" style="display:none;">
+        <div class="card-header"><div class="icon"><i class="fas fa-user"></i></div><h3>Your Details</h3></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group"><label>Full Name *</label><input type="text" id="patName" placeholder="Your full name" required></div>
+            <div class="form-group"><label>Age *</label><input type="number" id="patAge" placeholder="Age" min="1" max="120" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone *</label><input type="tel" id="patPhone" placeholder="+880 1XXX XXXXXX" required></div>
+            <div class="form-group"><label>Email</label><input type="email" id="patEmail" placeholder="your@email.com"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Gender</label>
+              <select id="patGender"><option>Male</option><option>Female</option><option>Other</option></select>
+            </div>
+            <div class="form-group"><label>Visit Type</label>
+              <select id="visitType"><option value="in-person">In Person</option><option value="video">Video Consult</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Chief Complaint / Reason for Visit</label>
+            <textarea id="complaint" placeholder="Describe your symptoms or reason for the visit…"></textarea>
+          </div>
+          <div style="display:flex;gap:1rem;margin-top:0.5rem;">
+            <button onclick="prevStep()" style="padding:10px 22px;border:1.5px solid var(--gray-200);border-radius:10px;background:none;cursor:pointer;font-weight:500;">← Back</button>
+            <button onclick="nextStep()" style="padding:10px 28px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border:none;border-radius:10px;font-weight:600;cursor:pointer;flex:1;">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Summary Sidebar -->
+    <div>
+      <div class="summary-card">
+        <div class="summary-title">Booking Summary</div>
+        <div class="summary-row"><span class="label">Doctor</span><span class="value" id="sumDoc">—</span></div>
+        <div class="summary-row"><span class="label">Specialty</span><span class="value" id="sumSpec">—</span></div>
+        <div class="summary-row"><span class="label">Date</span><span class="value" id="sumDate">Not selected</span></div>
+        <div class="summary-row"><span class="label">Time</span><span class="value" id="sumTime">Not selected</span></div>
+        <div class="summary-row"><span class="label">Visit Type</span><span class="value" id="sumType">In Person</span></div>
+        <div class="summary-divider"></div>
+        <div class="summary-total"><span>Consultation Fee</span><span>৳<span id="sumFee">800</span></span></div>
+        <button class="btn-confirm" id="confirmBtn" onclick="confirmBooking()" disabled>
+          <i class="fas fa-calendar-check"></i> Confirm Booking
+        </button>
+        <div class="policy-note">Free cancellation up to 24 hours before appointment</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon"><i class="fas fa-check"></i></div>
+    <h2>Booking Confirmed!</h2>
+    <p>Your appointment has been successfully booked. You'll receive a confirmation SMS shortly.</p>
+    <div class="modal-ref" id="bookingRef">MF-000000</div>
+    <button class="btn-done" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+  </div>
+</div>
+
+<script src="../../assets/js/components.js"></script>
+<script>
+// ── State ──────────────────────────────────────────────────────
+let calYear, calMonth, selectedDate = null, selectedTime = null;
+let currentStep = 1;
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// ── Calendar ───────────────────────────────────────────────────
+function initCal() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCal();
+}
+
+function renderCal() {
+  document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('calGrid');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const first = new Date(calYear, calMonth, 1);
+  const last = new Date(calYear, calMonth+1, 0);
+  const startDow = first.getDay();
+
+  let html = DAYS.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  // Prev month padding
+  for (let i = 0; i < startDow; i++) {
+    const d = new Date(calYear, calMonth, -startDow + i + 1);
+    html += `<div class="cal-day other">${d.getDate()}</div>`;
+  }
+
+  // This month
+  for (let d = 1; d <= last.getDate(); d++) {
+    const date = new Date(calYear, calMonth, d);
+    const isPast = date < today;
+    const isSun = date.getDay() === 0;
+    const isToday = date.getTime() === today.getTime();
+    const isSel = selectedDate && selectedDate.getTime() === date.getTime();
+    let cls = 'cal-day';
+    if (isPast || isSun) cls += ' disabled';
+    if (isToday && !isPast) cls += ' today';
+    if (isSel) cls += ' selected';
+    html += `<div class="${cls}" onclick="selectDate(${calYear},${calMonth},${d})">${d}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCal();
+}
+
+function selectDate(y, m, d) {
+  const date = new Date(y, m, d);
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (date < today || date.getDay() === 0) return;
+  selectedDate = date;
+  selectedTime = null;
+  renderCal();
+  renderTimeSlots();
+  updateSummary();
+  document.getElementById('selectedDateLabel').textContent =
+    DAYS[date.getDay()] + ', ' + date.getDate() + ' ' + MONTHS[date.getMonth()] + ' ' + date.getFullYear();
+}
+
+// ── Time Slots ─────────────────────────────────────────────────
+const BOOKED = ['10:00 AM', '2:00 PM', '4:30 PM'];
+const ALL_SLOTS = ['9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM',
+                   '2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM'];
+
+function renderTimeSlots() {
+  if (!selectedDate) return;
+  document.getElementById('timeGrid').innerHTML = ALL_SLOTS.map(t => {
+    const isBooked = BOOKED.includes(t);
+    const isSel = selectedTime === t;
+    return `<div class="time-slot${isBooked?' booked':''}${isSel?' selected':''}" onclick="${isBooked?'':'"selectTime(\''+t+'\')"'}">${t}</div>`;
+  }).join('');
+}
+
+function selectTime(t) {
+  selectedTime = t;
+  renderTimeSlots();
+  updateSummary();
+  checkStepReady();
+}
+
+// ── Summary ────────────────────────────────────────────────────
+function updateSummary() {
+  document.getElementById('sumDate').textContent = selectedDate
+    ? selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ' ' + calYear : 'Not selected';
+  document.getElementById('sumTime').textContent = selectedTime || 'Not selected';
+  document.getElementById('sumType').textContent = document.getElementById('visitType')?.value === 'video' ? 'Video Consult' : 'In Person';
+}
+
+function checkStepReady() {
+  const ready = selectedDate && selectedTime;
+  const btn = document.getElementById('confirmBtn');
+  if (currentStep >= 2 && ready) {
+    btn.disabled = false;
+    btn.textContent = '✓ Confirm Booking';
+  }
+}
+
+// ── Steps ──────────────────────────────────────────────────────
+function nextStep() {
+  if (!selectedDate || !selectedTime) {
+    MFC.toast('Please select a date and time first', 'warning', 'Missing Info');
+    return;
+  }
+  if (currentStep === 1) {
+    currentStep = 2;
+    document.getElementById('step2').style.display = 'block';
+    document.getElementById('step2el').classList.add('active');
+    document.getElementById('line1').classList.add('done');
+    document.getElementById('confirmBtn').disabled = false;
+  }
+  updateSummary();
+}
+
+function prevStep() {
+  if (currentStep === 2) {
+    currentStep = 1;
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step2el').classList.remove('active');
+  }
+}
+
+function confirmBooking() {
+  const name = document.getElementById('patName')?.value?.trim();
+  const phone = document.getElementById('patPhone')?.value?.trim();
+  if (!name || !phone) {
+    MFC.toast('Please fill in your name and phone number', 'warning', 'Required Fields');
+    return;
+  }
+  if (!selectedDate || !selectedTime) {
+    MFC.toast('Please select date and time', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+
+  // Try real API, fallback to demo
+  (async () => {
+    let ref;
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/appointments/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json',
+          ...(localStorage.getItem('mf_token') ? { 'Authorization': 'Bearer '+localStorage.getItem('mf_token') } : {})
+        },
+        body: JSON.stringify({
+          appointment_date: selectedDate.toISOString().split('T')[0],
+          time_slot: selectedTime,
+          visit_type: document.getElementById('visitType')?.value || 'in_person',
+          chief_complaint: document.getElementById('complaint')?.value || '',
+          fee: document.getElementById('docFee')?.textContent || 800,
+          patient: 1, doctor: new URLSearchParams(location.search).get('doctor') || 1
+        })
+      });
+      const data = await res.json();
+      ref = data.data?.ref_id || 'MF-' + Date.now().toString().slice(-6);
+    } catch {
+      ref = 'MF-' + Date.now().toString().slice(-6);
+    }
+
+    document.getElementById('bookingRef').textContent = ref;
+    document.getElementById('successModal').classList.add('show');
+
+    // Always save to localStorage for offline access
+    const bookings = JSON.parse(localStorage.getItem('medfind_bookings') || '[]');
+    bookings.unshift({
+      ref, doctor: document.getElementById('docName').textContent,
+      specialty: document.getElementById('docSpec').textContent,
+      date: selectedDate.toDateString(), time: selectedTime,
+      patient: name, phone,
+      status: 'confirmed', created: new Date().toISOString()
+    });
+    localStorage.setItem('medfind_bookings', JSON.stringify(bookings.slice(0, 20)));
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-calendar-check"></i> Confirm Booking';
+  })();
+}
+
+// ── Doctor Info from URL ───────────────────────────────────────
+function loadDoctorInfo() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('doctor');
+  const doctors = {
+    1:{name:'Prof. Dr. Ahmed Hossain', spec:'Cardiologist', hosp:'United Hospital, Dhaka', fee:800},
+    2:{name:'Dr. Fatima Begum', spec:'Gynecologist', hosp:'Square Hospital, Dhaka', fee:700},
+    3:{name:'Prof. Dr. Kamal Uddin', spec:'Neurologist', hosp:'Apollo Hospital, Dhaka', fee:1000},
+    4:{name:'Dr. Shahidul Islam', spec:'Orthopedic Surgeon', hosp:'Labaid Hospital, Dhaka', fee:900},
+  };
+  const doc = doctors[id] || doctors[1];
+  document.getElementById('docName').textContent = doc.name;
+  document.getElementById('docSpec').textContent = doc.spec;
+  document.getElementById('docHosp').textContent = doc.hosp;
+  document.getElementById('docFee').textContent = doc.fee;
+  document.getElementById('sumDoc').textContent = doc.name;
+  document.getElementById('sumSpec').textContent = doc.spec;
+  document.getElementById('sumFee').textContent = doc.fee;
+}
+
+document.getElementById('visitType')?.addEventListener('change', updateSummary);
+loadDoctorInfo();
+initCal();
+</script>
+<script src="../../services/api.js"></script>
+</body>
+</html>

@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedFind — Medicine Inventory</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1f44;
+    --navy-mid: #ffffff;
+    --navy-light: #e8f0fe;
+    --blue: #1e6fd9;
+    --blue-bright: #2d8ef7;
+    --blue-light: #1a5cbf;
+    --accent: #1e6fd9;
+    --accent-glow: rgba(30,111,217,0.1);
+    --white: #1a2744;
+    --muted: #5a7399;
+    --card-bg: #ffffff;
+    --border: rgba(30,111,217,0.18);
+    --glass: rgba(30,111,217,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f4fb;
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: #ffffff;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 16px rgba(30,111,217,0.08);
+    padding: 0 40px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--blue-bright), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .search-bar {
+    background: #f0f4fb;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 8px 18px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    width: 240px;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  .search-bar::placeholder { color: var(--muted); }
+  .search-bar:focus {
+    border-color: var(--blue-bright);
+    background: #e8f0fe;
+    box-shadow: 0 0 0 3px rgba(30,111,217,0.1);
+  }
+
+  /* CART BUTTON */
+  .cart-btn {
+    position: relative;
+    background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(30,111,217,0.4);
+  }
+  .cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(30,111,217,0.5);
+  }
+  .cart-count {
+    background: var(--accent);
+    color: var(--navy);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    transition: transform 0.3s;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 40px;
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: var(--white);
+  }
+  .page-subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+  }
+
+  /* CATEGORY FILTER */
+  .categories {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .cat-btn {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 7px 18px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .cat-btn:hover, .cat-btn.active {
+    background: rgba(30,111,217,0.1);
+    border-color: var(--blue-bright);
+    color: var(--blue);
+  }
+  .cat-btn.active {
+    box-shadow: 0 0 12px rgba(30,111,217,0.15);
+  }
+
+  /* MEDICINE GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+  }
+
+  .med-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(30,111,217,0.06);
+  }
+  .med-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--accent));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .med-card:hover {
+    border-color: rgba(30,111,217,0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(30,111,217,0.15), 0 0 0 1px rgba(30,111,217,0.2);
+  }
+  .med-card:hover::before { opacity: 1; }
+
+  .med-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(30,111,217,0.3), rgba(0,212,255,0.1));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+    border: 1px solid rgba(30,111,217,0.3);
+  }
+
+  .med-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--white);
+  }
+  .med-generic {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .med-category-tag {
+    display: inline-block;
+    background: rgba(30,111,217,0.08);
+    border: 1px solid rgba(30,111,217,0.2);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.72rem;
+    color: var(--blue);
+    margin-bottom: 14px;
+  }
+  .med-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+  .med-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .med-price span {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 400;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .add-btn {
+    background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+    flex-shrink: 0;
+  }
+  .add-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 4px 16px rgba(30,111,217,0.6);
+  }
+  .add-btn.added {
+    background: linear-gradient(135deg, #0e9f6e, #05d69e);
+  }
+
+  .stock-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .in-stock { background: rgba(14,159,110,0.15); color: #05d69e; border: 1px solid rgba(5,214,158,0.3); }
+  .low-stock { background: rgba(255,170,0,0.12); color: #ffaa00; border: 1px solid rgba(255,170,0,0.3); }
+
+  /* CART PANEL */
+  .cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,31,68,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  .cart-panel {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 420px;
+    background: #ffffff;
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 40px rgba(30,111,217,0.1);
+    z-index: 201;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+  }
+  .cart-panel.open { transform: translateX(0); }
+
+  .cart-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cart-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  .close-btn {
+    background: #f4f7fc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .close-btn:hover { color: var(--navy); border-color: var(--blue-bright); }
+
+  .cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 28px;
+  }
+  .cart-items::-webkit-scrollbar { width: 4px; }
+  .cart-items::-webkit-scrollbar-track { background: transparent; }
+  .cart-items::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .cart-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .cart-empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(30,111,217,0.1);
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .cart-item-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(30,111,217,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cart-item-price { font-size: 0.8rem; color: var(--blue); }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0f4fb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
+  }
+  .qty-btn {
+    background: none;
+    border: none;
+    color: var(--blue-light);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: color 0.2s;
+    width: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-btn:hover { color: var(--accent); }
+  .qty-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+  }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .remove-btn:hover { color: #ff6b6b; }
+
+  .cart-footer {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+  }
+  .cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .cart-total-label { color: var(--muted); font-size: 0.9rem; }
+  .cart-total-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--blue);
+  }
+
+  .order-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 24px rgba(30,111,217,0.5);
+    letter-spacing: 0.5px;
+  }
+  .order-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(30,111,217,0.7);
+  }
+  .order-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* MEDICINE DETAIL MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,31,68,0.5);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: #ffffff;
+    border: 1px solid rgba(30,111,217,0.2);
+    border-radius: 24px;
+    width: 520px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 40px 80px rgba(30,111,217,0.2);
+  }
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+  .modal-header {
+    padding: 28px 32px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+  }
+  .modal-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(30,111,217,0.4), rgba(0,212,255,0.15));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 1px solid rgba(46,142,247,0.3);
+    flex-shrink: 0;
+  }
+  .modal-med-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .modal-generic { color: var(--muted); font-size: 0.88rem; margin-bottom: 8px; }
+  .modal-category {
+    display: inline-block;
+    background: rgba(30,111,217,0.08);
+    border: 1px solid rgba(30,111,217,0.25);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.75rem;
+    color: var(--blue);
+  }
+  .modal-close {
+    margin-left: auto;
+    background: #f4f7fc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { color: var(--navy); border-color: var(--blue-bright); }
+
+  .modal-body { padding: 0 32px 32px; }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .info-box {
+    background: #f4f7fc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .info-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+  .info-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+  .info-value.price { color: var(--blue); font-size: 1.1rem; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--blue);
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .section-text {
+    font-size: 0.88rem;
+    color: #3a5070;
+    line-height: 1.6;
+  }
+
+  .side-effects-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .side-tag {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    color: #ff9a9a;
+  }
+
+  .modal-add-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(30,111,217,0.4);
+  }
+  .modal-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(30,111,217,0.6);
+  }
+  .modal-add-btn.added {
+    background: linear-gradient(135deg, #0e9f6e, #05d69e);
+    box-shadow: 0 4px 20px rgba(5,214,158,0.3);
+  }
+
+  /* ORDER SUCCESS */
+  .success-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #0e9f6e, #05d69e);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 500;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 8px 32px rgba(5,214,158,0.4);
+  }
+  .success-toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 600px) {
+    header { padding: 0 16px; }
+    .main { padding: 24px 16px; }
+    .cart-panel { width: 100%; }
+    .search-bar { width: 150px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Med<span>Find</span></div>
+  <div class="header-right">
+    <input class="search-bar" type="text" placeholder="🔍  Search medicines..." id="searchInput">
+    <button class="cart-btn" onclick="openCart()">
+      🛒 Cart
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+  <h1 class="page-title">Medicine Inventory</h1>
+  <p class="page-subtitle">সকল সাধারণ ওষুধ এক জায়গায় — ক্লিক করুন বিস্তারিত দেখতে</p>
+
+  <!-- CATEGORIES -->
+  <div class="categories" id="categories">
+    <button class="cat-btn active" onclick="filterCat('all', this)">All</button>
+    <button class="cat-btn" onclick="filterCat('Antibiotic', this)">Antibiotic</button>
+    <button class="cat-btn" onclick="filterCat('Pain Relief', this)">Pain Relief</button>
+    <button class="cat-btn" onclick="filterCat('Antacid', this)">Antacid</button>
+    <button class="cat-btn" onclick="filterCat('Vitamin', this)">Vitamin</button>
+    <button class="cat-btn" onclick="filterCat('Antidiabetic', this)">Antidiabetic</button>
+    <button class="cat-btn" onclick="filterCat('Antihistamine', this)">Antihistamine</button>
+    <button class="cat-btn" onclick="filterCat('Antihypertensive', this)">Antihypertensive</button>
+    <button class="cat-btn" onclick="filterCat('Antifungal', this)">Antifungal</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid" id="medGrid"></div>
+</div>
+
+<!-- CART OVERLAY -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+<!-- CART PANEL -->
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <div class="cart-title">🛒 Your Cart</div>
+    <button class="close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="cart-total-label">Total Amount</span>
+      <span class="cart-total-amount" id="cartTotal">৳0</span>
+    </div>
+    <button class="order-btn" id="orderBtn" onclick="placeOrder()" disabled>
+      Place Order →
+    </button>
+  </div>
+</div>
+
+<!-- MEDICINE DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="medModal"></div>
+</div>
+
+<!-- SUCCESS TOAST -->
+<div class="success-toast" id="successToast">✅ Order Placed Successfully!</div>
+
+<script>
+  const API_BASE = 'http://127.0.0.1:8000';
+  const defaultMedicines = [
+    { id:1, name:"Napa Extra", generic:"Paracetamol+Caffeine", category:"Pain Relief", icon:"💊", price:15, unit:"strip", stock:"In Stock", description:"মাথাব্যথা, জ্বর ও ব্যথায় কার্যকর। Paracetamol ও Caffeine এর সংমিশ্রণ দ্রুত উপশম দেয়।", dosage:"প্রাপ্তবয়স্ক: ১-২টি ট্যাবলেট ৪-৬ ঘন্টা পর পর।", warnings:"কিডনি রোগীদের সতর্কতার সাথে ব্যবহার করুন। অ্যালকোহলের সাথে এড়িয়ে চলুন।", sideEffects:["বমি বমি ভাব","মাথা ঘোরা","অনিদ্রা"] },
+    { id:2, name:"Seclo 20", generic:"Omeprazole", category:"Antacid", icon:"🧪", price:80, unit:"strip", stock:"In Stock", description:"গ্যাস্ট্রিক আলসার ও বুকজ্বালার চিকিৎসায় ব্যবহৃত প্রোটন পাম্প ইনহিবিটর।", dosage:"দিনে একবার, সকালে খাবার আগে।", warnings:"দীর্ঘমেয়াদী ব্যবহারে হাড়ের ঘনত্ব কমতে পারে।", sideEffects:["মাথাব্যথা","ডায়রিয়া","পেট ফাঁপা"] },
+    { id:3, name:"Amoxicillin 500", generic:"Amoxicillin Trihydrate", category:"Antibiotic", icon:"💉", price:120, unit:"strip", stock:"In Stock", description:"ব্যাকটেরিয়াল ইনফেকশন চিকিৎসায় ব্যাপকভাবে ব্যবহৃত পেনিসিলিন গ্রুপের এন্টিবায়োটিক।", dosage:"৫০০mg দিনে ৩ বার, ৫-৭ দিন।", warnings:"পেনিসিলিন এলার্জি থাকলে ব্যবহার করবেন না। ডাক্তারের পরামর্শ ছাড়া নেবেন না।", sideEffects:["ডায়রিয়া","বমি","র‍্যাশ"] },
+    { id:4, name:"Metformin 500", generic:"Metformin HCl", category:"Antidiabetic", icon:"🩺", price:50, unit:"strip", stock:"Low Stock", description:"টাইপ ২ ডায়াবেটিসের প্রথম সারির চিকিৎসায় ব্যবহৃত বিগুয়ানাইড গ্রুপের ওষুধ।", dosage:"৫০০mg দিনে ২ বার, খাবারের সাথে।", warnings:"কিডনি সমস্যায় ব্যবহার বন্ধ রাখুন। রক্ত পরীক্ষা নিয়মিত করুন।", sideEffects:["বমি বমি ভাব","পেটে অস্বস্তি","ক্ষুধামন্দা"] },
+    { id:5, name:"Cetirizine 10", generic:"Cetirizine HCl", category:"Antihistamine", icon:"🌿", price:35, unit:"strip", stock:"In Stock", description:"অ্যালার্জি, হাঁচি, সর্দি ও চুলকানিতে দ্রুত ও কার্যকর দ্বিতীয় প্রজন্মের এন্টিহিস্টামিন।", dosage:"১০mg দিনে একবার রাতে।", warnings:"গাড়ি চালানোর আগে সতর্কতা। কিডনি রোগীদের ডোজ কমাতে হবে।", sideEffects:["ঘুম ঘুম ভাব","মুখ শুকানো","মাথাব্যথা"] },
+    { id:6, name:"Amlodipine 5", generic:"Amlodipine Besylate", category:"Antihypertensive", icon:"❤️", price:60, unit:"strip", stock:"In Stock", description:"উচ্চ রক্তচাপ ও এনজাইনা চিকিৎসায় ক্যালসিয়াম চ্যানেল ব্লকার।", dosage:"৫mg দিনে একবার।", warnings:"হঠাৎ বন্ধ করবেন না। গর্ভাবস্থায় ডাক্তারের পরামর্শ নিন।", sideEffects:["পা ফোলা","মাথা ঘোরা","মুখ লাল হওয়া"] },
+    { id:7, name:"Fluconazole 150", generic:"Fluconazole", category:"Antifungal", icon:"🍄", price:90, unit:"capsule", stock:"In Stock", description:"ফাঙ্গাল ইনফেকশন বিশেষত ক্যান্ডিডিয়াসিস চিকিৎসায় কার্যকর।", dosage:"একক ডোজ ১৫০mg।", warnings:"লিভার সমস্যায় সতর্কতার সাথে ব্যবহার।", sideEffects:["মাথাব্যথা","বমি বমি ভাব","পেটে ব্যথা"] },
+    { id:8, name:"Vitamin D3 1000IU", generic:"Cholecalciferol", category:"Vitamin", icon:"☀️", price:250, unit:"bottle", stock:"In Stock", description:"ভিটামিন ডি এর ঘাটতি পূরণ, হাড় ও ইমিউন সিস্টেম শক্তিশালী করে।", dosage:"দিনে একবার, খাবারের সাথে।", warnings:"হাইপারক্যালসেমিয়া রোগীদের এড়িয়ে চলুন।", sideEffects:["অতিরিক্ত ডোজে বমি","ক্লান্তি"] },
+    { id:9, name:"Azithromycin 500", generic:"Azithromycin", category:"Antibiotic", icon:"🔬", price:140, unit:"strip", stock:"Low Stock", description:"শ্বাসতন্ত্র, ত্বক ও কানের ইনফেকশনে কার্যকর ম্যাক্রোলাইড এন্টিবায়োটিক।", dosage:"৫০০mg দিনে একবার, ৩ দিন।", warnings:"কার্ডিয়াক সমস্যায় সতর্কতা। এন্টাসিডের সাথে একসাথে নেবেন না।", sideEffects:["পেট ব্যথা","ডায়রিয়া","বমি বমি ভাব"] },
+    { id:10, name:"Pantoprazole 40", generic:"Pantoprazole Sodium", category:"Antacid", icon:"🧬", price:95, unit:"strip", stock:"In Stock", description:"পেপটিক আলসার, GERD এবং জোলিঞ্জার-এলিসন সিন্ড্রোমের চিকিৎসায় ব্যবহৃত।", dosage:"৪০mg দিনে একবার খাবার আগে।", warnings:"দীর্ঘমেয়াদী ব্যবহারে ম্যাগনেসিয়ামের মাত্রা কমতে পারে।", sideEffects:["মাথাব্যথা","ডায়রিয়া","পেট ফাঁপা"] },
+    { id:11, name:"Ibuprofen 400", generic:"Ibuprofen", category:"Pain Relief", icon:"🩹", price:45, unit:"strip", stock:"In Stock", description:"প্রদাহ, ব্যথা ও জ্বর কমাতে NSAID গ্রুপের কার্যকর ওষুধ।", dosage:"৪০০mg দিনে ৩ বার, খাবারের সাথে।", warnings:"পেপটিক আলসার ও কিডনি রোগে এড়িয়ে চলুন।", sideEffects:["পেট ব্যথা","বুকজ্বালা","মাথা ঘোরা"] },
+    { id:12, name:"Vitamin C 500", generic:"Ascorbic Acid", category:"Vitamin", icon:"🍊", price:180, unit:"bottle", stock:"In Stock", description:"ইমিউনিটি বাড়ায়, অ্যান্টিঅক্সিডেন্ট হিসেবে কাজ করে ও স্কার্ভি প্রতিরোধ করে।", dosage:"৫০০mg দিনে একবার।", warnings:"কিডনি পাথরের ইতিহাস থাকলে ডাক্তারের পরামর্শ নিন।", sideEffects:["পেট খারাপ","ডায়রিয়া (অতিরিক্ত ডোজে)"] },
+  ];
+
+  let medicines = [];
+  let cart = {};
+  let currentFilter = 'all';
+
+  function normalizeMedicines(list) {
+    return list.map(m => ({
+      ...m,
+      id: String(m._id || m.id),
+      price: Number(m.price || 0),
+      stock: m.stock || 'In Stock',
+    }));
+  }
+
+  async function loadMedicines() {
+    try {
+      const response = await fetch(`${API_BASE}/api/medicines/`, { method: 'GET' });
+      if (!response.ok) throw new Error('Network response was not ok');
+      const result = await response.json();
+      medicines = normalizeMedicines(result.medicines || defaultMedicines);
+    } catch (error) {
+      console.warn('Failed to load medicines from API, using fallback data.', error);
+      medicines = normalizeMedicines(defaultMedicines);
+    }
+    applyFilters();
+  }
+
+  function renderGrid(data) {
+    const grid = document.getElementById('medGrid');
+    if (!data.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">কোনো ওষুধ পাওয়া যায়নি</div>`;
+      return;
+    }
+    grid.innerHTML = data.map(m => `
+      <div class="med-card" onclick="openModal('${m.id}')">
+        <span class="stock-badge ${m.stock === 'In Stock' ? 'in-stock' : 'low-stock'}">${m.stock}</span>
+        <div class="med-icon">${m.icon}</div>
+        <div class="med-name">${m.name}</div>
+        <div class="med-generic">${m.generic}</div>
+        <div class="med-category-tag">${m.category}</div>
+        <div class="med-footer">
+          <div class="med-price">৳${m.price} <span>/ ${m.unit}</span></div>
+          <button class="add-btn ${cart[m.id] ? 'added' : ''}" id="addBtn${m.id}"
+            onclick="event.stopPropagation(); addToCart('${m.id}')"
+            title="Add to cart">
+            ${cart[m.id] ? '✓' : '+'}
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterCat(cat, el) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = cat;
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    let data = medicines;
+    if (currentFilter !== 'all') data = data.filter(m => m.category === currentFilter);
+    if (q) data = data.filter(m => m.name.toLowerCase().includes(q) || m.generic.toLowerCase().includes(q));
+    renderGrid(data);
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+  function addToCart(id) {
+    if (cart[id]) {
+      cart[id].qty++;
+    } else {
+      const m = medicines.find(x => (x._id || x.id) == id);
+      cart[id] = { ...m, qty: 1 };
+    }
+    updateCartUI();
+    // Flash button
+    const btn = document.getElementById('addBtn' + id);
+    if (btn) { btn.classList.add('added'); btn.textContent = '✓'; }
+  }
+
+  function updateCartUI() {
+    const count = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cartCount').textContent = count;
+    // animate
+    const cc = document.getElementById('cartCount');
+    cc.style.transform = 'scale(1.5)';
+    setTimeout(() => cc.style.transform = 'scale(1)', 200);
+
+    renderCartItems();
+  }
+
+  function renderCartItems() {
+    const items = Object.values(cart);
+    const container = document.getElementById('cartItems');
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('cartTotal').textContent = '৳' + total;
+    document.getElementById('orderBtn').disabled = items.length === 0;
+
+    if (!items.length) {
+      container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><div>কার্ট খালি</div><div style="font-size:0.8rem;margin-top:6px">ওষুধ যোগ করুন</div></div>`;
+      return;
+    }
+    container.innerHTML = items.map(i => `
+      <div class="cart-item">
+        <div class="cart-item-icon">${i.icon}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${i.name}</div>
+          <div class="cart-item-price">৳${i.price} × ${i.qty} = ৳${i.price * i.qty}</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty('${i.id}', -1)">−</button>
+          <span class="qty-num">${i.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${i.id}', 1)">+</button>
+        </div>
+        <button class="remove-btn" onclick="removeItem('${i.id}')" title="Remove">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function changeQty(id, delta) {
+    if (!cart[id]) return;
+    cart[id].qty += delta;
+    if (cart[id].qty <= 0) delete cart[id];
+    updateCartUI();
+    applyFilters();
+  }
+
+  function removeItem(id) {
+    delete cart[id];
+    updateCartUI();
+    applyFilters();
+  }
+
+  function openCart() {
+    document.getElementById('cartPanel').classList.add('open');
+    document.getElementById('cartOverlay').classList.add('open');
+    renderCartItems();
+  }
+  function closeCart() {
+    document.getElementById('cartPanel').classList.remove('open');
+    document.getElementById('cartOverlay').classList.remove('open');
+  }
+
+  function openModal(id) {
+    const m = medicines.find(x => (x._id || x.id) == id);
+    const inCart = !!cart[id];
+    document.getElementById('medModal').innerHTML = `
+      <div class="modal-header">
+        <div class="modal-icon">${m.icon}</div>
+        <div>
+          <div class="modal-med-title">${m.name}</div>
+          <div class="modal-generic">${m.generic}</div>
+          <span class="modal-category">${m.category}</span>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-label">Price</div>
+            <div class="info-value price">৳${m.price} <span style="font-size:0.75rem;color:var(--muted)">/ ${m.unit}</span></div>
+          </div>
+          <div class="info-box">
+            <div class="info-label">Availability</div>
+            <div class="info-value" style="color:${m.stock==='In Stock'?'#05d69e':'#ffaa00'}">${m.stock}</div>
+          </div>
+        </div>
+        <div class="section-label">বিবরণ</div>
+        <div class="section-text">${m.description}</div>
+        <div class="section-label">ডোজ</div>
+        <div class="section-text">${m.dosage}</div>
+        <div class="section-label">সতর্কতা</div>
+        <div class="section-text">${m.warnings}</div>
+        <div class="section-label">পার্শ্বপ্রতিক্রিয়া</div>
+        <div class="side-effects-list">
+          ${m.sideEffects.map(s => `<span class="side-tag">${s}</span>`).join('')}
+        </div>
+        <button class="modal-add-btn ${inCart ? 'added' : ''}" id="modalAddBtn" onclick="addToCart('${m.id}'); document.getElementById('modalAddBtn').classList.add('added'); document.getElementById('modalAddBtn').textContent='✓ কার্টে আছে'">
+          ${inCart ? '✓ কার্টে আছে' : '+ কার্টে যোগ করুন'}
+        </button>
+      </div>
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  async function placeOrder() {
+    const items = Object.values(cart).map(i => ({
+      id: i._id || i.id,
+      name: i.name,
+      price: i.price,
+      qty: i.qty,
+      unit: i.unit,
+    }));
+
+    try {
+      const response = await fetch(`${API_BASE}/api/medicine-order/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Failed to place order');
+      cart = {};
+      updateCartUI();
+      applyFilters();
+      const toast = document.getElementById('successToast');
+      toast.textContent = '✅ Order placed successfully!';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    } catch (error) {
+      console.error('Order failed:', error);
+      alert('Order placement failed. Please try again.');
+    }
+  }
+
+  // Init
+  loadMedicines();
+</script>
+</body>
+</html>

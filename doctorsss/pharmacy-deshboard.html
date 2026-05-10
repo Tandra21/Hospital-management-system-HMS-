@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MedFind Billing - Manage payments, invoices, and receipts for your healthcare services.">
+<title>Pharmacy - MedFind Bangladesh</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--primary:#2563eb;--primary-d:#1d4ed8;--primary-l:#dbeafe;--primary-xl:#eff6ff;--accent:#7c3aed;--green:#10b981;--green-l:#d1fae5;--amber:#f59e0b;--amber-l:#fef3c7;--red:#ef4444;--red-l:#fee2e2;--teal:#0d9488;--teal-l:#ccfbf1;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g500:#64748b;--g700:#334155;--g800:#1e293b;--g900:#0f172a;--sh:0 4px 16px rgba(0,0,0,.08);--sh-xl:0 20px 48px rgba(0,0,0,.14);--r:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;--t:all .22s ease;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--g50);color:var(--g800);}
+    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem;}
+    .page-header{background:linear-gradient(135deg,#0f172a,#1e293b,#2d1b69);color:white;padding:2.5rem 0;}
+    .page-header h1{font-size:1.9rem;font-weight:800;margin-bottom:6px;}
+    .page-header p{color:A#94a3b8;}
+    /* Banner */
+    .promo-banner{background:linear-gradient(135deg,#eff6ff,#ede9fe);border-radius:var(--r-xl);padding:1rem 1.5rem;margin:1.2rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border:1px solid #c7d2fe;}
+    .pb-left{display:flex;align-items:center;gap:12px;font-size:.88rem;font-weight:600;color:var(--primary-d);}
+    .pb-left i{font-size:1.4rem;}
+    /* Layout */
+    .pha-layout{display:grid;grid-template-columns:1fr 330px;gap:1.5rem;padding:1.5rem 0 4rem;}
+    /* Search & filters */
+    .pha-search{display:flex;gap:10px;margin-bottom:1.2rem;flex-wrap:wrap;}
+    .pha-search input{flex:1;min-width:180px;padding:11px 14px 11px 42px;border:1.5px solid var(--g200);border-radius:var(--r);font-size:.9rem;font-family:'Inter',sans-serif;transition:var(--t);}
+    .pha-search input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    .pha-search-wrap{position:relative;flex:1;}
+    .pha-search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--g400);}
+    /* Category pills */
+    .cat-pills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:1.2rem;}
+    .cat-pill{padding:6px 16px;border-radius:var(--r-full);background:white;border:1.5px solid var(--g200);color:var(--g500);font-size:.8rem;font-weight:500;cursor:pointer;transition:var(--t);}
+    .cat-pill:hover,.cat-pill.active{border-color:var(--primary);background:var(--primary-xl);color:var(--primary);}
+    /* Med grid */
+    .med-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;}
+    .med-card{background:white;border-radius:var(--r-xl);border:1px solid var(--g200);box-shadow:var(--sh);overflow:hidden;transition:var(--t);}
+    .med-card:hover{transform:translateY(-4px);box-shadow:var(--sh-xl);border-color:var(--primary);}
+    .med-img{height:110px;background:linear-gradient(135deg,var(--primary-l),var(--teal-l));display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;}
+    .med-rx{position:absolute;top:8px;right:8px;background:var(--amber-l);color:#92400e;padding:2px 7px;border-radius:var(--r-full);font-size:.65rem;font-weight:700;}
+    .med-body{padding:1rem;}
+    .med-name{font-size:.9rem;font-weight:700;color:var(--g800);margin-bottom:2px;}
+    .med-gen{font-size:.72rem;color:var(--g500);margin-bottom:6px;}
+    .med-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+    .med-tag{background:var(--g100);color:var(--g600);padding:2px 8px;border-radius:var(--r-full);font-size:.7rem;font-weight:500;}
+    .med-foot{display:flex;justify-content:space-between;align-items:center;}
+    .med-price{font-size:.95rem;font-weight:700;color:var(--primary);}
+    .med-price small{font-size:.7rem;font-weight:400;color:var(--g400);}
+    .add-btn{padding:6px 14px;border-radius:var(--r-full);background:var(--primary);color:white;border:none;font-size:.78rem;font-weight:600;cursor:pointer;transition:var(--t);}
+    .add-btn:hover{background:var(--primary-d);transform:scale(1.04);}
+    .add-btn.added{background:var(--green);}
+    /* Cart */
+    .cart-panel{background:white;border-radius:var(--r-2xl,32px);box-shadow:var(--sh);border:1px solid var(--g200);padding:1.3rem;position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto;}
+    .cart-title{font-size:.92rem;font-weight:700;margin-bottom:1rem;padding-bottom:9px;border-bottom:1px solid var(--g100);}
+    .cart-empty{text-align:center;padding:2rem;color:var(--g400);}
+    .cart-empty i{font-size:2.5rem;display:block;margin-bottom:8px;color:var(--g200);}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--g50);}
+    .cart-item:last-child{border:none;}
+    .ci-name{font-size:.82rem;font-weight:600;color:var(--g800);flex:1;}
+    .ci-qty{display:flex;align-items:center;gap:6px;margin:0 8px;}
+    .qty-btn{width:22px;height:22px;border-radius:5px;background:var(--g100);border:none;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:var(--t);}
+    .qty-btn:hover{background:var(--primary-l);color:var(--primary);}
+    .ci-price{font-size:.82rem;font-weight:600;color:var(--primary);}
+    .ci-remove{background:none;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:3px;}
+    .cart-subtotal{display:flex;justify-content:space-between;font-size:.85rem;margin-top:8px;padding-top:8px;border-top:1px solid var(--g200);color:var(--g500);}
+    .cart-total{display:flex;justify-content:space-between;font-weight:800;font-size:.98rem;margin-top:6px;color:var(--g900);}
+    .cart-total span:last-child{color:var(--primary);}
+    .delivery-form{margin-top:1rem;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:.8rem;}
+    .form-label{font-size:.8rem;font-weight:600;color:var(--g700);}
+    .form-control{padding:10px 13px;border:1.5px solid var(--g200);border-radius:var(--r);font-size:.88rem;font-family:'Inter',sans-serif;transition:var(--t);width:100%;}
+    .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    .rx-upload{border:2px dashed var(--g200);border-radius:var(--r-lg);padding:1rem;text-align:center;cursor:pointer;transition:var(--t);margin-bottom:.8rem;}
+    .rx-upload:hover{border-color:var(--primary);background:var(--primary-xl);}
+    .rx-upload i{font-size:1.5rem;color:var(--g400);display:block;margin-bottom:5px;}
+    .rx-upload p{font-size:.75rem;color:var(--g500);}
+    .order-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border:none;border-radius:var(--r-lg);font-size:.95rem;font-weight:700;cursor:pointer;margin-top:.8rem;transition:var(--t);}
+    .order-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,.3);}
+    /* Tracking */
+    .track-steps{display:flex;flex-direction:column;gap:0;margin-top:1rem;}
+    .tk-step{display:flex;gap:12px;padding:7px 0;}
+    .tk-dot-wrap{display:flex;flex-direction:column;align-items:center;}
+    .tk-dot{width:13px;height:13px;border-radius:50%;background:var(--g200);flex-shrink:0;}
+    .tk-dot.done{background:var(--green);}
+    .tk-dot.act{background:var(--primary);animation:tPulse .8s ease-in-out infinite alternate;}
+    @keyframes tPulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.4);}100%{box-shadow:0 0 0 8px rgba(37,99,235,0);}}
+    .tk-line{width:2px;flex:1;background:var(--g200);margin:2px auto;}
+    .tk-line.done{background:var(--green);}
+    .tk-step:last-child .tk-line{display:none;}
+    .tk-info h4{font-size:.8rem;font-weight:600;color:var(--g800);}
+    .tk-info p{font-size:.72rem;color:var(--g400);}
+    @media(max-width:900px){.pha-layout{grid-template-columns:1fr;}.cart-panel{position:static;}}
+  </style>
+</head>
+<body>
+<div class="page-header">
+  <div class="container">
+    <h1><i class="fas fa-pills" style="opacity:.8;margin-right:10px;"></i>Pharmacy</h1>
+    <p>Order medicines online • Home delivery • Real-time tracking</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="promo-banner">
+    <div class="pb-left"><i class="fas fa-truck"></i><div><div>Free delivery on orders above ৳500!</div><div style="font-size:.75rem;font-weight:400;color:var(--g500);">Delivered within 2–4 hours in Dhaka</div></div></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:.8rem;color:var(--g600);"><i class="fas fa-clock" style="color:var(--green);"></i> 24/7</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.8rem;color:var(--g600);"><i class="fas fa-shield-alt" style="color:var(--primary);"></i> 100% Genuine</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.8rem;color:var(--g600);"><i class="fas fa-file-prescription" style="color:var(--accent);"></i> Rx Accepted</div>
+    </div>
+  </div>
+
+  <div class="pha-layout">
+    <div>
+      <div class="pha-search">
+        <div class="pha-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="medQ" placeholder="Search medicine name or generic…" oninput="filterMeds()">
+        </div>
+        <select style="padding:11px 14px;border:1.5px solid var(--g200);border-radius:var(--r);font-size:.85rem;font-family:'Inter',sans-serif;" id="sortMeds" onchange="filterMeds()">
+          <option value="">Sort by</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name">Name: A–Z</option>
+        </select>
+      </div>
+      <div class="cat-pills">
+        <div class="cat-pill active" onclick="setCat(this,'all')">All</div>
+        <div class="cat-pill" onclick="setCat(this,'Antibiotic')">Antibiotic</div>
+        <div class="cat-pill" onclick="setCat(this,'Cardiac')">Cardiac</div>
+        <div class="cat-pill" onclick="setCat(this,'Diabetes')">Diabetes</div>
+        <div class="cat-pill" onclick="setCat(this,'Pain Relief')">Pain Relief</div>
+        <div class="cat-pill" onclick="setCat(this,'Vitamin')">Vitamins</div>
+        <div class="cat-pill" onclick="setCat(this,'Gastro')">Gastro</div>
+        <div class="cat-pill" onclick="setCat(this,'Respiratory')">Respiratory</div>
+      </div>
+      <div class="med-grid" id="medGrid"></div>
+    </div>
+
+    <div class="cart-panel">
+      <div class="cart-title"><i class="fas fa-shopping-cart" style="color:var(--primary);margin-right:7px;"></i>Cart <span id="cartBadge" style="background:var(--primary);color:#fff;font-size:.7rem;padding:2px 7px;border-radius:10px;margin-left:4px;"></span></div>
+      <div id="cartBody"><div class="cart-empty"><i class="fas fa-pills"></i>Cart is empty</div></div>
+      <div id="cartFooter" style="display:none;">
+        <div style="height:1px;background:var(--g200);margin:12px 0;"></div>
+        <div class="cart-subtotal"><span>Subtotal</span><span>৳<span id="cartSub">0</span></span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--g500);margin-top:4px;"><span>Delivery</span><span id="delivFee">৳60</span></div>
+        <div class="cart-total"><span>Total</span><span>৳<span id="cartTot">0</span></span></div>
+        <div class="delivery-form">
+          <div class="form-group"><label class="form-label">Delivery Address *</label><input class="form-control" id="delivAddr" placeholder="Your full address"></div>
+          <div class="form-group"><label class="form-label">Phone *</label><input class="form-control" id="delivPhone" placeholder="+880 1XXX XXXXXX"></div>
+          <div class="rx-upload" onclick="document.getElementById('rxFile').click()">
+            <i class="fas fa-file-prescription"></i>
+            <p>Upload Prescription (for Rx medicines)</p>
+            <input type="file" id="rxFile" accept="image/*,.pdf" style="display:none;" onchange="rxUploaded(this)">
+          </div>
+          <div id="rxStatus" style="display:none;font-size:.75rem;color:var(--green);text-align:center;padding:4px;"><i class="fas fa-check-circle"></i> Prescription uploaded!</div>
+          <button class="order-btn" id="orderBtn" onclick="placeOrder()"><i class="fas fa-shopping-bag"></i> Place Order</button>
+        </div>
+      </div>
+      <div id="trackPanel" style="display:none;">
+        <div style="height:1px;background:var(--g200);margin:12px 0;"></div>
+        <div style="font-size:.84rem;font-weight:700;margin-bottom:1rem;"><i class="fas fa-truck" style="color:var(--primary);margin-right:6px;"></i>Order Tracking</div>
+        <div class="track-steps">
+          <div class="tk-step"><div class="tk-dot-wrap"><div class="tk-dot done"></div><div class="tk-line done"></div></div><div class="tk-info"><h4>Order Confirmed</h4><p id="tk1t">Just now</p></div></div>
+          <div class="tk-step"><div class="tk-dot-wrap"><div class="tk-dot act"></div><div class="tk-line"></div></div><div class="tk-info"><h4>Processing</h4><p>Pharmacy preparing your order</p></div></div>
+          <div class="tk-step"><div class="tk-dot-wrap"><div class="tk-dot"></div><div class="tk-line"></div></div><div class="tk-info"><h4>Out for Delivery</h4><p>Estimated 2–3 hours</p></div></div>
+          <div class="tk-step"><div class="tk-dot-wrap"><div class="tk-dot"></div><div class="tk-line"></div></div><div class="tk-info"><h4>Delivered</h4><p>—</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/js/config.js"></script>
+  <script src="../../assets/js/components.js"></script>
+<script>
+const API_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://127.0.0.1:8000/api/v1':'/api/v1';
+const MEDS = [
+  {id:1,name:'Amoxicillin 500mg',gen:'Amoxicillin',cat:'Antibiotic',price:120,unit:'Strip/10',rx:true,em:'💊'},
+  {id:2,name:'Napa 500mg',gen:'Paracetamol',cat:'Pain Relief',price:25,unit:'Strip/10',rx:false,em:'💊'},
+  {id:3,name:'Metformin 500mg',gen:'Metformin HCl',cat:'Diabetes',price:80,unit:'Strip/10',rx:true,em:'🔵'},
+  {id:4,name:'Amlodipine 5mg',gen:'Amlodipine Besylate',cat:'Cardiac',price:95,unit:'Strip/10',rx:true,em:'❤️'},
+  {id:5,name:'Atenolol 50mg',gen:'Atenolol',cat:'Cardiac',price:75,unit:'Strip/10',rx:true,em:'❤️'},
+  {id:6,name:'Vitamin C 500mg',gen:'Ascorbic Acid',cat:'Vitamin',price:150,unit:'Bottle/30',rx:false,em:'🍊'},
+  {id:7,name:'Vitamin D3 1000IU',gen:'Cholecalciferol',cat:'Vitamin',price:320,unit:'Bottle/30',rx:false,em:'☀️'},
+  {id:8,name:'Omeprazole 20mg',gen:'Omeprazole',cat:'Gastro',price:60,unit:'Strip/10',rx:false,em:'🟡'},
+  {id:9,name:'Salbutamol Inhaler',gen:'Salbutamol',cat:'Respiratory',price:280,unit:'1 Inhaler',rx:true,em:'💨'},
+  {id:10,name:'Cetirizine 10mg',gen:'Cetirizine HCl',cat:'Pain Relief',price:35,unit:'Strip/10',rx:false,em:'💊'},
+  {id:11,name:'Calcium+D3',gen:'Calcium+Vit D3',cat:'Vitamin',price:420,unit:'Bottle/60',rx:false,em:'🦴'},
+  {id:12,name:'Ranitidine 150mg',gen:'Ranitidine',cat:'Gastro',price:45,unit:'Strip/10',rx:false,em:'🟠'},
+];
+let cart={}, activeCat='all', currentList=[...MEDS];
+
+function renderMeds(list){
+  document.getElementById('medGrid').innerHTML = list.map(m=>`
+    <div class="med-card">
+      <div class="med-img">${m.em}${m.rx?'<span class="med-rx">Rx</span>':''}</div>
+      <div class="med-body">
+        <div class="med-name">${m.name}</div>
+        <div class="med-gen">${m.gen}</div>
+        <div class="med-tags"><span class="med-tag">${m.cat}</span><span class="med-tag">${m.unit}</span></div>
+        <div class="med-foot">
+          <div class="med-price">৳${m.price} <small>/unit</small></div>
+          <button class="add-btn ${cart[m.id]?'added':''}" onclick="addToCart(${m.id})" id="cb${m.id}">
+            ${cart[m.id]?`✓ ${cart[m.id]}`:'Add'}
+          </button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function addToCart(id){
+  cart[id]=(cart[id]||0)+1;
+  renderCart(); renderMeds(currentList);
+}
+
+function chQty(id,d){
+  cart[id]=(cart[id]||0)+d;
+  if(cart[id]<=0) delete cart[id];
+  renderCart(); renderMeds(currentList);
+}
+
+function renderCart(){
+  const ids=Object.keys(cart).filter(id=>cart[id]>0);
+  const count=ids.reduce((s,id)=>s+cart[id],0);
+  document.getElementById('cartBadge').textContent=count||'';
+  if(!ids.length){
+    document.getElementById('cartBody').innerHTML='<div class="cart-empty"><i class="fas fa-pills"></i>Cart is empty</div>';
+    document.getElementById('cartFooter').style.display='none'; return;
+  }
+  const sub=ids.reduce((s,id)=>{const m=MEDS.find(x=>x.id===+id);return s+(m?m.price*cart[id]:0);},0);
+  const del=sub>=500?0:60;
+  document.getElementById('cartSub').textContent=sub.toLocaleString();
+  document.getElementById('delivFee').textContent=del===0?'FREE':'৳'+del;
+  document.getElementById('cartTot').textContent=(sub+del).toLocaleString();
+  document.getElementById('cartFooter').style.display='block';
+  document.getElementById('cartBody').innerHTML=ids.map(id=>{
+    const m=MEDS.find(x=>x.id===+id); if(!m)return '';
+    return `<div class="cart-item">
+      <div class="ci-name">${m.name}</div>
+      <div class="ci-qty"><button class="qty-btn" onclick="chQty(${id},-1)">−</button><span style="font-weight:700;font-size:.82rem;min-width:16px;text-align:center;">${cart[id]}</span><button class="qty-btn" onclick="chQty(${id},1)">+</button></div>
+      <span class="ci-price">৳${(m.price*cart[id]).toLocaleString()}</span>
+      <button class="ci-remove" onclick="chQty(${id},-999)"><i class="fas fa-times"></i></button>
+    </div>`;}).join('');
+}
+
+function setCat(el,cat){
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); activeCat=cat; filterMeds();
+}
+function filterMeds(){
+  const q=document.getElementById('medQ').value.toLowerCase();
+  const sort=document.getElementById('sortMeds').value;
+  currentList=MEDS.filter(m=>{
+    if(activeCat!=='all'&&m.cat!==activeCat)return false;
+    if(q&&!m.name.toLowerCase().includes(q)&&!m.gen.toLowerCase().includes(q))return false;
+    return true;
+  });
+  if(sort==='price-asc')currentList.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc')currentList.sort((a,b)=>b.price-a.price);
+  else if(sort==='name')currentList.sort((a,b)=>a.name.localeCompare(b.name));
+  renderMeds(currentList);
+}
+function rxUploaded(inp){if(inp.files.length){document.getElementById('rxStatus').style.display='block';}}
+function placeOrder(){
+  if(!Object.keys(cart).length){MedFindComponents?.toast('Cart is empty','warning');return;}
+  const addr=document.getElementById('delivAddr').value.trim();
+  const phone=document.getElementById('delivPhone').value.trim();
+  if(!addr||!phone){MedFindComponents?.toast('Please enter delivery address and phone','warning');return;}
+  const btn=document.getElementById('orderBtn');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Placing order…';
+  // Try real API, fall back to demo
+  (async () => {
+    try {
+      const items = Object.keys(cart).map(id => ({
+        medicine_id: parseInt(id), quantity: cart[id]
+      }));
+      const res = await fetch(API_BASE+'/pharmacy/orders/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_name: document.getElementById('delivPhone').value || 'Guest',
+          patient_phone: document.getElementById('delivPhone').value,
+          delivery_address: document.getElementById('delivAddr').value,
+          payment_method: document.getElementById('payMethod')?.value || 'cash',
+          items
+        })
+      });
+      const data = await res.json();
+      const ref = data.ref_id || 'PH-'+Date.now().toString().slice(-6);
+      // Save to localStorage for history
+      const orders = JSON.parse(localStorage.getItem('mf_orders')||'[]');
+      orders.unshift({ ref, date: new Date().toISOString(), status: 'confirmed', total: document.getElementById('cartTot').textContent });
+      localStorage.setItem('mf_orders', JSON.stringify(orders.slice(0,10)));
+      cart={};renderCart();renderMeds(currentList);
+      document.getElementById('cartFooter').style.display='none';
+      document.getElementById('trackPanel').style.display='block';
+      document.getElementById('tk1t').textContent='Order '+ref+' · '+new Date().toLocaleTimeString();
+      MedFindComponents?.toast('Order placed! Ref: '+ref,'success','Order Confirmed 🎉',6000);
+    } catch {
+      const ref='PH-'+Date.now().toString().slice(-6);
+      cart={};renderCart();renderMeds(currentList);
+      document.getElementById('cartFooter').style.display='none';
+      document.getElementById('trackPanel').style.display='block';
+      document.getElementById('tk1t').textContent='Order #'+ref+' · '+new Date().toLocaleTimeString();
+      MedFindComponents?.toast('Order placed! Ref: '+ref,'success','Order Confirmed 🎉',6000);
+    }
+    btn.disabled=false;btn.innerHTML='<i class="fas fa-shopping-bag"></i> Place Order';
+  })();
+}
+renderMeds(MEDS);
+</script>
+<script src="../../services/api.js"></script>
+</body>
+</html>

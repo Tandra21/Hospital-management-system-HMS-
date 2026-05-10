@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Register on MedFind Bangladesh - Create your healthcare account to book doctors, find blood donors, and manage health.">
+<title>Join MedFind – Professional Healthcare Platform Bangladesh</title>
+<link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05101e;--blue:#1a56db;--blue-d:#1344b4;--teal:#0d9488;--teal-l:#14b8a6;
+  --cyan:#06b6d4;--t1:#f0f9ff;--t2:#93c5fd;--t3:#475569;--border:rgba(255,255,255,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--t1);display:flex;flex-direction:column;min-height:100vh;}
+#bgc{position:fixed;inset:0;z-index:0;}
+.mesh{position:fixed;inset:0;z-index:1;background:
+  radial-gradient(ellipse 70% 65% at 12% 50%,rgba(26,86,219,.22),transparent 65%),
+  radial-gradient(ellipse 55% 60% at 88% 25%,rgba(13,148,136,.18),transparent 65%),
+  radial-gradient(ellipse 50% 40% at 55% 90%,rgba(6,182,212,.12),transparent 60%);}
+.ptc{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+.pt{position:absolute;border-radius:50%;animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(110vh);opacity:0}10%{opacity:1}85%{opacity:.4}100%{transform:translateY(-5vh);opacity:0}}
+.screen{position:relative;z-index:10;flex:1;display:grid;grid-template-columns:1.05fr .95fr;min-height:0;}
+/* LEFT */
+.left{padding:2.5rem 3rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.lgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);}
+.logo{display:flex;align-items:center;gap:1rem;animation:fsr .6s ease both;}
+.logo-img{width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(13,148,136,.5));transition:.3s;}
+.logo-img:hover{transform:scale(1.05);}
+.logo-text .lname{font-size:1.6rem;font-weight:900;letter-spacing:-.02em;}
+.logo-text .lname .med{color:#fff;}.logo-text .lname .find{color:var(--teal-l);}
+.logo-text .ltag{font-size:.6rem;color:var(--t3);font-weight:500;letter-spacing:.3px;}
+.hero{flex:1;display:flex;flex-direction:column;justify-content:center;padding:1rem 0;}
+.badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.28);border-radius:30px;padding:.4rem 1rem;font-size:.72rem;font-weight:700;color:var(--teal-l);margin-bottom:1.2rem;animation:fsr .6s .1s ease both;}
+.badge::before{content:'';width:7px;height:7px;background:var(--teal-l);border-radius:50%;animation:dot 2s infinite;box-shadow:0 0 8px var(--teal-l);}
+@keyframes dot{0%,100%{opacity:1}50%{opacity:.2}}
+.htitle{font-size:2.8rem;font-weight:900;line-height:1.08;letter-spacing:-.035em;margin-bottom:1rem;animation:fsr .6s .15s ease both;}
+.htitle em{font-style:normal;background:linear-gradient(135deg,#38bdf8 0%,#5eead4 50%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hdesc{font-size:.93rem;color:rgba(240,249,255,.7);line-height:1.7;max-width:400px;margin-bottom:1.5rem;animation:fsr .6s .2s ease both;}
+.feats{display:flex;flex-direction:column;gap:.5rem;animation:fsr .6s .25s ease both;}
+.feat{display:flex;align-items:center;gap:.875rem;padding:.55rem .875rem;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.045);border-radius:11px;transition:.2s;}
+.feat:hover{background:rgba(255,255,255,.05);}
+.fic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.ft{font-size:.8rem;color:rgba(240,249,255,.7);}
+.ft b{color:#e0f2fe;font-weight:700;}
+.sbar{display:flex;gap:2rem;border-top:1px solid var(--border);padding-top:1.25rem;animation:fsr .6s .3s ease both;}
+.sv{font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,#f0f9ff,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sl{font-size:.68rem;color:var(--t3);font-weight:500;}
+/* RIGHT */
+.right{display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 2rem;position:relative;overflow-y:auto;}
+.right::before{content:'';position:absolute;left:0;top:12%;bottom:12%;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.07) 35%,rgba(255,255,255,.07) 65%,transparent);}
+.rcard{width:100%;max-width:440px;padding-bottom:2rem;animation:fsl .7s ease both;}
+/* PROGRESS STEPS */
+.progress-wrap{margin-bottom:1.5rem;}
+.progress-steps{display:flex;align-items:center;}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:16px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;transition:.3s;}
+.step.completed:not(:last-child)::after{background:linear-gradient(90deg,var(--teal),var(--blue));}
+.step-circle{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--t3);position:relative;z-index:1;transition:.3s;}
+.step.active .step-circle{border-color:var(--blue);background:var(--blue);color:#fff;box-shadow:0 0 16px rgba(26,86,219,.5);}
+.step.completed .step-circle{border-color:var(--teal);background:var(--teal);color:#fff;}
+.step-label{font-size:.65rem;color:var(--t3);margin-top:.4rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;transition:.3s;}
+.step.active .step-label{color:var(--teal-l);}
+.step.completed .step-label{color:var(--teal);}
+/* FORM */
+.ch{margin-bottom:1.25rem;}
+.ct{font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:-.02em;}
+.cs{font-size:.82rem;color:var(--t3);margin-top:.2rem;}
+.form-section{display:none;}.form-section.active{display:block;}
+.fl{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:600;color:rgba(240,249,255,.7);margin-bottom:.45rem;}
+.fl i{color:var(--teal-l);font-size:.72rem;width:13px;}
+.fl .opt{color:var(--t3);font-weight:400;font-size:.7rem;margin-left:.2rem;}
+.iw{position:relative;}
+.iic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.82rem;pointer-events:none;z-index:1;}
+.fi{width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:.7rem .9rem .7rem 2.5rem;color:#fff;font-family:'Outfit',sans-serif;font-size:.88rem;transition:.2s;outline:none;}
+.fi:focus{border-color:var(--blue);background:rgba(26,86,219,.08);box-shadow:0 0 0 3px rgba(26,86,219,.15);}
+.fi.error-input{border-color:#ef4444;}
+.fi::placeholder{color:rgba(255,255,255,.22);}
+select.fi{-webkit-appearance:none;cursor:pointer;}
+select.fi option{background:#1e293b;color:#fff;}
+textarea.fi{resize:vertical;min-height:68px;padding-top:.7rem;padding-left:.9rem;}
+.phone-group{display:flex;}
+.phone-prefix{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-right:none;border-radius:11px 0 0 11px;padding:0 .75rem;display:flex;align-items:center;font-size:.82rem;color:var(--t3);white-space:nowrap;font-weight:600;}
+.phone-group .fi{border-radius:0 11px 11px 0;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.fg{margin-bottom:.85rem;}
+.hint{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:var(--t3);margin-top:.3rem;}
+.hint i{color:var(--cyan);font-size:.68rem;}
+.err-msg{font-size:.7rem;color:#f87171;margin-top:.2rem;display:none;}
+.err-msg.show{display:block;}
+/* PASSWORD STRENGTH */
+.pw-strength{margin-top:.45rem;}
+.strength-meter{height:3px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:.25rem;}
+.strength-bar{height:100%;width:0;border-radius:3px;transition:.4s;}
+.strength-bar.weak{background:#ef4444;width:33%;}
+.strength-bar.medium{background:#f59e0b;width:66%;}
+.strength-bar.strong{background:#10b981;width:100%;}
+.strength-text{font-size:.68rem;color:var(--t3);}
+/* OTP */
+.otp-container{margin-top:.75rem;padding:.9rem 1rem;background:rgba(13,148,136,.07);border:1px solid rgba(13,148,136,.2);border-radius:12px;display:none;}
+.otp-container.active{display:block;}
+.otp-title{font-size:.75rem;font-weight:600;color:var(--teal-l);margin-bottom:.6rem;}
+.otp-inputs{display:flex;gap:.4rem;margin-bottom:.55rem;}
+.otp-input{width:38px;height:42px;border-radius:9px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:1.1rem;font-weight:700;text-align:center;font-family:'JetBrains Mono',monospace;outline:none;transition:.2s;}
+.otp-input:focus{border-color:var(--teal);background:rgba(13,148,136,.1);}
+.otp-input.filled{border-color:var(--teal);}
+.otp-timer{display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:var(--t3);}
+.resend-btn{background:none;border:none;color:var(--teal-l);font-size:.7rem;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:underline;}
+.resend-btn:disabled{color:var(--t3);text-decoration:none;cursor:default;}
+/* EMAIL VERIFY */
+.ev-group{display:flex;gap:.5rem;}
+.ev-group .iw{flex:1;}
+.verify-btn{padding:.68rem .9rem;background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border:none;border-radius:11px;font-size:.76rem;font-weight:700;cursor:pointer;transition:.2s;font-family:'Outfit',sans-serif;white-space:nowrap;flex-shrink:0;}
+.verify-btn:hover{opacity:.88;}
+.verify-btn.verified{background:linear-gradient(135deg,#059669,#047857);}
+/* TERMS */
+.terms-group{margin-bottom:1rem;}
+.cb-label{display:flex;align-items:flex-start;gap:.65rem;cursor:pointer;font-size:.77rem;color:rgba(240,249,255,.6);line-height:1.55;}
+.cb-label input{margin-top:2px;accent-color:var(--blue);width:14px;height:14px;flex-shrink:0;}
+.cb-label a{color:var(--teal-l);text-decoration:none;font-weight:600;}
+/* BUTTONS */
+.form-actions{display:flex;gap:.75rem;margin-bottom:.9rem;}
+.sbtn{flex:1;padding:.78rem;border:none;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.sbtn-outline{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);color:rgba(240,249,255,.7);}
+.sbtn-outline:hover:not(:disabled){background:rgba(255,255,255,.1);}
+.sbtn-outline:disabled{opacity:.35;cursor:not-allowed;}
+.sbtn-primary{background:linear-gradient(135deg,var(--blue),var(--teal));color:#fff;box-shadow:0 4px 20px rgba(26,86,219,.28);}
+.sbtn-primary:hover{opacity:.9;transform:translateY(-1px);}
+/* DIVIDER */
+.div{text-align:center;font-size:.78rem;color:var(--t3);margin:.65rem 0;position:relative;}
+.div::before,.div::after{content:'';position:absolute;top:50%;width:43%;height:1px;background:var(--border);}
+.div::before{left:0;}.div::after{right:0;}
+/* REGROW */
+.regrow{text-align:center;font-size:.8rem;color:var(--t3);}
+.regrow a{color:var(--teal-l);text-decoration:none;font-weight:700;}
+/* ALERTS */
+.al{display:none;align-items:center;gap:.6rem;padding:.6rem .85rem;border-radius:10px;font-size:.79rem;font-weight:500;margin-bottom:.7rem;}
+.al.vis{display:flex;}
+.al.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5;}
+.al.ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;}
+/* SUCCESS */
+.success-state{display:none;text-align:center;padding:2rem 1rem;}
+.success-state.active{display:block;}
+.success-icon{width:72px;height:72px;border-radius:50%;background:rgba(13,148,136,.15);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--teal-l);margin:0 auto 1.25rem;animation:popIn .5s ease;}
+@keyframes popIn{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.success-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.5rem;}
+.success-msg{font-size:.84rem;color:var(--t3);line-height:1.6;margin-bottom:1.5rem;}
+.success-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+.sa-btn{padding:.65rem 1.4rem;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;}
+.sa-btn.primary{background:linear-gradient(135deg,var(--blue),var(--teal));color:#fff;border:none;}
+.sa-btn.outline{background:transparent;border:1.5px solid rgba(255,255,255,.15);color:rgba(240,249,255,.8);}
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;z-index:9999;background:rgba(5,16,30,.8);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+.loading-overlay.active{display:flex;}
+.loader{width:44px;height:44px;border:3px solid rgba(255,255,255,.1);border-top:3px solid var(--teal-l);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* TOAST */
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:10000;display:flex;flex-direction:column;gap:.5rem;}
+.toast{display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem;border-radius:12px;background:#1e293b;border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateX(120%);transition:.3s;max-width:320px;}
+.toast.show{transform:translateX(0);}
+.toast.success{border-color:rgba(16,185,129,.3);}.toast.error{border-color:rgba(239,68,68,.3);}
+.toast-icon{font-size:.88rem;}.toast.success .toast-icon{color:#34d399;}.toast.error .toast-icon{color:#f87171;}
+.toast-message{font-size:.8rem;color:rgba(240,249,255,.85);flex:1;}
+.toast-close{background:none;border:none;color:var(--t3);cursor:pointer;font-size:1rem;line-height:1;}
+@keyframes fsr{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+@keyframes fsl{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@media(max-width:900px){.screen{grid-template-columns:1fr;}.left{display:none;}.right{padding:2rem 1.25rem;}}
+@media(max-width:480px){.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<canvas id="bgc"></canvas>
+<div class="mesh"></div>
+<div class="ptc" id="ptc"></div>
+
+<div class="screen">
+  <!-- ── LEFT PANEL ── -->
+  <div class="left">
+    <div class="lgrid"></div>
+    <div class="logo">
+      <img class="logo-img" src="../assets/medfind-logo.png" alt="MedFind Bangladesh" style="width:52px;height:52px;object-fit:contain;">
+      <div class="logo-text">
+        <div class="lname"><span class="med">Med</span><span class="find">Find</span></div>
+        <div class="ltag">CARE YOU CAN TRUST</div>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="badge">Bangladesh's #1 Digital Healthcare Platform</div>
+      <div class="htitle">Start Your<br><em>Health Journey</em><br>Today</div>
+      <div class="hdesc">Join 50,000+ patients connecting with verified doctors, booking lab tests, and managing their health all in one secure platform.</div>
+      <div class="feats">
+        <div class="feat"><div class="fic" style="background:rgba(26,86,219,.18);color:#93c5fd;"><i class="fas fa-user-md"></i></div><div class="ft"><b>2,400+</b> BMDC Verified Specialist Doctors</div></div>
+        <div class="feat"><div class="fic" style="background:rgba(13,148,136,.18);color:#5eead4;"><i class="fas fa-hospital"></i></div><div class="ft"><b>800+</b> Hospitals Across Bangladesh</div></div>
+        <div class="feat"><div class="fic" style="background:rgba(6,182,212,.15);color:#67e8f9;"><i class="fas fa-flask"></i></div><div class="ft"><b>50+</b> Lab Tests with Online Booking</div></div>
+        <div class="feat"><div class="fic" style="background:rgba(139,92,246,.15);color:#c4b5fd;"><i class="fas fa-video"></i></div><div class="ft"><b>HD Video</b> Telemedicine Consultations</div></div>
+        <div class="feat"><div class="fic" style="background:rgba(245,158,11,.12);color:#fcd34d;"><i class="fas fa-shield-halved"></i></div><div class="ft"><b>BMDC Verified</b> — Secure &amp; Private Records</div></div>
+      </div>
+    </div>
+    <div class="sbar">
+      <div><div class="sv" id="c1">0</div><div class="sl">Patients Served</div></div>
+      <div><div class="sv" id="c2">0</div><div class="sl">Doctors</div></div>
+      <div><div class="sv" id="c3">0</div><div class="sl">Hospitals</div></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right">
+    <div class="rcard">
+
+      <!-- Progress Steps -->
+      <div class="progress-wrap">
+        <div class="progress-steps">
+          <div class="step active" data-step="1">
+            <div class="step-circle"><span class="step-num">1</span></div>
+            <div class="step-label">Account</div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-circle"><span class="step-num">2</span></div>
+            <div class="step-label">Personal</div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-circle"><span class="step-num">3</span></div>
+            <div class="step-label">Medical</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div class="ch" id="formHeader">
+        <div class="ct" id="formTitle">Create your account</div>
+        <div class="cs" id="formSubtitle">Step 1 of 3 — Account credentials</div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="al err" id="aErr"><i class="fas fa-circle-exclamation"></i><span id="aErrMsg"></span></div>
+      <div class="al ok" id="aOk"><i class="fas fa-circle-check"></i><span id="aOkMsg"></span></div>
+
+      <!-- ── STEP 1: Account ── -->
+      <div class="form-section active" id="section1">
+        <div class="fg">
+          <label class="fl"><i class="fas fa-envelope"></i> Email Address</label>
+          <div class="ev-group">
+            <div class="iw">
+              <i class="fas fa-envelope iic"></i>
+              <input type="email" class="fi" id="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <button type="button" class="verify-btn" id="verifyEmailBtn">
+              <i class="fas fa-paper-plane"></i> Send OTP
+            </button>
+          </div>
+          <div class="hint"><i class="fas fa-info-circle"></i> Verification code will be sent to this email</div>
+          <div class="err-msg" id="emailError"></div>
+          <div class="otp-container" id="otpContainer">
+            <div class="otp-title"><i class="fas fa-key"></i>&nbsp; Enter 6-digit verification code</div>
+            <div class="otp-inputs">
+              <input type="text" class="otp-input" maxlength="1" data-index="1">
+              <input type="text" class="otp-input" maxlength="1" data-index="2">
+              <input type="text" class="otp-input" maxlength="1" data-index="3">
+              <input type="text" class="otp-input" maxlength="1" data-index="4">
+              <input type="text" class="otp-input" maxlength="1" data-index="5">
+              <input type="text" class="otp-input" maxlength="1" data-index="6">
+            </div>
+            <div class="otp-timer">
+              <i class="fas fa-clock"></i>
+              <span id="timer">2:00</span>
+              <button type="button" class="resend-btn" id="resendOtp">Resend code</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="fg">
+            <label class="fl"><i class="fas fa-lock"></i> Password</label>
+            <div class="iw">
+              <i class="fas fa-lock iic"></i>
+              <input type="password" class="fi" id="password" placeholder="Create a strong password" autocomplete="new-password">
+            </div>
+            <div class="pw-strength">
+              <div class="strength-meter"><div class="strength-bar" id="strengthBar"></div></div>
+              <div class="strength-text" id="strengthText">Use at least 8 characters</div>
+            </div>
+            <div class="err-msg" id="passwordError"></div>
+          </div>
+          <div class="fg">
+            <label class="fl"><i class="fas fa-lock"></i> Confirm Password</label>
+            <div class="iw">
+              <i class="fas fa-lock iic"></i>
+              <input type="password" class="fi" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password">
+            </div>
+            <div class="err-msg" id="confirmPasswordError"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Personal ── -->
+      <div class="form-section" id="section2">
+        <div class="form-row">
+          <div class="fg">
+            <label class="fl"><i class="fas fa-user"></i> First Name</label>
+            <div class="iw"><i class="fas fa-user iic"></i><input type="text" class="fi" id="firstName" placeholder="Rahim"></div>
+            <div class="err-msg" id="firstNameError"></div>
+          </div>
+          <div class="fg">
+            <label class="fl"><i class="fas fa-user"></i> Last Name</label>
+            <div class="iw"><i class="fas fa-user iic"></i><input type="text" class="fi" id="lastName" placeholder="Uddin"></div>
+            <div class="err-msg" id="lastNameError"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="fg">
+            <label class="fl"><i class="fas fa-phone"></i> Phone <span class="opt">(Optional)</span></label>
+            <div class="phone-group">
+              <span class="phone-prefix">+880</span>
+              <input type="tel" class="fi" id="phone" placeholder="1XXXXXXXXX" maxlength="10">
+            </div>
+            <div class="err-msg" id="phoneError"></div>
+            <div class="hint"><i class="fas fa-info-circle"></i> For appointment reminders</div>
+          </div>
+          <div class="fg">
+            <label class="fl"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+            <div class="iw"><i class="fas fa-calendar-alt iic"></i><input type="date" class="fi" id="dob"></div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl"><i class="fas fa-venus-mars"></i> Gender</label>
+          <div class="iw">
+            <i class="fas fa-venus-mars iic"></i>
+            <select class="fi" id="gender">
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other / Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Medical ── -->
+      <div class="form-section" id="section3">
+        <div class="fg">
+          <label class="fl"><i class="fas fa-tint"></i> Blood Group</label>
+          <div class="iw">
+            <i class="fas fa-tint iic"></i>
+            <select class="fi" id="bloodGroup">
+              <option value="">Select blood group</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl"><i class="fas fa-pills"></i> Current Medications <span class="opt">(Optional)</span></label>
+          <textarea class="fi" style="padding-left:.9rem" id="medications" rows="2" placeholder="List any medications you're currently taking"></textarea>
+        </div>
+        <div class="fg">
+          <label class="fl"><i class="fas fa-allergies"></i> Allergies <span class="opt">(Optional)</span></label>
+          <textarea class="fi" style="padding-left:.9rem" id="allergies" rows="2" placeholder="List any known allergies"></textarea>
+        </div>
+        <div class="fg">
+          <label class="fl"><i class="fas fa-history"></i> Medical Conditions <span class="opt">(Optional)</span></label>
+          <textarea class="fi" style="padding-left:.9rem" id="conditions" rows="2" placeholder="List any existing conditions"></textarea>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <div class="terms-group" id="termsGroup">
+        <label class="cb-label">
+          <input type="checkbox" id="termsAgreement">
+          <span>I agree to MedFind's <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>. My medical information will be handled securely.</span>
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions" id="formActions">
+        <button class="sbtn sbtn-outline" id="prevBtn" disabled><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="sbtn sbtn-primary" id="nextBtn">Continue <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <!-- Success State -->
+      <div class="success-state" id="successState">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <div class="success-title">Account Created! 🎉</div>
+        <div class="success-msg">Welcome to MedFind Bangladesh.<br>Your account has been created successfully.</div>
+        <div class="success-actions">
+          <a href="login.html" class="sa-btn primary"><i class="fas fa-sign-in-alt"></i> Sign In Now</a>
+          <a href="../index.html" class="sa-btn outline"><i class="fas fa-home"></i> Home</a>
+        </div>
+      </div>
+
+      <div class="div" id="divEl">or</div>
+      <div class="regrow" id="loginLinkRow">Already have an account? <a href="login.html">Sign in here →</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading & Toast -->
+<div class="loading-overlay" id="loadingOverlay"><div class="loader"></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const API_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://127.0.0.1:8000/api/v1':'/api/v1';
+/* BG */
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+let W,H,nds=[];
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+rsz();addEventListener('resize',rsz);
+for(let i=0;i<85;i++)nds.push({x:Math.random()*9999,y:Math.random()*9999,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5});
+(function loop(){
+  if(nds[0].x>9990)nds.forEach(n=>{n.x=Math.random()*W;n.y=Math.random()*H;});
+  cx.fillStyle='#05101e';cx.fillRect(0,0,W,H);
+  nds.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;cx.beginPath();cx.arc(n.x,n.y,n.r,0,Math.PI*2);cx.fillStyle='rgba(13,148,136,.45)';cx.fill();});
+  for(let i=0;i<nds.length;i++)for(let j=i+1;j<nds.length;j++){const dx=nds[i].x-nds[j].x,dy=nds[i].y-nds[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(nds[i].x,nds[i].y);cx.lineTo(nds[j].x,nds[j].y);cx.strokeStyle=`rgba(26,86,219,${.14*(1-d/120)})`;cx.lineWidth=.5;cx.stroke();}}
+  requestAnimationFrame(loop);
+})();
+const pc=document.getElementById('ptc');
+for(let i=0;i<22;i++){const p=document.createElement('div');p.className='pt';p.style.cssText=`left:${Math.random()*100}%;width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;animation-duration:${Math.random()*12+7}s;animation-delay:${Math.random()*12}s;background:rgba(${Math.random()>.5?'13,148,136':'26,86,219'},.55);`;pc.appendChild(p);}
+function cnt(el,end,sfx=''){let n=0,s=end/55;const iv=setInterval(()=>{n=Math.min(n+s,end);el.textContent=Math.round(n).toLocaleString()+sfx;if(n>=end)clearInterval(iv);},22);}
+setTimeout(()=>{cnt(document.getElementById('c1'),52000,'+');cnt(document.getElementById('c2'),2400,'+');cnt(document.getElementById('c3'),800,'+');},700);
+
+/* ── REGISTRATION ── */
+class Reg {
+  constructor(){
+    this.step=1;this.emailVerified=false;this.otpCode=null;this.otpTimer=null;this.countdown=120;
+    this.$ = id=>document.getElementById(id);
+    this.steps=document.querySelectorAll('.step');
+    this.sections=document.querySelectorAll('.form-section');
+    this.$('prevBtn').onclick=()=>this.prev();
+    this.$('nextBtn').onclick=()=>this.next();
+    this.$('verifyEmailBtn').onclick=()=>this.sendOTP();
+    this.$('resendOtp').onclick=()=>this.sendOTP();
+    this.$('password').oninput=()=>this.checkStrength();
+    document.querySelectorAll('.otp-input').forEach((inp,i)=>{
+      inp.oninput=e=>this.otpInput(e,i);
+      inp.onkeydown=e=>this.otpKey(e,i);
+    });
+    ['email','password','confirmPassword','firstName','lastName'].forEach(id=>
+      this.$(id).onblur=()=>this['val_'+id]?.()
+    );
+    this.val_email=()=>this.vEmail();
+    this.val_password=()=>this.vPass();
+    this.val_confirmPassword=()=>this.vConfirm();
+    this.val_firstName=()=>this.vFirst();
+    this.val_lastName=()=>this.vLast();
+    this.updateUI();
+  }
+
+  prev(){if(this.step>1){this.step--;this.updateUI();}}
+
+  async next(){
+    if(!await this.validate())return;
+    if(this.step===3){await this.submit();return;}
+    this.step++;this.updateUI();
+  }
+
+  updateUI(){
+    this.steps.forEach((s,i)=>{
+      s.classList.remove('active','completed');
+      if(i+1===this.step)s.classList.add('active');
+      else if(i+1<this.step)s.classList.add('completed');
+      const sc=s.querySelector('.step-circle');
+      if(i+1<this.step)sc.innerHTML='<i class="fas fa-check" style="font-size:.65rem"></i>';
+      else sc.innerHTML=`<span class="step-num">${i+1}</span>`;
+    });
+    this.sections.forEach((s,i)=>{s.classList.toggle('active',i+1===this.step);});
+    this.$('prevBtn').disabled=this.step===1;
+    this.$('nextBtn').innerHTML=this.step===3?'<i class="fas fa-check"></i> Create Account':'Continue <i class="fas fa-arrow-right"></i>';
+    const titles=['','Create your account','Personal information','Medical details'];
+    const subs=['','Step 1 of 3 — Account credentials','Step 2 of 3 — Your details','Step 3 of 3 — Health information'];
+    this.$('formTitle').textContent=titles[this.step];
+    this.$('formSubtitle').textContent=subs[this.step];
+  }
+
+  async validate(){
+    if(this.step===1){
+      let ok=true;
+      if(!this.vEmail())ok=false;
+      if(!this.vPhone())ok=false;
+      if(!this.vPass())ok=false;
+      if(!this.vConfirm())ok=false;
+      if(!this.emailVerified){this.toast('Please verify your Gmail address first','error');ok=false;}
+      return ok;
+    }
+    if(this.step===2){let ok=true;if(!this.vFirst())ok=false;if(!this.vLast())ok=false;return ok;}
+    return true;
+  }
+
+  vEmail(){
+    const v=this.$('email').value.trim();
+    if(!v){this.ferr('emailError','Email is required');return false;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){this.ferr('emailError','Enter a valid email address');return false;}
+    // ✅ CONDITION: Only Gmail addresses allowed
+    if(!v.toLowerCase().endsWith('@gmail.com')){this.ferr('emailError','Only Gmail addresses are allowed (must end with @gmail.com)');return false;}
+    this.fok('emailError');return true;
+  }
+  vPhone(){
+    const raw=this.$('phone').value.trim();
+    if(!raw)return true; // Optional field
+    // ✅ CONDITION: Valid Bangladeshi format — 10 digits after +880 prefix (total 11 with leading 0, or 10 without)
+    const digitsOnly=raw.replace(/\D/g,'');
+    // Accept: 10 digits starting with 1 (e.g. 1XXXXXXXXX) — combined with +880 prefix shown in UI
+    if(!/^1[3-9]\d{8}$/.test(digitsOnly)){this.ferr('phoneError','Enter a valid BD number (e.g. 1XXXXXXXXX — 10 digits)');return false;}
+    this.fok('phoneError');return true;
+  }
+  vPass(){const v=this.$('password').value;if(!v){this.ferr('passwordError','Password is required');return false;}if(v.length<8){this.ferr('passwordError','At least 8 characters required');return false;}this.fok('passwordError');return true;}
+  vConfirm(){const p=this.$('password').value,c=this.$('confirmPassword').value;if(!c){this.ferr('confirmPasswordError','Confirm your password');return false;}if(p!==c){this.ferr('confirmPasswordError','Passwords do not match');return false;}this.fok('confirmPasswordError');return true;}
+  vFirst(){const v=this.$('firstName').value.trim();if(!v){this.ferr('firstNameError','First name is required');return false;}this.fok('firstNameError');return true;}
+  vLast(){const v=this.$('lastName').value.trim();if(!v){this.ferr('lastNameError','Last name is required');return false;}this.fok('lastNameError');return true;}
+  ferr(id,msg){const el=this.$(id);if(el){el.textContent=msg;el.classList.add('show');}}
+  fok(id){const el=this.$(id);if(el){el.textContent='';el.classList.remove('show');}}
+
+  async sendOTP(){
+    if(!this.vEmail())return;
+    const btn=this.$('verifyEmailBtn');
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
+    await new Promise(r=>setTimeout(r,1200));
+    this.otpCode=Math.floor(100000+Math.random()*900000).toString();
+    console.log('%cMedFind OTP (demo):%c '+this.otpCode,'color:#14b8a6;font-weight:bold','color:#fff');
+    this.$('otpContainer').classList.add('active');
+    btn.innerHTML='<i class="fas fa-check"></i> Sent';
+    btn.disabled=false;
+    this.toast('OTP sent! Check browser console (demo)','success');
+    this.startTimer();
+  }
+
+  startTimer(){
+    this.countdown=120;this.$('resendOtp').disabled=true;clearInterval(this.otpTimer);
+    this.otpTimer=setInterval(()=>{
+      this.countdown--;
+      const m=Math.floor(this.countdown/60),s=this.countdown%60;
+      this.$('timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+      if(this.countdown<=0){clearInterval(this.otpTimer);this.$('resendOtp').disabled=false;}
+    },1000);
+  }
+
+  otpInput(e,i){
+    const inp=e.target;
+    if(!/^\d*$/.test(inp.value)){inp.value='';return;}
+    inp.classList.toggle('filled',inp.value!=='');
+    const inputs=document.querySelectorAll('.otp-input');
+    if(inp.value&&i<inputs.length-1)inputs[i+1].focus();
+    let ok=true,code='';
+    inputs.forEach(x=>{if(!x.value)ok=false;code+=x.value;});
+    if(ok)this.verifyOtp(code);
+  }
+  otpKey(e,i){if(e.key==='Backspace'&&!e.target.value&&i>0)document.querySelectorAll('.otp-input')[i-1].focus();}
+  verifyOtp(entered){
+    if(entered===this.otpCode){
+      this.emailVerified=true;clearInterval(this.otpTimer);
+      const btn=this.$('verifyEmailBtn');btn.classList.add('verified');btn.innerHTML='<i class="fas fa-check"></i> Verified';
+      document.querySelectorAll('.otp-input').forEach(x=>x.disabled=true);
+      this.toast('Email verified!','success');
+    }else{this.toast('Invalid OTP. Try again.','error');}
+  }
+
+  checkStrength(){
+    const p=this.$('password').value;const bar=this.$('strengthBar');const txt=this.$('strengthText');
+    if(!p){bar.className='strength-bar';bar.style.width='0';txt.textContent='Use at least 8 characters';return;}
+    let s=0;
+    if(p.length>=8)s++;if(p.length>=12)s++;
+    if(/[a-z]/.test(p))s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;
+    if(s>=5){bar.className='strength-bar strong';txt.textContent='Strong password ✓';}
+    else if(s>=3){bar.className='strength-bar medium';txt.textContent='Medium — add uppercase & numbers';}
+    else{bar.className='strength-bar weak';txt.textContent='Weak — use uppercase, numbers & symbols';}
+  }
+
+  async submit(){
+    if(!this.$('termsAgreement').checked){this.toast('Please accept the terms and conditions','error');return;}
+    this.$('loadingOverlay').classList.add('active');
+    try{
+      const d={
+        email:this.$('email').value.trim(),password:this.$('password').value,
+        firstName:this.$('firstName').value.trim(),lastName:this.$('lastName').value.trim(),
+        phone:this.$('phone').value.trim(),dob:this.$('dob').value,
+        gender:this.$('gender').value,bloodGroup:this.$('bloodGroup').value,
+        medications:this.$('medications').value,allergies:this.$('allergies').value,
+        conditions:this.$('conditions').value,emailVerified:this.emailVerified,
+        createdAt:new Date().toISOString(),userId:'user_'+Date.now()
+      };
+      try{
+        const res=await fetch(API_BASE+'/accounts/register/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+        const r=await res.json();if(!r.success)throw new Error(r.message||'Failed');
+      }catch(e){
+        await new Promise(r=>setTimeout(r,1800));
+        localStorage.setItem('medfind_user',JSON.stringify(d));
+        // Index by email and phone so login works
+        const reg=JSON.parse(localStorage.getItem('mf_registered_users')||'{}');
+        reg[d.email]={...d,role:'patient'};
+        if(d.phone) reg['+880'+d.phone]={...d,role:'patient'};
+        localStorage.setItem('mf_registered_users',JSON.stringify(reg));
+      }
+      ['formHeader','termsGroup','formActions','loginLinkRow','divEl'].forEach(id=>{const el=this.$(id);if(el)el.style.display='none';});
+      this.sections.forEach(s=>s.style.display='none');
+      document.querySelector('.progress-wrap').style.display='none';
+      this.$('successState').classList.add('active');
+      this.toast('Account created successfully!','success');
+    }catch(e){this.toast('Registration failed. Please try again.','error');}
+    finally{this.$('loadingOverlay').classList.remove('active');}
+  }
+
+  toast(msg,type='info'){
+    const t=document.createElement('div');t.className=`toast ${type}`;
+    const ic=type==='success'?'fa-check-circle':type==='error'?'fa-exclamation-circle':'fa-info-circle';
+    t.innerHTML=`<i class="fas ${ic} toast-icon"></i><span class="toast-message">${msg}</span><button class="toast-close">&times;</button>`;
+    this.$('toastContainer').appendChild(t);
+    setTimeout(()=>t.classList.add('show'),10);
+    setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},5000);
+    t.querySelector('.toast-close').onclick=()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);};
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>new Reg());
+</script>
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Popup — ডাক্তারের প্রোফাইল</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f3ee;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #e0dcd4;
+    --border-dark: #c8c3b8;
+    --text: #1a1814;
+    --text-muted: #6b6560;
+    --text-light: #9c9690;
+    --blue: #1a5fb4;
+    --blue-bg: #e8f0fb;
+    --blue-border: #a8c4ef;
+    --green: #2d7d46;
+    --green-bg: #e6f4eb;
+    --red: #b43030;
+    --red-bg: #fbe8e8;
+    --amber: #8a5c00;
+    --amber-bg: #fdf3d8;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Hind Siliguri', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    background: transparent;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .15s;
+  }
+  .back-btn:hover { background: var(--surface2); color: var(--text); }
+  .back-btn svg { width: 14px; height: 14px; }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--blue);
+  }
+  .breadcrumb {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .breadcrumb a { color: var(--blue); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  /* ── PAGE ── */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    animation: fadeIn .3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── PROFILE HERO ── */
+  .profile-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-banner {
+    height: 100px;
+    background: linear-gradient(135deg, #e8f0fb 0%, #d4e4f7 50%, #c0d8f4 100%);
+    position: relative;
+  }
+  .hero-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231a5fb4' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .hero-content {
+    padding: 0 28px 24px;
+    position: relative;
+  }
+
+  .big-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 4px solid var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: -44px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .profile-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .doc-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .doc-spec {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 4px;
+  }
+  .doc-hospital {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .doc-edu {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 3px;
+  }
+
+  .avail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .avail-badge.yes { background: var(--green-bg); color: var(--green); }
+  .avail-badge.no  { background: var(--red-bg);   color: var(--red); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot-green { background: var(--green); }
+  .dot-red   { background: var(--red); }
+
+  /* ── STAT CARDS ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  @media(max-width:640px) { .stat-row { grid-template-columns: repeat(2,1fr); } }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-icon { font-size: 22px; margin-bottom: 6px; }
+  .stat-value { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .stat-label { font-size: 11px; color: var(--text-muted); }
+
+  /* ── SECTION ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section-title-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: var(--blue-bg);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .about-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  /* ── INFO GRID ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media(max-width:480px) { .info-grid { grid-template-columns: 1fr; } }
+
+  .info-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--surface2);
+  }
+  .info-key {
+    font-size: 11px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 3px;
+  }
+  .info-val {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ── SLOTS ── */
+  .slots-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .slot-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .slot-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
+  .slot-btn.picked { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  /* ── REVIEWS ── */
+  .reviews-list { display: flex; flex-direction: column; gap: 10px; }
+  .review-card {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .rev-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .rev-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--blue-bg);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .rev-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .rev-stars { font-size: 12px; color: #e6a817; margin-left: auto; }
+  .rev-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── BOOK SECTION ── */
+  .book-section {
+    background: linear-gradient(135deg, #1a5fb4 0%, #1248a0 100%);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: var(--shadow-lg);
+  }
+  .book-left h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .book-left p { font-size: 13px; color: rgba(255,255,255,0.75); }
+  .book-right { display: flex; gap: 10px; }
+  .btn-primary {
+    padding: 11px 24px;
+    background: #fff;
+    color: var(--blue);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .1s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { transform: scale(1.02); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+  .btn-secondary {
+    padding: 11px 20px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 8px;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.25); }
+
+  /* ── SELECTED SLOT TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1814;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    box-shadow: var(--shadow-lg);
+    transition: transform .3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── NOT FOUND ── */
+  .not-found {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--text-muted);
+  }
+  .not-found h2 { font-size: 20px; color: var(--text); margin-bottom: 8px; }
+
+  @media(max-width:600px) {
+    .page { padding: 1rem 1rem 3rem; }
+    .hero-content { padding: 0 16px 20px; }
+    .doc-name { font-size: 20px; }
+    .book-section { flex-direction: column; }
+    .book-right { width: 100%; flex-direction: column; }
+    .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+    .breadcrumb { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="back-btn" href="doctor-popup.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    ফিরে যান
+  </a>
+  <div class="logo">Doctor Popup</div>
+  <div class="breadcrumb">
+    <a href="doctor-popup.html">ডাক্তার</a> › প্রোফাইল
+  </div>
+</header>
+
+<div class="page" id="pageContent">
+  <div class="not-found"><h2>লোড হচ্ছে...</h2></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const doctors = [
+  {
+    id: 1, name: "ডা. রাহেলা বেগম", spec: "হৃদরোগ বিশেষজ্ঞ", tag: "হৃদরোগ",
+    hospital: "ঢাকা মেডিকেল কলেজ হাসপাতাল", exp: "১৮ বছর",
+    rating: 4.9, reviews: 312, fee: "৮০০", avail: true,
+    edu: "MBBS, MD (Cardiology), FCPS",
+    slots: ["সকাল ৯টা","সকাল ১০টা","দুপুর ১২টা","বিকেল ৪টা","বিকেল ৫টা"],
+    color: "#dce8f8", textColor: "#1a5fb4", initials: "রা",
+    patients: "৮,৫০০+", lang: "বাংলা, ইংরেজি",
+    about: "ডা. রাহেলা বেগম বাংলাদেশের অন্যতম অভিজ্ঞ হৃদরোগ বিশেষজ্ঞ। তিনি ১৮ বছরেরও বেশি সময় ধরে হৃদরোগীদের সেবা দিয়ে আসছেন। উচ্চ রক্তচাপ, হৃদস্পন্দনের সমস্যা এবং ইস্কেমিক হৃদরোগে তাঁর বিশেষ দক্ষতা রয়েছে। দেশে ও বিদেশে তিনি বিভিন্ন সম্মেলনে বক্তৃতা দিয়েছেন এবং একাধিক গবেষণাপত্র প্রকাশ করেছেন।",
+    reviews_list: [
+      { n: "করিম সাহেব", r: 5, t: "অনেক ভালো ডাক্তার, সময় দিয়ে শুনলেন এবং ভালো পরামর্শ দিলেন।" },
+      { n: "নাসরিন আক্তার", r: 5, t: "খুবই দক্ষ এবং রোগীবান্ধব। চেম্বারে বেশি অপেক্ষা করতে হয় না।" },
+      { n: "মিজানুর রহমান", r: 4, t: "চিকিৎসা পদ্ধতি খুব ভালো, তবে অ্যাপয়েন্টমেন্ট পেতে একটু সময় লাগে।" }
+    ]
+  },
+  {
+    id: 2, name: "ডা. আহমেদ হোসেন", spec: "শিশু বিশেষজ্ঞ", tag: "শিশু",
+    hospital: "বঙ্গবন্ধু শেখ মুজিব মেডিকেল", exp: "১২ বছর",
+    rating: 4.8, reviews: 245, fee: "৬০০", avail: true,
+    edu: "MBBS, DCH, MD (Paediatrics)",
+    slots: ["সকাল ১০টা","সকাল ১১টা","বিকেল ৩টা","বিকেল ৫টা"],
+    color: "#ddf0e5", textColor: "#2d7d46", initials: "আ",
+    patients: "৬,২০০+", lang: "বাংলা",
+    about: "ডা. আহমেদ হোসেন শিশুদের স্বাস্থ্যসেবায় বিশেষভাবে দক্ষ। তিনি নবজাতক থেকে শুরু করে কিশোর বয়সী শিশুদের সব ধরনের সমস্যার চিকিৎসা করে থাকেন। শিশুদের সাথে তাঁর আন্তরিক ব্যবহার এবং রোগ নির্ণয়ে দক্ষতা বিশেষভাবে প্রশংসিত।",
+    reviews_list: [
+      { n: "রুবিনা পারভীন", r: 5, t: "আমার ছেলের জন্য অনেক ভালো চিকিৎসা দিয়েছেন। খুব ধৈর্যশীল ডাক্তার।" },
+      { n: "জহির রায়হান", r: 5, t: "শিশুদের সাথে অনেক ভালো ব্যবহার করেন, বাচ্চারা ভয় পায় না।" }
+    ]
+  },
+  {
+    id: 3, name: "ডা. সুমাইয়া ইসলাম", spec: "চর্মরোগ বিশেষজ্ঞ", tag: "চর্ম",
+    hospital: "স্কয়ার হাসপাতাল, ঢাকা", exp: "৯ বছর",
+    rating: 4.7, reviews: 189, fee: "১০০০", avail: false,
+    edu: "MBBS, DDV (Dermatology)",
+    slots: ["দুপুর ২টা","বিকেল ৪টা","সন্ধ্যা ৬টা"],
+    color: "#f7dfe9", textColor: "#993556", initials: "সু",
+    patients: "৪,৮০০+", lang: "বাংলা, ইংরেজি",
+    about: "ডা. সুমাইয়া ইসলাম চর্মরোগ চিকিৎসায় বিশেষজ্ঞ। ত্বকের সমস্যা, একজিমা, সোরিয়াসিস, ব্রণ এবং চুলের সমস্যায় তিনি সর্বাধুনিক চিকিৎসা পদ্ধতি ব্যবহার করেন। লেজার ট্রিটমেন্ট এবং কসমেটিক ডার্মাটোলজিতেও তাঁর বিশেষ দক্ষতা রয়েছে।",
+    reviews_list: [
+      { n: "শাহিদা বেগম", r: 5, t: "ত্বকের সমস্যায় অনেক উপকার পেয়েছি। নিয়মিত ফলোআপ করেন।" },
+      { n: "তানভীর আহমেদ", r: 4, t: "খুব কার্যকর চিকিৎসা দিয়েছেন, দ্রুত সুস্থ হয়েছি।" }
+    ]
+  },
+  {
+    id: 4, name: "ডা. মুহাম্মদ কামাল", spec: "অর্থোপেডিক সার্জন", tag: "অর্থো",
+    hospital: "ন্যাশনাল ইনস্টিটিউট অব ট্রমাটোলজি", exp: "২২ বছর",
+    rating: 4.9, reviews: 410, fee: "১২০০", avail: true,
+    edu: "MBBS, MS (Ortho), FRCS",
+    slots: ["সকাল ৮টা","সকাল ৯টা","দুপুর ১টা"],
+    color: "#faeacf", textColor: "#8a5c00", initials: "কা",
+    patients: "১২,০০০+", lang: "বাংলা, ইংরেজি, উর্দু",
+    about: "ডা. মুহাম্মদ কামাল দেশের অন্যতম বিখ্যাত অর্থোপেডিক সার্জন। হাড়, জয়েন্ট এবং মেরুদণ্ডের জটিল সমস্যায় তাঁর অসাধারণ দক্ষতা রয়েছে। হাঁটু ও কোমর প্রতিস্থাপন সার্জারিতে তিনি বিশেষভাবে পারদর্শী এবং দেশে এই ধরনের জটিল অপারেশনে তিনি অগ্রণী ভূমিকা রেখেছেন।",
+    reviews_list: [
+      { n: "মোশাররফ হোসেন", r: 5, t: "হাঁটুর অপারেশন করেছেন, এখন সম্পূর্ণ সুস্থ। দুর্দান্ত সার্জন।" },
+      { n: "কুলসুম বানু", r: 5, t: "বয়স্ক রোগীদের প্রতি অনেক মনোযোগী এবং বিশ্বস্ত ডাক্তার।" }
+    ]
+  },
+  {
+    id: 5, name: "ডা. নাফিসা খানম", spec: "নিউরোলজিস্ট", tag: "নিউরো",
+    hospital: "ইউনাইটেড হাসপাতাল, গুলশান", exp: "১৫ বছর",
+    rating: 4.6, reviews: 167, fee: "১৫০০", avail: true,
+    edu: "MBBS, MD (Neurology), PhD",
+    slots: ["সকাল ১১টা","দুপুর ১২টা","বিকেল ৪টা","বিকেল ৬টা"],
+    color: "#eae7fc", textColor: "#534ab7", initials: "না",
+    patients: "৫,৫০০+", lang: "বাংলা, ইংরেজি",
+    about: "ডা. নাফিসা খানম নিউরোলজি বিভাগে বাংলাদেশের শীর্ষস্থানীয় বিশেষজ্ঞদের একজন। মাইগ্রেন, স্ট্রোক, মৃগীরোগ এবং স্নায়বিক সমস্যায় তাঁর বিশেষ দক্ষতা রয়েছে। তিনি দেশের বিভিন্ন বিশ্ববিদ্যালয়ে অতিথি বক্তা হিসেবে নিয়মিত বক্তৃতা দিয়ে থাকেন।",
+    reviews_list: [
+      { n: "আরিফুল ইসলাম", r: 5, t: "মাইগ্রেনের সমস্যা থেকে মুক্তি পেয়েছি। অনেক অভিজ্ঞ এবং দক্ষ।" },
+      { n: "পারুল বেগম", r: 4, t: "মাথার সমস্যায় অনেক উপকার করেছেন, ধন্যবাদ।" }
+    ]
+  },
+  {
+    id: 6, name: "ডা. শফিকুল আলম", spec: "চক্ষু বিশেষজ্ঞ", tag: "চক্ষু",
+    hospital: "ইসলামী আই হাসপাতাল, ঢাকা", exp: "১৪ বছর",
+    rating: 4.8, reviews: 298, fee: "৭০০", avail: false,
+    edu: "MBBS, DO, MS (Ophthalmology)",
+    slots: ["সকাল ৯টা","দুপুর ১২টা","বিকেল ৩টা","বিকেল ৫টা"],
+    color: "#cef0e3", textColor: "#0f6e56", initials: "শ",
+    patients: "৭,৩০০+", lang: "বাংলা",
+    about: "ডা. শফিকুল আলম চক্ষু বিভাগে দীর্ঘ অভিজ্ঞতাসম্পন্ন বিশেষজ্ঞ। ছানি অপারেশন, লেজার দৃষ্টি সংশোধন এবং গ্লুকোমা চিকিৎসায় তিনি বিশেষভাবে দক্ষ। তাঁর তত্ত্বাবধানে হাজারো রোগী তাদের দৃষ্টিশক্তি ফিরে পেয়েছেন।",
+    reviews_list: [
+      { n: "জামিলা খাতুন", r: 5, t: "চোখের অপারেশন অনেক সফলভাবে করেছেন, দৃষ্টিশক্তি ফিরে পেয়েছি।" },
+      { n: "রফিকুল ইসলাম", r: 5, t: "ছানি অপারেশনের পর থেকে চোখ অনেক ভালো। বিশ্বস্ত ডাক্তার।" }
+    ]
+  }
+];
+
+function stars(r) {
+  let s = '';
+  for (let i = 1; i <= 5; i++) s += i <= Math.round(r) ? '★' : '☆';
+  return s;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function pickSlot(btn, slot) {
+  document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  showToast('✓ ' + slot + ' সময়টি বেছে নেওয়া হয়েছে');
+}
+
+function bookNow(name) {
+  const picked = document.querySelector('.slot-btn.picked');
+  if (!picked) {
+    showToast('অনুগ্রহ করে আগে একটি সময় বেছে নিন');
+    return;
+  }
+  showToast('✓ ' + picked.textContent + ' — অ্যাপয়েন্টমেন্ট নিশ্চিত করা হয়েছে!');
+}
+
+// ── RENDER ──
+const params = new URLSearchParams(window.location.search);
+const id = parseInt(params.get('id'));
+const d = doctors.find(x => x.id === id);
+const page = document.getElementById('pageContent');
+
+if (!d) {
+  page.innerHTML = `<div class="not-found"><h2>ডাক্তার পাওয়া যায়নি</h2><p><a href="doctor-popup.html" style="color:var(--blue)">সার্চ পেজে ফিরে যান</a></p></div>`;
+} else {
+  document.title = `${d.name} — Doctor Popup`;
+
+  page.innerHTML = `
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <div class="hero-banner"></div>
+      <div class="hero-content">
+        <div class="big-avatar" style="background:${d.color};color:${d.textColor}">${d.initials}</div>
+        <div class="profile-top-row">
+          <div>
+            <div class="doc-name">${d.name}</div>
+            <div class="doc-spec">${d.spec}</div>
+            <div class="doc-hospital">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              ${d.hospital}
+            </div>
+            <div class="doc-edu">${d.edu}</div>
+          </div>
+          <span class="avail-badge ${d.avail ? 'yes' : 'no'}">
+            <span class="dot ${d.avail ? 'dot-green' : 'dot-red'}"></span>
+            ${d.avail ? 'আজ উপলব্ধ' : 'আজ ব্যস্ত'}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value">${d.rating}/৫</div>
+        <div class="stat-label">রেটিং (${d.reviews} রিভিউ)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🩺</div>
+        <div class="stat-value">${d.exp}</div>
+        <div class="stat-label">অভিজ্ঞতা</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">${d.patients}</div>
+        <div class="stat-label">রোগী দেখেছেন</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💳</div>
+        <div class="stat-value">৳${d.fee}</div>
+        <div class="stat-label">ভিজিট ফি</div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-title-icon">ℹ</div>
+        পরিচিতি
+      </div>
+      <p class="about-text">${d.about}</p>
+    </div>
+
+    <!-- INFO -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-title-icon">📋</div>
+        বিস্তারিত তথ্য
+      </div>
+      <div class="info-grid">
+        <div class="info-row">
+          <div><div class="info-key">বিভাগ</div><div class="info-val">${d.tag}</div></div>
+        </div>
+        <div class="info-row">
+          <div><div class="info-key">হাসপাতাল</div><div class="info-val">${d.hospital}</div></div>
+        </div>
+        <div class="info-row">
+          <div><div class="info-key">শিক্ষাগত যোগ্যতা</div><div class="info-val">${d.edu}</div></div>
+        </div>
+        <div class="info-row">
+          <div><div class="info-key">ভাষা</div><div class="info-val">${d.lang}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOTS -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-title-icon">🕐</div>
+        সময়সূচি বেছে নিন
+      </div>
+      <div class="slots-grid">
+        ${d.slots.map(s => `<button class="slot-btn" onclick="pickSlot(this,'${s}')">${s}</button>`).join('')}
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-title-icon">💬</div>
+        রোগীদের মতামত
+      </div>
+      <div class="reviews-list">
+        ${d.reviews_list.map(r => `
+          <div class="review-card">
+            <div class="rev-top">
+              <div class="rev-avatar">${r.n[0]}</div>
+              <span class="rev-name">${r.n}</span>
+              <span class="rev-stars">${stars(r.r)}</span>
+            </div>
+            <div class="rev-text">${r.t}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- BOOK -->
+    <div class="book-section">
+      <div class="book-left">
+        <h3>অ্যাপয়েন্টমেন্ট নিন</h3>
+        <p>উপরে একটি সময় বেছে নিয়ে বুক করুন</p>
+      </div>
+      <div class="book-right">
+        <button class="btn-secondary" onclick="showToast('📞 ফোন: 01700-000000')">ফোন করুন</button>
+        <button class="btn-primary" onclick="bookNow('${d.name}')">এখনই বুক করুন</button>
+      </div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

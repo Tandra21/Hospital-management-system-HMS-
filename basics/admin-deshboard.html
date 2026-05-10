@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — MedFind</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--p:#2563eb;--pd:#1d4ed8;--pl:#dbeafe;--a:#7c3aed;--g:#10b981;--am:#f59e0b;--r:#ef4444;
+    --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g500:#64748b;--g700:#334155;
+    --g800:#1e293b;--g900:#0f172a;--sh:0 4px 16px rgba(0,0,0,.08);--rr:12px;--rl:18px;--rx:24px;--tr:all .2s ease;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--g50);display:flex;height:100vh;overflow:hidden;}
+    .sb{width:248px;background:linear-gradient(180deg,#0f172a,#1e293b);min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+    .sb::-webkit-scrollbar{display:none;}
+    .sb-hdr{padding:1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,.06);}
+    .sb-brand{display:flex;align-items:center;gap:9px;}
+    .sb-brand-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--p),var(--a));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;}
+    .sb-brand-name{color:#fff;font-size:.98rem;font-weight:700;}
+    .sb-brand-sub{color:#64748b;font-size:.65rem;display:block;}
+    .sb-nav{flex:1;padding:.7rem 0;}
+    .sb-sec{padding:0 .8rem;margin-bottom:.5rem;}
+    .sb-sec-lbl{font-size:.62rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;padding:.4rem .5rem .2rem;}
+    .sb-link{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;color:#94a3b8;font-size:.84rem;font-weight:500;cursor:pointer;transition:var(--tr);margin-bottom:2px;text-decoration:none;}
+    .sb-link:hover,.sb-link.active{background:rgba(37,99,235,.2);color:#60a5fa;}
+    .sb-link i{width:16px;text-align:center;}
+    .sb-badge{margin-left:auto;background:var(--r);color:#fff;font-size:.62rem;padding:2px 6px;border-radius:8px;font-weight:700;}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{height:62px;background:white;border-bottom:1px solid var(--g200);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;flex-shrink:0;}
+    .tb-title{font-weight:800;font-size:1rem;color:var(--g900);flex:1;}
+    .tb-btn{width:36px;height:36px;background:var(--g100);border:none;border-radius:9px;cursor:pointer;color:var(--g500);transition:var(--tr);display:flex;align-items:center;justify-content:center;}
+    .tb-btn:hover{background:var(--pl);color:var(--p);}
+    .content{flex:1;overflow-y:auto;padding:1.5rem;}
+    .content::-webkit-scrollbar{width:4px;}.content::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px;}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+    .stat{background:white;border-radius:var(--rl);border:1px solid var(--g200);box-shadow:var(--sh);padding:1.2rem;}
+    .stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem;}
+    .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+    .si-blue{background:#dbeafe;color:#2563eb;}.si-green{background:#d1fae5;color:#059669;}
+    .si-amber{background:#fef3c7;color:#d97706;}.si-purple{background:#ede9fe;color:#7c3aed;}
+    .stat-trend{font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:7px;}
+    .tr-up{background:#d1fae5;color:#059669;}.tr-dn{background:#fee2e2;color:#dc2626;}
+    .stat-val{font-family:'Poppins',sans-serif;font-size:1.9rem;font-weight:800;color:var(--g900);}
+    .stat-lbl{font-size:.78rem;color:var(--g500);}
+    .qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+    .qa-btn{background:white;border-radius:var(--rl);border:1px solid var(--g200);box-shadow:var(--sh);padding:1.2rem;text-align:center;cursor:pointer;transition:var(--tr);text-decoration:none;display:block;}
+    .qa-btn:hover{border-color:var(--p);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.1);}
+    .qa-icon{width:48px;height:48px;border-radius:12px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+    .qa-label{font-size:.82rem;font-weight:700;color:var(--g700);}
+    .charts-row{display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.5rem;}
+    .chart-card{background:white;border-radius:var(--rx);border:1px solid var(--g200);box-shadow:var(--sh);padding:1.4rem;}
+    .ch-title{font-weight:800;font-size:.92rem;color:var(--g900);margin-bottom:1.2rem;display:flex;align-items:center;gap:8px;}
+    .ch-title i{color:var(--p);}
+    .tables-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+    .table-card{background:white;border-radius:var(--rx);border:1px solid var(--g200);box-shadow:var(--sh);overflow:hidden;}
+    .tc-hdr{padding:1.1rem 1.4rem;border-bottom:1px solid var(--g100);display:flex;justify-content:space-between;align-items:center;}
+    .tc-title{font-weight:800;font-size:.88rem;color:var(--g900);}
+    .data-table{width:100%;border-collapse:collapse;}
+    .data-table th{background:var(--g50);padding:8px 12px;text-align:left;font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;}
+    .data-table td{padding:10px 12px;border-bottom:1px solid var(--g50);font-size:.83rem;}
+    .data-table tr:last-child td{border-bottom:none;}
+    .status-badge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;}
+    .sb-confirmed{background:#d1fae5;color:#065f46;}.sb-pending{background:#fef3c7;color:#92400e;}
+    .sb-cancelled{background:#fee2e2;color:#991b1b;}.sb-completed{background:#dbeafe;color:#1e3a8a;}
+    .live-badge{display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:8px;font-size:.72rem;font-weight:700;}
+    .ld{width:7px;height:7px;background:var(--g);border-radius:50%;animation:ld 1.5s infinite;}
+    @keyframes ld{0%,100%{opacity:1;}50%{opacity:.3;}}
+    @media(max-width:1100px){.stats-grid{grid-template-columns:1fr 1fr}.charts-row{grid-template-columns:1fr}.tables-row{grid-template-columns:1fr}.qa-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:768px){.sb{display:none;}}
+  </style>
+</head>
+<body>
+<aside class="sb">
+  <div class="sb-hdr">
+    <div class="sb-brand">
+      <div class="sb-brand-ico"><i class="fas fa-heartbeat"></i></div>
+      <div><div class="sb-brand-name">MedFind Admin</div><div class="sb-brand-sub">Hospital Management</div></div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">Dashboard</div>
+      <a class="sb-link active" href="dashboard.html"><i class="fas fa-th-large"></i> Overview</a>
+      <a class="sb-link" href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">Manage</div>
+      <a class="sb-link" href="../doctors/search.html"><i class="fas fa-user-md"></i> Doctors</a>
+      <a class="sb-link" href="../patients/dashboard.html"><i class="fas fa-users"></i> Patients <span class="sb-badge" id="pendingBadge">3</span></a>
+      <a class="sb-link" href="../patients/appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a>
+      <a class="sb-link" href="../hospital/list.html"><i class="fas fa-hospital"></i> Hospitals</a>
+      <a class="sb-link" href="../hospital/admin.html"><i class="fas fa-cog"></i> Hospital Admin</a>
+      <a class="sb-link" href="../hospital/bed-management.html"><i class="fas fa-bed"></i> Bed Management</a>
+      <a class="sb-link" href="../lab/tests.html"><i class="fas fa-flask"></i> Lab Tests</a>
+      <a class="sb-link" href="../billing/opd.html"><i class="fas fa-file-invoice-dollar"></i> OPD Billing</a>
+      <a class="sb-link" href="../billing/pharmacy.html"><i class="fas fa-pills"></i> Pharmacy</a>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">Site</div>
+      <a class="sb-link" href="../../index.html"><i class="fas fa-external-link-alt"></i> View Website</a>
+      <a class="sb-link" href="../login.html" onclick="localStorage.removeItem('mf_user');localStorage.removeItem('mf_token');"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </nav>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="tb-title">Dashboard Overview</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="live-badge"><div class="ld"></div> Live</div>
+      <button class="tb-btn" onclick="refreshDash()"><i class="fas fa-sync-alt" id="syncIcon"></i></button>
+      <button class="tb-btn" onclick="window.location.href='analytics.html'" title="Analytics"><i class="fas fa-chart-bar"></i></button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- QUICK ACTIONS -->
+    <div class="qa-grid">
+      <a href="../doctors/search.html" class="qa-btn"><div class="qa-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-user-md"></i></div><div class="qa-label">Add Doctor</div></a>
+      <a href="../patients/appointments.html" class="qa-btn"><div class="qa-icon" style="background:#d1fae5;color:#059669;"><i class="fas fa-calendar-plus"></i></div><div class="qa-label">New Appointment</div></a>
+      <a href="../hospital/bed-management.html" class="qa-btn"><div class="qa-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas fa-bed"></i></div><div class="qa-label">Bed Management</div></a>
+      <a href="../billing/opd.html" class="qa-btn"><div class="qa-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-file-invoice-dollar"></i></div><div class="qa-label">OPD Billing</div></a>
+      <a href="../lab/tests.html" class="qa-btn"><div class="qa-icon" style="background:#ccfbf1;color:#0d9488;"><i class="fas fa-flask"></i></div><div class="qa-label">Lab Tests</div></a>
+      <a href="../billing/pharmacy.html" class="qa-btn"><div class="qa-icon" style="background:#fee2e2;color:#dc2626;"><i class="fas fa-pills"></i></div><div class="qa-label">Pharmacy</div></a>
+      <a href="analytics.html" class="qa-btn"><div class="qa-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-chart-bar"></i></div><div class="qa-label">Analytics</div></a>
+      <a href="../hospital/admin.html" class="qa-btn"><div class="qa-icon" style="background:#f0fdf4;color:#16a34a;"><i class="fas fa-hospital-alt"></i></div><div class="qa-label">Hospital Admin</div></a>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-top"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><span class="stat-trend tr-up">↑ 12%</span></div><div class="stat-val" id="sPatients">0</div><div class="stat-lbl">Total Patients</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-icon si-green"><i class="fas fa-calendar-check"></i></div><span class="stat-trend tr-up">↑ 8%</span></div><div class="stat-val" id="sAppts">0</div><div class="stat-lbl">Today's Appointments</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-icon si-amber"><i class="fas fa-user-md"></i></div><span class="stat-trend tr-up">↑ 3%</span></div><div class="stat-val" id="sDocs">0</div><div class="stat-lbl">Active Doctors</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-icon si-purple"><i class="fas fa-taka-sign"></i></div><span class="stat-trend tr-up">↑ 15%</span></div><div class="stat-val" id="sRevenue">0</div><div class="stat-lbl">Revenue Today (৳)</div></div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="ch-title"><i class="fas fa-chart-area"></i> Appointments This Week</div>
+        <canvas id="apptChart" height="90"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="ch-title"><i class="fas fa-chart-pie"></i> Specialties</div>
+        <canvas id="specChart" height="140"></canvas>
+      </div>
+    </div>
+
+    <!-- TABLES -->
+    <div class="tables-row">
+      <div class="table-card">
+        <div class="tc-hdr"><div class="tc-title">Recent Appointments</div><a href="../patients/appointments.html" style="font-size:.78rem;color:var(--p);font-weight:700;text-decoration:none;">View All →</a></div>
+        <table class="data-table"><thead><tr><th>Patient</th><th>Doctor</th><th>Time</th><th>Status</th></tr></thead>
+        <tbody id="apptTable"></tbody></table>
+      </div>
+      <div class="table-card">
+        <div class="tc-hdr"><div class="tc-title">Top Doctors Today</div><a href="../doctors/search.html" style="font-size:.78rem;color:var(--p);font-weight:700;text-decoration:none;">View All →</a></div>
+        <table class="data-table"><thead><tr><th>Doctor</th><th>Specialty</th><th>Patients</th><th>Rating</th></tr></thead>
+        <tbody id="docTable"></tbody></table>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script src="../../assets/js/components.js"></script>
+<script src="../../services/api.js"></script>
+<script>
+function animNum(id, target, prefix='') {
+  const el=document.getElementById(id); if(!el)return;
+  let n=0; const step=Math.ceil(target/50);
+  const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=prefix+n.toLocaleString();if(n>=target)clearInterval(t);},25);
+}
+async function refreshDash() {
+  const icon=document.getElementById('syncIcon');
+  let a=0; const spin=setInterval(()=>{icon.style.transform=`rotate(${a+=20}deg)`;},30);
+  try {
+    const res=await fetch('http://localhost:8000/api/v1/admin-panel/');
+    if(res.ok){const d=await res.json();const s=d.data||{};
+      animNum('sPatients',s.patients?.total||4891);animNum('sAppts',s.appointments?.today||47);
+      animNum('sDocs',s.doctors?.total||124);animNum('sRevenue',s.revenue?.today||48200);}
+    else throw new Error('');
+  } catch {
+    animNum('sPatients',4891);animNum('sAppts',47);animNum('sDocs',124);animNum('sRevenue',48200);
+  }
+  setTimeout(()=>{clearInterval(spin);icon.style.transform='';},500);
+}
+const APPTS=[
+  {p:'Rahim Uddin',d:'Dr. Ahmed',t:'10:30 AM',s:'confirmed'},{p:'Sumaiya K.',d:'Dr. Fatima',t:'11:00 AM',s:'confirmed'},
+  {p:'Habib R.',d:'Dr. Kamal',t:'11:30 AM',s:'pending'},{p:'Moriam B.',d:'Dr. Nasreen',t:'2:00 PM',s:'completed'},
+  {p:'Faruk H.',d:'Dr. Rafiqul',t:'2:30 PM',s:'cancelled'},
+];
+const DOCS=[
+  {n:'Dr. Ahmed Hossain',s:'Cardiologist',p:12,r:4.9},{n:'Dr. Fatima Begum',s:'Gynecologist',p:18,r:4.8},
+  {n:'Dr. Kamal Uddin',s:'Neurologist',p:8,r:4.9},{n:'Dr. Nasreen Akter',s:'Pediatric',p:22,r:4.8},
+];
+document.getElementById('apptTable').innerHTML=APPTS.map(a=>`<tr><td><strong>${a.p}</strong></td><td style="color:var(--g500)">${a.d}</td><td>${a.t}</td><td><span class="status-badge sb-${a.s}">${a.s}</span></td></tr>`).join('');
+document.getElementById('docTable').innerHTML=DOCS.map(d=>`<tr><td><strong>${d.n}</strong></td><td style="color:var(--p);font-size:.78rem">${d.s}</td><td><strong>${d.p}</strong></td><td style="color:var(--am)">⭐ ${d.r}</td></tr>`).join('');
+new Chart(document.getElementById('apptChart'),{type:'bar',data:{labels:['Sat','Sun','Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'Confirmed',data:[28,35,42,31,47,38,52],backgroundColor:'rgba(37,99,235,.7)',borderRadius:6},{label:'Cancelled',data:[3,5,6,2,4,3,5],backgroundColor:'rgba(239,68,68,.5)',borderRadius:6}]},options:{responsive:true,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{y:{beginAtZero:true,grid:{color:'#f8fafc'}},x:{grid:{display:false}}}}});
+new Chart(document.getElementById('specChart'),{type:'doughnut',data:{labels:['Cardiology','Gynecology','Neurology','Orthopedic','Pediatric','Other'],datasets:[{data:[22,18,15,12,10,23],backgroundColor:['#2563eb','#7c3aed','#10b981','#f59e0b','#ef4444','#64748b'],borderWidth:0}]},options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:9},padding:8}}}}});
+refreshDash();
+</script>
+</body>
+</html>

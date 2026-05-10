@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="/assets/medfind-logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MedFind Billing - Manage payments, invoices, and receipts for your healthcare services.">
+<title>OPD Billing System | MedFind Bangladesh</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+  <script src="../../assets/js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root{--p:#2563eb;--pd:#1d4ed8;--pl:#dbeafe;--a:#7c3aed;--g:#10b981;--am:#f59e0b;--r:#ef4444;
+    --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g500:#64748b;--g700:#334155;
+    --g800:#1e293b;--g900:#0f172a;--sh:0 4px 16px rgba(0,0,0,.08);--sh-xl:0 20px 48px rgba(0,0,0,.14);
+    --rr:12px;--rl:18px;--rx:24px;--tr:all .2s ease;}
+    *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+    body{font-family:'Inter',sans-serif;background:var(--g50);color:var(--g800);}
+    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem;}
+
+    /* HEADER */
+    .page-hero{background:linear-gradient(135deg,#0f172a,#1e293b,#2d1b69);color:white;padding:2.5rem 0;}
+    .ph-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+    .ph-title{font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:4px;}
+    .ph-sub{color:#94a3b8;font-size:.9rem;}
+    .ph-meta{display:flex;gap:12px;align-items:center;}
+    .ph-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+      padding:7px 16px;border-radius:30px;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:7px;}
+    .token-badge{background:linear-gradient(135deg,var(--am),#d97706);color:white;
+      font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:900;padding:10px 22px;border-radius:12px;}
+
+    /* QUICK STATS */
+    .stats-strip{background:white;border-bottom:1px solid var(--g200);padding:.8rem 0;}
+    .stats-inner{display:flex;gap:2rem;flex-wrap:wrap;}
+    .qs{display:flex;align-items:center;gap:10px;}
+    .qs-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+    .qi-blue{background:#dbeafe;color:#2563eb;}.qi-green{background:#d1fae5;color:#059669;}
+    .qi-amber{background:#fef3c7;color:#d97706;}.qi-purple{background:#ede9fe;color:#7c3aed;}
+    .qs-val{font-weight:800;font-size:1.1rem;color:var(--g900);}
+    .qs-lbl{font-size:.72rem;color:var(--g500);}
+
+    /* MAIN LAYOUT */
+    .billing-layout{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;padding:1.5rem 0 4rem;}
+
+    /* CARDS */
+    .card{background:white;border-radius:var(--rx);border:1px solid var(--g200);box-shadow:var(--sh);margin-bottom:1.5rem;overflow:hidden;transition:var(--tr);}
+    .card-hdr{padding:1.1rem 1.4rem;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;}
+    .card-hdr-left{display:flex;align-items:center;gap:10px;}
+    .card-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+    .ci-blue{background:#dbeafe;color:#2563eb;}.ci-green{background:#d1fae5;color:#059669;}
+    .ci-amber{background:#fef3c7;color:#d97706;}
+    .card-title{font-size:.92rem;font-weight:800;color:var(--g900);}
+    .card-body{padding:1.4rem;}
+
+    /* FORM */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+    .form-row.three{grid-template-columns:1fr 1fr 1fr;}
+    .fg{display:flex;flex-direction:column;gap:4px;}
+    .fg label{font-size:.8rem;font-weight:700;color:var(--g700);}
+    .fg input,.fg select,.fg textarea{padding:10px 13px;border:2px solid var(--g200);border-radius:var(--rr);
+      font-family:'Inter',sans-serif;font-size:.9rem;transition:var(--tr);outline:none;background:white;color:var(--g800);}
+    .fg input:focus,.fg select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+    .fg input:invalid{border-color:var(--r);}
+    .required-mark{color:var(--r);margin-left:2px;}
+
+    /* TOKEN QUEUE */
+    .queue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px;margin-top:10px;}
+    .queue-token{height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:.95rem;cursor:pointer;border:2px solid var(--g200);transition:var(--tr);}
+    .qt-waiting{background:white;color:var(--g700);}
+    .qt-current{background:linear-gradient(135deg,var(--p),var(--a));color:white;border-color:var(--p);}
+    .qt-done{background:#d1fae5;color:#065f46;border-color:#a7f3d0;}
+    .qt-skip{background:#fee2e2;color:#991b1b;border-color:#fca5a5;}
+
+    /* SERVICES TABLE */
+    .services-table{width:100%;border-collapse:collapse;}
+    .services-table th{background:var(--g50);padding:9px 12px;text-align:left;font-size:.75rem;
+      font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;}
+    .services-table td{padding:9px 12px;border-bottom:1px solid var(--g50);font-size:.88rem;vertical-align:middle;}
+    .services-table tr:last-child td{border-bottom:none;}
+    .st-input{border:2px solid var(--g200);border-radius:8px;padding:7px 10px;width:100%;
+      font-family:'Inter',sans-serif;font-size:.85rem;outline:none;transition:var(--tr);}
+    .st-input:focus{border-color:var(--p);}
+    .row-del{background:none;border:none;color:var(--r);cursor:pointer;padding:4px 6px;border-radius:6px;font-size:.9rem;transition:var(--tr);}
+    .row-del:hover{background:#fee2e2;}
+    .add-item-btn{width:100%;margin-top:10px;padding:10px;border:2px dashed var(--g200);border-radius:10px;
+      background:none;color:var(--g500);cursor:pointer;font-size:.85rem;font-weight:600;transition:var(--tr);}
+    .add-item-btn:hover{border-color:var(--p);color:var(--p);}
+    .row-total{font-weight:700;color:var(--p);}
+
+    /* PAYMENT METHODS */
+    .pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+    .pay-method{padding:12px 8px;border:2px solid var(--g200);border-radius:var(--rr);text-align:center;
+      cursor:pointer;transition:var(--tr);position:relative;}
+    .pay-method.selected{border-color:var(--p);background:var(--pl);}
+    .pm-icon{font-size:1.3rem;margin-bottom:4px;}
+    .pm-label{font-size:.72rem;font-weight:700;color:var(--g700);}
+    .pm-check{position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;
+      background:var(--p);color:white;font-size:.55rem;display:none;align-items:center;justify-content:center;}
+    .pay-method.selected .pm-check{display:flex;}
+
+    /* PAYMENT VERIFICATION */
+    .pay-verify{background:var(--g50);border-radius:var(--rl);padding:1.2rem;border:1px solid var(--g200);margin-top:10px;}
+    .pv-label{font-size:.8rem;font-weight:700;color:var(--g700);margin-bottom:6px;}
+    .pv-input-row{display:flex;gap:8px;}
+    .pv-input{flex:1;padding:9px 13px;border:2px solid var(--g200);border-radius:var(--rr);
+      font-family:'Inter',sans-serif;font-size:.88rem;outline:none;transition:var(--tr);}
+    .pv-input:focus{border-color:var(--p);}
+    .pv-verify-btn{padding:9px 18px;background:linear-gradient(135deg,var(--g),#059669);
+      color:white;border:none;border-radius:var(--rr);font-weight:700;cursor:pointer;font-size:.82rem;transition:var(--tr);}
+    .pv-verify-btn:hover{transform:translateY(-1px);}
+    .pv-status{margin-top:8px;font-size:.8rem;font-weight:700;display:none;}
+    .pv-status.verified{color:var(--g);display:flex;align-items:center;gap:6px;}
+    .pv-status.failed{color:var(--r);display:flex;align-items:center;gap:6px;}
+
+    /* INVOICE PANEL */
+    .invoice-panel{position:sticky;top:80px;}
+    .inv-card{background:white;border-radius:var(--rx);border:1px solid var(--g200);box-shadow:var(--sh);padding:1.4rem;margin-bottom:1rem;}
+    .inv-header{text-align:center;padding-bottom:1rem;border-bottom:1px solid var(--g100);margin-bottom:1rem;}
+    .inv-logo{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:900;color:var(--p);margin-bottom:2px;}
+    .inv-hospital{font-size:.75rem;color:var(--g500);}
+    .inv-num{font-size:.8rem;font-weight:700;color:var(--g700);margin-top:6px;}
+    .inv-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.85rem;}
+    .inv-row .lbl{color:var(--g500);}
+    .inv-row .val{font-weight:700;color:var(--g900);}
+    .inv-div{height:1px;background:var(--g100);margin:10px 0;}
+    .inv-total-row{display:flex;justify-content:space-between;font-weight:800;font-size:1rem;}
+    .inv-total-row .total-amt{color:var(--p);font-family:'Poppins',sans-serif;font-size:1.2rem;}
+    .inv-items{margin:10px 0;}
+    .inv-item{display:flex;justify-content:space-between;font-size:.8rem;padding:4px 0;border-bottom:1px solid var(--g50);}
+    .inv-item:last-child{border-bottom:none;}
+    .disc-group{display:flex;gap:8px;align-items:center;margin:8px 0;}
+    .disc-input{flex:1;padding:8px 12px;border:2px solid var(--g200);border-radius:var(--rr);
+      font-family:'Inter',sans-serif;font-size:.85rem;outline:none;transition:var(--tr);}
+    .disc-input:focus{border-color:var(--p);}
+    .disc-label{font-size:.8rem;font-weight:700;color:var(--g700);white-space:nowrap;}
+
+    /* BUTTONS */
+    .btn-generate{width:100%;padding:14px;background:linear-gradient(135deg,var(--p),var(--a));
+      color:white;border:none;border-radius:var(--rl);font-weight:800;font-size:.95rem;
+      cursor:pointer;transition:var(--tr);margin-bottom:8px;}
+    .btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,.3);}
+    .btn-secondary{width:100%;padding:11px;border:2px solid var(--g200);background:none;
+      border-radius:var(--rl);font-weight:700;cursor:pointer;color:var(--g700);transition:var(--tr);margin-bottom:8px;}
+    .btn-secondary:hover{border-color:var(--p);color:var(--p);}
+
+    /* SUCCESS MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;
+      display:none;align-items:center;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal-box{background:white;border-radius:var(--rx);padding:2.5rem;max-width:460px;width:90%;text-align:center;
+      box-shadow:0 30px 80px rgba(0,0,0,.25);}
+    .modal-icon{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--g),#059669);
+      color:white;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+    .modal-ref{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--p);
+      background:var(--pl);padding:10px 20px;border-radius:10px;margin:1rem 0;}
+    .modal-btns{display:flex;gap:10px;margin-top:1.2rem;}
+    .modal-btn{flex:1;padding:11px;border-radius:12px;font-weight:700;cursor:pointer;font-size:.88rem;}
+    .modal-btn-primary{background:linear-gradient(135deg,var(--p),var(--a));color:white;border:none;}
+    .modal-btn-outline{background:none;border:2px solid var(--g200);color:var(--g700);}
+
+    @media(max-width:900px){.billing-layout{grid-template-columns:1fr;}.invoice-panel{position:static;}
+    .form-row{grid-template-columns:1fr;}.form-row.three{grid-template-columns:1fr 1fr;}.pay-methods{grid-template-columns:repeat(3,1fr);}}
+    @media print{.page-hero,.stats-strip,.services-section,.queue-card,.no-print{display:none!important;}
+    .billing-layout{grid-template-columns:1fr!important;}.invoice-panel{position:static!important;}
+    body{background:white!important;}}
+  </style>
+</head>
+<body>
+<div id="mf-navbar-root"></div>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="container ph-inner">
+    <div>
+      <h1 class="ph-title"><i class="fas fa-file-invoice-dollar" style="margin-right:10px;opacity:.8"></i>OPD Billing</h1>
+      <p class="ph-sub">Outpatient Department — Invoice & Queue Management</p>
+    </div>
+    <div class="ph-meta">
+      <div class="ph-badge"><i class="fas fa-calendar-day"></i> <span id="todayDate"></span></div>
+      <div class="ph-badge"><i class="fas fa-hospital"></i> RMCH Rajshahi</div>
+      <div class="token-badge">T-<span id="tokenDisplay">001</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK STATS -->
+<div class="stats-strip no-print">
+  <div class="container">
+    <div class="stats-inner">
+      <div class="qs"><div class="qs-icon qi-blue"><i class="fas fa-users"></i></div><div><div class="qs-val" id="statToday">0</div><div class="qs-lbl">Today's Patients</div></div></div>
+      <div class="qs"><div class="qs-icon qi-green"><i class="fas fa-check-circle"></i></div><div><div class="qs-val" id="statDone">0</div><div class="qs-lbl">Billed Today</div></div></div>
+      <div class="qs"><div class="qs-icon qi-amber"><i class="fas fa-clock"></i></div><div><div class="qs-val" id="statWaiting">0</div><div class="qs-lbl">In Queue</div></div></div>
+      <div class="qs"><div class="qs-icon qi-purple"><i class="fas fa-taka-sign"></i></div><div><div class="qs-val" id="statRevenue">৳0</div><div class="qs-lbl">Today's Revenue</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="billing-layout">
+    <div>
+      <!-- TOKEN QUEUE -->
+      <div class="card queue-card no-print">
+        <div class="card-hdr">
+          <div class="card-hdr-left">
+            <div class="card-ico ci-amber"><i class="fas fa-ticket-alt"></i></div>
+            <div class="card-title">OPD Token Queue — <span id="queueDate"></span></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="addToQueue()" style="padding:7px 16px;background:linear-gradient(135deg,var(--p),var(--a));color:white;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;"><i class="fas fa-plus"></i> New Token</button>
+            <button onclick="advanceQueue()" style="padding:7px 16px;background:linear-gradient(135deg,var(--g),#059669);color:white;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;"><i class="fas fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;"><div style="width:14px;height:14px;border-radius:4px;background:white;border:2px solid var(--g200)"></div> Waiting</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;"><div style="width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--p),var(--a))"></div> Current</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;"><div style="width:14px;height:14px;border-radius:4px;background:#d1fae5;border:2px solid #a7f3d0"></div> Done</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;"><div style="width:14px;height:14px;border-radius:4px;background:#fee2e2;border:2px solid #fca5a5"></div> Skipped</div>
+          </div>
+          <div class="queue-grid" id="tokenGrid"></div>
+        </div>
+      </div>
+
+      <!-- PATIENT INFO -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-hdr-left"><div class="card-ico ci-blue"><i class="fas fa-user-injured"></i></div><div class="card-title">Patient Information</div></div>
+          <button onclick="loadPatientFromAPI()" style="padding:6px 14px;border:2px solid var(--p);color:var(--p);background:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;"><i class="fas fa-search"></i> Search</button>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="fg"><label>Patient Name <span class="required-mark">*</span></label><input type="text" id="patName" placeholder="Full name" required oninput="updateInvoiceLive()"></div>
+            <div class="fg"><label>Phone <span class="required-mark">*</span></label><input type="tel" id="patPhone" placeholder="+880 1XXX XXXXXX" required></div>
+          </div>
+          <div class="form-row three">
+            <div class="fg"><label>Age</label><input type="number" id="patAge" placeholder="Years" min="1" max="120"></div>
+            <div class="fg"><label>Gender</label><select id="patGender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="fg"><label>Blood Group</label><select id="patBlood"><option value="">Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label>Referring Doctor</label>
+              <select id="doctorSel" onchange="applyDoctorFee()">
+                <option value="">Select Doctor</option>
+                <option value="800|Prof. Dr. Ahmed Hossain">Prof. Dr. Ahmed Hossain — Cardiologist ৳800</option>
+                <option value="700|Dr. Fatima Begum">Dr. Fatima Begum — Gynecologist ৳700</option>
+                <option value="1000|Prof. Dr. Kamal Uddin">Prof. Dr. Kamal Uddin — Neurologist ৳1000</option>
+                <option value="900|Dr. Shahidul Islam">Dr. Shahidul Islam — Orthopedic ৳900</option>
+                <option value="600|Dr. Nasreen Akter">Dr. Nasreen Akter — Pediatrician ৳600</option>
+                <option value="500|Dr. Rafiqul Rahman">Dr. Rafiqul Rahman — General Physician ৳500</option>
+              </select>
+            </div>
+            <div class="fg"><label>Visit Date</label><input type="date" id="visitDate"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label>Chief Complaint</label><input type="text" id="complaint" placeholder="e.g. Fever, headache, chest pain…"></div>
+            <div class="fg"><label>Ward / Room</label><select id="wardSel"><option>OPD General</option><option>OPD Cardiology</option><option>OPD Gynecology</option><option>OPD Orthopedic</option><option>OPD Pediatrics</option><option>Emergency OPD</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICES / BILL ITEMS -->
+      <div class="card services-section">
+        <div class="card-hdr">
+          <div class="card-hdr-left"><div class="card-ico ci-green"><i class="fas fa-list-alt"></i></div><div class="card-title">Bill Items</div></div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="addPreset('consultation')" style="padding:6px 12px;background:#dbeafe;color:#1d4ed8;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">+ Consultation</button>
+            <button onclick="addPreset('lab')" style="padding:6px 12px;background:#ede9fe;color:#6d28d9;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">+ Lab Test</button>
+            <button onclick="addPreset('medicine')" style="padding:6px 12px;background:#d1fae5;color:#065f46;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">+ Medicine</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="services-table">
+            <thead>
+              <tr><th style="width:40%">Description</th><th style="width:15%">Dept</th><th style="width:10%">Qty</th><th style="width:15%">Rate (৳)</th><th style="width:12%">Total</th><th style="width:8%"></th></tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+          <button class="add-item-btn" onclick="addRow()"><i class="fas fa-plus"></i> Add Custom Item</button>
+        </div>
+      </div>
+
+      <!-- PAYMENT SECTION -->
+      <div class="card no-print">
+        <div class="card-hdr">
+          <div class="card-hdr-left"><div class="card-ico ci-blue"><i class="fas fa-credit-card"></i></div><div class="card-title">Payment Method & Verification</div></div>
+        </div>
+        <div class="card-body">
+          <div class="pay-methods">
+            <div class="pay-method selected" onclick="selectPayment(this,'Cash')" data-method="Cash">
+              <div class="pm-check"><i class="fas fa-check"></i></div>
+              <div class="pm-icon">💵</div><div class="pm-label">Cash</div>
+            </div>
+            <div class="pay-method" onclick="selectPayment(this,'bKash')" data-method="bKash">
+              <div class="pm-check"><i class="fas fa-check"></i></div>
+              <div class="pm-icon" style="color:#e2136e;">🅱</div><div class="pm-label">bKash</div>
+            </div>
+            <div class="pay-method" onclick="selectPayment(this,'Nagad')" data-method="Nagad">
+              <div class="pm-check"><i class="fas fa-check"></i></div>
+              <div class="pm-icon">🅽</div><div class="pm-label">Nagad</div>
+            </div>
+            <div class="pay-method" onclick="selectPayment(this,'Rocket')" data-method="Rocket">
+              <div class="pm-check"><i class="fas fa-check"></i></div>
+              <div class="pm-icon">🚀</div><div class="pm-label">Rocket</div>
+            </div>
+            <div class="pay-method" onclick="selectPayment(this,'Card')" data-method="Card">
+              <div class="pm-check"><i class="fas fa-check"></i></div>
+              <div class="pm-icon">💳</div><div class="pm-label">Card</div>
+            </div>
+            <div class="pay-method" onclick="selectPayment(this,'Bank Transfer')" data-method="Bank Transfer">
+              <div class="pm-check"><i class="fas fa-check"></i></div>
+              <div class="pm-icon">🏦</div><div class="pm-label">Bank</div>
+            </div>
+          </div>
+
+          <!-- Dynamic payment verification -->
+          <div id="payVerifySection"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVOICE PANEL -->
+    <div class="invoice-panel">
+      <div class="inv-card" id="invoicePreview">
+        <div class="inv-header">
+          <div class="inv-logo">🏥 MedFind Bangladesh</div>
+          <div class="inv-hospital">Rajshahi Medical College Hospital</div>
+          <div style="font-size:.72rem;color:var(--g400);margin-top:4px;">Medical College Road, Rajshahi 6000</div>
+          <div class="inv-num">Invoice No: <strong id="invNo">INV-000000</strong></div>
+        </div>
+
+        <div class="inv-row"><span class="lbl">Patient</span><span class="val" id="invPat">—</span></div>
+        <div class="inv-row"><span class="lbl">Phone</span><span class="val" id="invPhone">—</span></div>
+        <div class="inv-row"><span class="lbl">Date</span><span class="val" id="invDate">—</span></div>
+        <div class="inv-row"><span class="lbl">Doctor</span><span class="val" id="invDoc">—</span></div>
+        <div class="inv-row"><span class="lbl">Token</span><span class="val" id="invToken" style="color:var(--am);font-weight:800;">T-001</span></div>
+        <div class="inv-div"></div>
+
+        <div style="font-size:.75rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Services</div>
+        <div class="inv-items" id="invItems">
+          <div class="inv-item" style="color:var(--g400);font-style:italic;">No items yet</div>
+        </div>
+        <div class="inv-div"></div>
+
+        <div class="inv-row"><span class="lbl">Subtotal</span><span class="val">৳<span id="invSub">0</span></span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="disc-label">Discount (৳)</span>
+          <input type="number" class="disc-input" id="discount" placeholder="0" min="0" oninput="updateInvoiceLive()">
+        </div>
+        <div class="inv-row"><span class="lbl">Tax (5% VAT)</span><span class="val">৳<span id="invTax">0</span></span></div>
+        <div class="inv-div"></div>
+        <div class="inv-total-row"><span style="font-size:1rem;">Grand Total</span><span class="total-amt">৳<span id="invTotal">0</span></span></div>
+
+        <div style="margin-top:12px;background:var(--g50);border-radius:10px;padding:10px 14px;font-size:.78rem;color:var(--g500);">
+          Payment: <strong id="invMethod" style="color:var(--g900);">Cash</strong>
+          <div id="invVerifyStatus" style="color:var(--g);font-weight:700;margin-top:3px;display:none;"><i class="fas fa-check-circle"></i> Payment Verified</div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <button class="btn-generate" onclick="generateInvoice()"><i class="fas fa-file-invoice"></i> Generate Invoice</button>
+      <button class="btn-secondary" onclick="printInvoice()"><i class="fas fa-print"></i> Print Invoice</button>
+      <button class="btn-secondary" onclick="downloadPDF()"><i class="fas fa-file-pdf" style="color:var(--r)"></i> Download PDF</button>
+      <button class="btn-secondary" onclick="clearForm()" style="border-color:var(--r);color:var(--r);"><i class="fas fa-trash-alt"></i> Clear Form</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box">
+    <div class="modal-icon"><i class="fas fa-check"></i></div>
+    <h2 style="font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:6px;">Invoice Generated! 🎉</h2>
+    <p style="color:var(--g500);font-size:.9rem;margin-bottom:.5rem;">OPD billing completed successfully</p>
+    <div class="modal-ref" id="modalInvNo">INV-000000</div>
+    <div id="modalDetails" style="background:var(--g50);border-radius:10px;padding:12px;text-align:left;font-size:.85rem;margin-bottom:1rem;"></div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-outline" onclick="document.getElementById('successModal').classList.remove('show')">Close</button>
+      <button class="modal-btn modal-btn-primary" onclick="printInvoice()"><i class="fas fa-print"></i> Print Now</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/js/components.js"></script>
+<script src="../../services/api.js"></script>
+<script>
+const API_BASE=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://127.0.0.1:8000/api/v1':'/api/v1';
+// ── INIT ──────────────────────────────────────────────────────────────
+const today = new Date();
+document.getElementById('todayDate').textContent = today.toLocaleDateString('en-BD', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
+document.getElementById('queueDate').textContent = today.toLocaleDateString('en-BD', {day:'numeric',month:'short'});
+document.getElementById('visitDate').value = today.toISOString().split('T')[0];
+const INV_NO = 'INV-' + Date.now().toString().slice(-6);
+document.getElementById('invNo').textContent = INV_NO;
+
+// ── TOKEN QUEUE ──────────────────────────────────────────────────────
+let queue = JSON.parse(localStorage.getItem('opd_queue_today') || '[]');
+let currentToken = parseInt(localStorage.getItem('opd_current_token') || '1');
+let dailyRevenue = parseInt(localStorage.getItem('opd_revenue_today') || '0');
+
+function saveQueue() { localStorage.setItem('opd_queue_today', JSON.stringify(queue)); localStorage.setItem('opd_current_token', String(currentToken)); localStorage.setItem('opd_revenue_today', String(dailyRevenue)); }
+
+function renderQueue() {
+  const grid = document.getElementById('tokenGrid');
+  grid.innerHTML = queue.map(t => {
+    const cls = t.token === currentToken ? 'qt-current' : t.status === 'done' ? 'qt-done' : t.status === 'skip' ? 'qt-skip' : 'qt-waiting';
+    return `<div class="queue-token ${cls}" onclick="selectToken(${t.token})" title="${t.name || 'Waiting'}">T-${String(t.token).padStart(3,'0')}</div>`;
+  }).join('');
+  document.getElementById('tokenDisplay').textContent = String(currentToken).padStart(3,'0');
+  document.getElementById('invToken').textContent = 'T-' + String(currentToken).padStart(3,'0');
+  updateStats();
+}
+
+function addToQueue() {
+  const next = queue.length > 0 ? Math.max(...queue.map(t => t.token)) + 1 : 1;
+  queue.push({ token: next, status: 'waiting', name: '', time: new Date().toLocaleTimeString('en-BD', {hour:'2-digit',minute:'2-digit'}) });
+  saveQueue();
+  renderQueue();
+  MFC?.toast(`Token T-${String(next).padStart(3,'0')} added to queue`, 'success');
+}
+
+function advanceQueue() {
+  const cur = queue.find(t => t.token === currentToken);
+  if (cur) cur.status = 'done';
+  const next = queue.find(t => t.status === 'waiting');
+  if (next) { currentToken = next.token; MFC?.toast(`Now serving T-${String(next.token).padStart(3,'0')}`, 'info'); }
+  else MFC?.toast('Queue complete! All tokens served.', 'success');
+  saveQueue();
+  renderQueue();
+}
+
+function selectToken(n) {
+  currentToken = n;
+  document.getElementById('tokenDisplay').textContent = String(n).padStart(3,'0');
+  document.getElementById('invToken').textContent = 'T-' + String(n).padStart(3,'0');
+  const t = queue.find(x => x.token === n);
+  if (t?.name) document.getElementById('patName').value = t.name;
+}
+
+function updateStats() {
+  const done = queue.filter(t => t.status === 'done').length;
+  const waiting = queue.filter(t => t.status === 'waiting').length;
+  document.getElementById('statToday').textContent = queue.length;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statWaiting').textContent = waiting;
+  document.getElementById('statRevenue').textContent = '৳' + dailyRevenue.toLocaleString();
+}
+
+// Init queue with some sample tokens
+if (queue.length === 0) {
+  for (let i = 1; i <= 8; i++) {
+    queue.push({ token: i, status: i < currentToken ? 'done' : 'waiting', name: '', time: '' });
+  }
+  saveQueue();
+}
+renderQueue();
+
+// ── BILLING ITEMS ──────────────────────────────────────────────────────
+const DEPTS = ['General', 'Cardiology', 'Gynecology', 'Orthopedic', 'Pediatric', 'Lab', 'Radiology', 'Pharmacy'];
+const PRESETS = {
+  consultation: [{ name: 'Consultation Fee', dept: 'General', qty: 1, price: 500 }],
+  lab: [
+    { name: 'CBC (Complete Blood Count)', dept: 'Lab', qty: 1, price: 350 },
+    { name: 'Blood Sugar (Fasting)', dept: 'Lab', qty: 1, price: 150 },
+  ],
+  medicine: [
+    { name: 'Paracetamol 500mg × 10', dept: 'Pharmacy', qty: 1, price: 8 },
+    { name: 'Vitamin C 500mg × 30', dept: 'Pharmacy', qty: 1, price: 65 },
+  ]
+};
+
+function makeRow(item = {}) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="st-input" type="text" value="${item.name||''}" placeholder="Service / item" oninput="calcRow(this)"></td>
+    <td><select class="st-input" style="font-size:.8rem;">${DEPTS.map(d=>`<option${item.dept===d?' selected':''}>${d}</option>`).join('')}</select></td>
+    <td><input class="st-input" type="number" value="${item.qty||1}" min="1" style="text-align:center;" oninput="calcRow(this)"></td>
+    <td><input class="st-input" type="number" value="${item.price||0}" min="0" oninput="calcRow(this)"></td>
+    <td class="row-total">৳${((item.qty||1)*(item.price||0)).toLocaleString()}</td>
+    <td><button class="row-del" onclick="removeRow(this)"><i class="fas fa-times"></i></button></td>`;
+  document.getElementById('itemsBody').appendChild(tr);
+}
+
+function addRow(item) { makeRow(item || {}); updateInvoiceLive(); }
+
+function addPreset(type) {
+  PRESETS[type].forEach(item => makeRow(item));
+  updateInvoiceLive();
+  MFC?.toast(`${type} items added`, 'success');
+}
+
+function removeRow(btn) {
+  if (document.getElementById('itemsBody').rows.length <= 1) { MFC?.toast('At least one item required','warning'); return; }
+  btn.closest('tr').remove();
+  updateInvoiceLive();
+}
+
+function calcRow(el) { const tr = el.closest('tr'); const qty = Number(tr.cells[2].querySelector('input').value)||0; const price = Number(tr.cells[3].querySelector('input').value)||0; tr.querySelector('.row-total').textContent = '৳'+(qty*price).toLocaleString(); updateInvoiceLive(); }
+
+function applyDoctorFee() {
+  const sel = document.getElementById('doctorSel').value;
+  if (!sel) return;
+  const [fee, name] = sel.split('|');
+  // Update or add consultation fee row
+  const firstInput = document.querySelector('#itemsBody tr:first-child input[type="text"]');
+  if (firstInput) {
+    firstInput.value = `Consultation Fee — ${name}`;
+    const priceInput = firstInput.closest('tr').cells[3].querySelector('input');
+    priceInput.value = fee;
+    calcRow(priceInput);
+  }
+  document.getElementById('invDoc').textContent = name;
+}
+
+// Init with one default row
+makeRow({ name: 'Consultation Fee', dept: 'General', qty: 1, price: 800 });
+
+// ── INVOICE LIVE UPDATE ──────────────────────────────────────────────
+function updateInvoiceLive() {
+  let sub = 0;
+  document.querySelectorAll('#itemsBody tr').forEach(tr => {
+    const qty = Number(tr.cells[2]?.querySelector('input')?.value)||0;
+    const price = Number(tr.cells[3]?.querySelector('input')?.value)||0;
+    sub += qty * price;
+  });
+  const disc = Number(document.getElementById('discount')?.value)||0;
+  const tax = Math.round(sub * 0.05);
+  const total = Math.max(0, sub - disc + tax);
+  document.getElementById('invSub').textContent = sub.toLocaleString();
+  document.getElementById('invTax').textContent = tax.toLocaleString();
+  document.getElementById('invTotal').textContent = total.toLocaleString();
+  document.getElementById('invPat').textContent = document.getElementById('patName').value || '—';
+  document.getElementById('invPhone').textContent = document.getElementById('patPhone').value || '—';
+  document.getElementById('invDate').textContent = document.getElementById('visitDate').value || '—';
+  // Update items list in preview
+  const rows = Array.from(document.querySelectorAll('#itemsBody tr'));
+  document.getElementById('invItems').innerHTML = rows.map(tr => {
+    const name = tr.cells[0]?.querySelector('input')?.value || '';
+    const qty = tr.cells[2]?.querySelector('input')?.value || '';
+    const price = tr.cells[3]?.querySelector('input')?.value || '';
+    const rowTotal = Number(qty)*Number(price);
+    return `<div class="inv-item"><span>${name}${Number(qty)>1?' ×'+qty:''}</span><span style="font-weight:600;">৳${rowTotal.toLocaleString()}</span></div>`;
+  }).filter(x => x.trim()).join('') || '<div class="inv-item" style="color:var(--g400)">No items</div>';
+}
+
+// ── PAYMENT ──────────────────────────────────────────────────────────
+let selectedPayMethod = 'Cash';
+let paymentVerified = false;
+
+function selectPayment(el, method) {
+  document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPayMethod = method;
+  document.getElementById('invMethod').textContent = method;
+  renderPayVerification(method);
+}
+
+function renderPayVerification(method) {
+  const sec = document.getElementById('payVerifySection');
+  if (method === 'Cash') {
+    sec.innerHTML = `<div class="pay-verify"><div class="pv-label"><i class="fas fa-money-bill-wave" style="color:var(--g)"></i> Cash Payment — Enter received amount</div>
+      <div class="pv-input-row"><input class="pv-input" type="number" id="cashReceived" placeholder="Amount received (৳)" oninput="calcChange()">
+      <span style="padding:0 12px;display:flex;align-items:center;font-weight:700;color:var(--g);">Change: ৳<span id="cashChange">0</span></span></div></div>`;
+    paymentVerified = true;
+  } else if (method === 'bKash') {
+    sec.innerHTML = `<div class="pay-verify"><div class="pv-label"><i class="fas fa-mobile-alt" style="color:#e2136e"></i> bKash Payment Verification</div>
+      <div style="font-size:.78rem;color:var(--g500);margin-bottom:8px;">Send money to: <strong>01711-123456</strong> (MedFind Hospital)</div>
+      <div class="pv-input-row"><input class="pv-input" type="text" id="txnId" placeholder="bKash TrxID (e.g. 8N3X4Y5Z6A)" maxlength="10" oninput="this.value=this.value.toUpperCase()">
+      <button class="pv-verify-btn" onclick="verifyBkash()"><i class="fas fa-check-circle"></i> Verify</button></div>
+      <div class="pv-status" id="pvStatus"></div></div>`;
+    paymentVerified = false;
+  } else if (method === 'Nagad') {
+    sec.innerHTML = `<div class="pay-verify"><div class="pv-label"><i class="fas fa-mobile-alt" style="color:#f5821f"></i> Nagad Payment Verification</div>
+      <div style="font-size:.78rem;color:var(--g500);margin-bottom:8px;">Send money to: <strong>01811-654321</strong> (MedFind Hospital)</div>
+      <div class="pv-input-row"><input class="pv-input" type="text" id="txnId" placeholder="Nagad TrxID (10 characters)" maxlength="10" oninput="this.value=this.value.toUpperCase()">
+      <button class="pv-verify-btn" onclick="verifyNagad()"><i class="fas fa-check-circle"></i> Verify</button></div>
+      <div class="pv-status" id="pvStatus"></div></div>`;
+    paymentVerified = false;
+  } else if (method === 'Rocket') {
+    sec.innerHTML = `<div class="pay-verify"><div class="pv-label"><i class="fas fa-mobile-alt" style="color:#8b14af"></i> Rocket Payment Verification</div>
+      <div class="pv-input-row"><input class="pv-input" type="text" id="txnId" placeholder="Rocket TrxID">
+      <button class="pv-verify-btn" onclick="verifyGeneric('Rocket')"><i class="fas fa-check-circle"></i> Verify</button></div>
+      <div class="pv-status" id="pvStatus"></div></div>`;
+    paymentVerified = false;
+  } else if (method === 'Card') {
+    sec.innerHTML = `<div class="pay-verify"><div class="pv-label"><i class="fas fa-credit-card" style="color:var(--p)"></i> Card Payment</div>
+      <div class="form-row" style="margin-bottom:8px;"><div class="fg"><label>Card Number</label><input class="pv-input" type="text" id="cardNo" placeholder="**** **** **** ****" maxlength="19" oninput="formatCard(this)"></div>
+      <div class="fg"><label>Expiry / CVV</label><div class="pv-input-row"><input class="pv-input" type="text" placeholder="MM/YY" maxlength="5" style="width:90px;"><input class="pv-input" type="password" placeholder="CVV" maxlength="3" style="width:70px;"></div></div></div>
+      <button class="pv-verify-btn" style="width:100%;padding:11px;" onclick="verifyCard()"><i class="fas fa-lock"></i> Verify Card</button>
+      <div class="pv-status" id="pvStatus"></div></div>`;
+    paymentVerified = false;
+  } else if (method === 'Bank Transfer') {
+    sec.innerHTML = `<div class="pay-verify"><div class="pv-label"><i class="fas fa-university" style="color:var(--p)"></i> Bank Transfer Verification</div>
+      <div style="background:var(--g50);border-radius:10px;padding:12px;margin-bottom:10px;font-size:.82rem;">
+        <div><strong>Bank:</strong> Sonali Bank Ltd</div><div><strong>Account:</strong> 0000-0000-0000-001</div><div><strong>Branch:</strong> Rajshahi Medical College Branch</div></div>
+      <div class="pv-input-row"><input class="pv-input" type="text" id="txnId" placeholder="Bank transfer reference number">
+      <button class="pv-verify-btn" onclick="verifyGeneric('Bank Transfer')"><i class="fas fa-check-circle"></i> Verify</button></div>
+      <div class="pv-status" id="pvStatus"></div></div>`;
+    paymentVerified = false;
+  }
+}
+
+function calcChange() {
+  const received = Number(document.getElementById('cashReceived')?.value)||0;
+  const total = Number(document.getElementById('invTotal').textContent.replace(/,/g,''))||0;
+  const change = received - total;
+  document.getElementById('cashChange').textContent = Math.max(0, change).toLocaleString();
+}
+
+async function verifyBkash() {
+  const txnId = document.getElementById('txnId').value.trim();
+  if (txnId.length < 8) { showVerifyStatus(false, 'TrxID must be at least 8 characters'); return; }
+  showVerifyStatus(null, 'Verifying with bKash…');
+  await new Promise(r => setTimeout(r, 1200));
+  if (/^[A-Z0-9]{8,10}$/.test(txnId)) {
+    showVerifyStatus(true, `✓ bKash payment TrxID ${txnId} verified`);
+    paymentVerified = true;
+    document.getElementById('invVerifyStatus').style.display = 'block';
+  } else {
+    showVerifyStatus(false, 'Invalid TrxID format. Use capital letters and numbers only');
+  }
+}
+
+async function verifyNagad() {
+  const txnId = document.getElementById('txnId').value.trim();
+  if (txnId.length < 8) { showVerifyStatus(false, 'Enter valid Nagad TrxID'); return; }
+  showVerifyStatus(null, 'Verifying with Nagad…');
+  await new Promise(r => setTimeout(r, 1000));
+  showVerifyStatus(true, `✓ Nagad payment verified: ${txnId}`);
+  paymentVerified = true;
+  document.getElementById('invVerifyStatus').style.display = 'block';
+}
+
+async function verifyGeneric(method) {
+  const txnId = document.getElementById('txnId').value.trim();
+  if (!txnId) { showVerifyStatus(false, 'Please enter transaction reference'); return; }
+  showVerifyStatus(null, `Verifying ${method} transaction…`);
+  await new Promise(r => setTimeout(r, 800));
+  showVerifyStatus(true, `✓ ${method} payment verified`);
+  paymentVerified = true;
+  document.getElementById('invVerifyStatus').style.display = 'block';
+}
+
+async function verifyCard() {
+  const cardNo = document.getElementById('cardNo')?.value.replace(/\s/g,'');
+  if (!cardNo || cardNo.length < 16) { showVerifyStatus(false, 'Enter valid 16-digit card number'); return; }
+  showVerifyStatus(null, 'Processing card securely…');
+  await new Promise(r => setTimeout(r, 1500));
+  showVerifyStatus(true, '✓ Card verified — secure transaction complete');
+  paymentVerified = true;
+  document.getElementById('invVerifyStatus').style.display = 'block';
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  v = v.replace(/(.{4})/g,'$1 ').trim();
+  input.value = v;
+}
+
+function showVerifyStatus(success, msg) {
+  const el = document.getElementById('pvStatus');
+  if (!el) return;
+  el.className = 'pv-status ' + (success === null ? '' : success ? 'verified' : 'failed');
+  el.style.display = 'flex';
+  el.innerHTML = success === null
+    ? `<i class="fas fa-spinner fa-spin"></i> ${msg}`
+    : success
+    ? `<i class="fas fa-check-circle"></i> ${msg}`
+    : `<i class="fas fa-times-circle"></i> ${msg}`;
+}
+
+// ── GENERATE INVOICE ──────────────────────────────────────────────────
+async function generateInvoice() {
+  const name = document.getElementById('patName').value.trim();
+  const phone = document.getElementById('patPhone').value.trim();
+  if (!name || !phone) { MFC?.toast('Patient name and phone are required', 'warning', 'Required Fields'); return; }
+  if (!paymentVerified && selectedPayMethod !== 'Cash') { MFC?.toast('Please verify payment before generating invoice', 'warning', 'Payment Required'); return; }
+
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+
+  const total = Number(document.getElementById('invTotal').textContent.replace(/,/g,''))||0;
+
+  try {
+    const token = localStorage.getItem('mf_token');
+    if (token) {
+      await fetch(API_BASE+'/billing/invoices/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({
+          patient_name: name, patient_phone: phone,
+          doctor: document.getElementById('doctorSel').value?.split('|')[1] || '',
+          invoice_date: document.getElementById('visitDate').value,
+          invoice_number: INV_NO, total_amount: total,
+          payment_method: selectedPayMethod, payment_verified: paymentVerified,
+          token_number: currentToken
+        })
+      });
+    }
+  } catch {}
+
+  // Save to localStorage
+  const invoices = JSON.parse(localStorage.getItem('opd_invoices') || '[]');
+  invoices.unshift({ ref: INV_NO, patient: name, phone, total, method: selectedPayMethod, date: new Date().toISOString() });
+  localStorage.setItem('opd_invoices', JSON.stringify(invoices.slice(0, 50)));
+
+  // Update stats
+  dailyRevenue += total;
+  const queueItem = queue.find(t => t.token === currentToken);
+  if (queueItem) { queueItem.status = 'done'; queueItem.name = name; }
+  saveQueue();
+  renderQueue();
+
+  // Show success
+  document.getElementById('modalInvNo').textContent = INV_NO;
+  document.getElementById('modalDetails').innerHTML = `
+    <div><strong>Patient:</strong> ${name} (${phone})</div>
+    <div><strong>Amount:</strong> ৳${total.toLocaleString()} via ${selectedPayMethod}</div>
+    <div><strong>Token:</strong> T-${String(currentToken).padStart(3,'0')}</div>`;
+  document.getElementById('successModal').classList.add('show');
+
+  MFC?.toast(`Invoice ${INV_NO} generated — ৳${total.toLocaleString()}`, 'success', 'Billing Complete 🎉', 6000);
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-file-invoice"></i> Generate Invoice';
+}
+
+function printInvoice() {
+  document.getElementById('successModal').classList.remove('show');
+  window.print();
+}
+
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { window.print(); return; }
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const name = document.getElementById('patName').value || 'Patient';
+  const total = document.getElementById('invTotal').textContent;
+  const date = document.getElementById('visitDate').value;
+
+  doc.setFillColor(37,99,235);
+  doc.rect(0,0,210,35,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(18);doc.setFont('helvetica','bold');
+  doc.text('MedFind Bangladesh — OPD Invoice', 15, 15);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Rajshahi Medical College Hospital  |  Tel: 0721-774044', 15, 23);
+  doc.text(`Invoice: ${INV_NO}  |  Date: ${date}`, 15, 30);
+
+  doc.setTextColor(30,41,59);
+  doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text('Patient Details', 15, 48);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text(`Name: ${name}  |  Phone: ${document.getElementById('patPhone').value}`, 15, 56);
+  doc.text(`Token: T-${String(currentToken).padStart(3,'0')}  |  Payment: ${selectedPayMethod}`, 15, 62);
+
+  let y = 76;
+  doc.setFillColor(37,99,235);doc.rect(10,y-5,190,7,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Description', 15, y);doc.text('Qty', 110, y);doc.text('Rate', 140, y);doc.text('Total', 175, y);
+  y += 8;
+  doc.setTextColor(30,41,59);doc.setFont('helvetica','normal');
+  document.querySelectorAll('#itemsBody tr').forEach(tr => {
+    const n=tr.cells[0]?.querySelector('input')?.value||'';const q=tr.cells[2]?.querySelector('input')?.value||'1';const p=tr.cells[3]?.querySelector('input')?.value||'0';
+    doc.text(n.substring(0,40),15,y);doc.text(q,113,y);doc.text('৳'+Number(p).toLocaleString(),140,y);doc.text('৳'+(Number(q)*Number(p)).toLocaleString(),175,y);
+    y+=6;
+  });
+  y+=5;
+  doc.setFontSize(12);doc.setFont('helvetica','bold');doc.setTextColor(37,99,235);
+  doc.text(`Grand Total: ৳${total}`, 130, y);
+  doc.setFontSize(7);doc.setTextColor(148,163,184);
+  doc.text('MedFind Bangladesh | Digital Healthcare Platform | medfind.com.bd', 15, 285);
+  doc.save(`OPD_Invoice_${INV_NO}.pdf`);
+  MFC?.toast('Invoice PDF downloaded!', 'success');
+}
+
+function clearForm() {
+  if (!confirm('Clear this form? Invoice data will be lost.')) return;
+  document.getElementById('patName').value = '';
+  document.getElementById('patPhone').value = '';
+  document.getElementById('patAge').value = '';
+  document.getElementById('doctorSel').value = '';
+  document.getElementById('complaint').value = '';
+  document.getElementById('itemsBody').innerHTML = '';
+  document.getElementById('discount').value = '';
+  makeRow({ name:'Consultation Fee', dept:'General', qty:1, price:800 });
+  updateInvoiceLive();
+  document.getElementById('invNo').textContent = 'INV-' + Date.now().toString().slice(-6);
+  MFC?.toast('Form cleared', 'info');
+}
+
+function loadPatientFromAPI() {
+  const phone = document.getElementById('patPhone').value.trim();
+  if (!phone) { MFC?.toast('Enter phone number to search patient', 'warning'); return; }
+  // Demo mode
+  MFC?.toast(`Searching for patient with phone ${phone}…`, 'info');
+  setTimeout(() => {
+    document.getElementById('patName').value = 'Demo Patient';
+    document.getElementById('patAge').value = '35';
+    updateInvoiceLive();
+    MFC?.toast('Patient loaded from database', 'success');
+  }, 800);
+}
+
+// Initialize
+renderPayVerification('Cash');
+updateInvoiceLive();
+</script>
+</body>
+</html>

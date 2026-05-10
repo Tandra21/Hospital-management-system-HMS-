@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MedFind Bangladesh - Digital Healthcare Platform. Find doctors, hospitals, blood donors and AI health tools.">
+<title>Doctor Console - MedFind</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>window.API_BASE=location.hostname==="localhost"||location.hostname==="127.0.0.1"?"http://127.0.0.1:8000/api/v1":"https://api.medfind.app/api/v1";window.WS_BASE="ws://127.0.0.1:8001";</script>
+<script src="../../assets/js/webrtc.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pri: #1a56db; --pri-d: #1342b0; --pri-l: #dbeafe;
+            --teal: #0d9488; --emerald: #059669; --purple: #7c3aed;
+            --amber: #d97706; --danger: #dc2626; --success: #16a34a;
+            --bg: #f0f4ff; --card: #ffffff; --border: #e2e8f0;
+            --text: #0f172a; --muted: #64748b; --subtle: #94a3b8;
+            --dark: #0f172a; --dark2: #1e293b; --dark3: #334155;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 72px; background: var(--dark); display: flex; flex-direction: column; align-items: center; padding: 1rem 0; gap: .25rem; z-index: 100; border-right: 1px solid var(--dark3); transition: width .3s; }
+        .sidebar:hover { width: 220px; }
+        .sidebar:hover .nav-label { display: block; }
+        .logo-wrap { width: 44px; height: 44px; background: linear-gradient(135deg, var(--pri), var(--teal)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 1.5rem; flex-shrink: 0; }
+        .nav-item { width: calc(100% - 16px); display: flex; align-items: center; gap: .75rem; padding: .7rem .9rem; border-radius: 10px; cursor: pointer; color: var(--subtle); font-size: .85rem; font-weight: 500; transition: .2s; white-space: nowrap; overflow: hidden; text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,.08); color: #fff; }
+        .nav-item.active { background: rgba(26,86,219,.25); color: var(--pri-l); }
+        .nav-item i { font-size: 1rem; min-width: 20px; text-align: center; }
+        .nav-label { display: none; }
+        .nav-badge { margin-left: auto; background: var(--danger); color: #fff; font-size: .65rem; font-weight: 700; padding: .15rem .45rem; border-radius: 100px; min-width: 18px; text-align: center; }
+        .sidebar-foot { margin-top: auto; width: calc(100% - 16px); }
+        .doc-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--pri), var(--teal)); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; font-size: .85rem; flex-shrink: 0; border: 2px solid var(--dark3); }
+        .online-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--emerald); border: 2px solid var(--dark); position: absolute; bottom: -1px; right: -1px; }
+
+        /* MAIN AREA */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* TOP BAR */
+        .topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .tb-left { display: flex; align-items: center; gap: 1.5rem; }
+        .page-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text); }
+        .status-toggle { display: flex; align-items: center; gap: .5rem; background: var(--bg); border: 1.5px solid var(--border); border-radius: 100px; padding: .3rem .75rem; cursor: pointer; font-size: .8rem; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); }
+        .status-toggle.offline .status-dot { background: var(--subtle); }
+        .tb-right { display: flex; align-items: center; gap: .75rem; }
+        .tb-btn { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: .9rem; position: relative; transition: .2s; }
+        .tb-btn:hover { background: var(--bg); color: var(--text); }
+        .tb-badge { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--danger); border-radius: 50%; color: #fff; font-size: .6rem; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--card); }
+
+        /* CONTENT */
+        .content { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; display: none; }
+        .content.active { display: block; }
+
+        /* OVERVIEW GRID */
+        .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; position: relative; overflow: hidden; }
+        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .metric-card.blue::before { background: linear-gradient(90deg, var(--pri), #60a5fa); }
+        .metric-card.teal::before { background: linear-gradient(90deg, var(--teal), #2dd4bf); }
+        .metric-card.purple::before { background: linear-gradient(90deg, var(--purple), #a78bfa); }
+        .metric-card.amber::before { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+        .mc-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+        .mc-label { font-size: .8rem; color: var(--muted); margin-top: .25rem; font-weight: 500; }
+        .mc-icon { position: absolute; top: 1.25rem; right: 1.25rem; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .mc-icon.blue { background: var(--pri-l); color: var(--pri); }
+        .mc-icon.teal { background: #ccfbf1; color: var(--teal); }
+        .mc-icon.purple { background: #ede9fe; color: var(--purple); }
+        .mc-icon.amber { background: #fef3c7; color: var(--amber); }
+
+        /* REQUESTS TABLE */
+        .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+        .section-btn { font-size: .8rem; font-weight: 600; color: var(--pri); cursor: pointer; border: none; background: none; }
+        .requests-list { display: flex; flex-direction: column; gap: .75rem; }
+        .req-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; transition: .2s; }
+        .req-card:hover { border-color: var(--pri); box-shadow: 0 2px 12px rgba(26,86,219,.08); }
+        .req-avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; color: #fff; flex-shrink: 0; }
+        .req-info { flex: 1; }
+        .req-name { font-weight: 600; font-size: .9rem; }
+        .req-meta { font-size: .78rem; color: var(--muted); margin-top: .15rem; display: flex; gap: .75rem; }
+        .req-tag { font-size: .7rem; font-weight: 600; padding: .2rem .6rem; border-radius: 100px; }
+        .req-tag.new { background: var(--pri-l); color: var(--pri); }
+        .req-tag.urgent { background: #fee2e2; color: var(--danger); }
+        .req-tag.files { background: #f3e8ff; color: var(--purple); }
+        .req-actions { display: flex; gap: .5rem; }
+        .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem 1rem; border-radius: 9px; font-weight: 600; font-size: .8rem; cursor: pointer; border: none; transition: .2s; }
+        .btn-accept { background: var(--pri); color: #fff; }
+        .btn-accept:hover { background: var(--pri-d); }
+        .btn-reject { background: #fee2e2; color: var(--danger); }
+        .btn-reject:hover { background: #fecaca; }
+        .btn-view { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+        .btn-view:hover { background: var(--card); border-color: var(--pri); color: var(--pri); }
+        .btn-primary { background: var(--pri); color: #fff; }
+        .btn-primary:hover { background: var(--pri-d); }
+        .btn-success { background: var(--emerald); color: #fff; }
+        .btn-success:hover { background: #047857; }
+
+        /* OVERVIEW TWO COLS */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; }
+
+        /* SCHEDULE */
+        .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin-top: .75rem; }
+        .slot { padding: .5rem .4rem; border-radius: 8px; font-size: .75rem; font-weight: 600; text-align: center; cursor: pointer; border: 1.5px solid transparent; transition: .2s; }
+        .slot.booked { background: var(--pri-l); color: var(--pri); border-color: #93c5fd; }
+        .slot.video { background: #f3e8ff; color: var(--purple); border-color: #c4b5fd; }
+        .slot.free { background: var(--bg); color: var(--muted); border-color: var(--border); }
+        .slot.free:hover { border-color: var(--pri); color: var(--pri); }
+
+        /* PATIENT FILE SHARING */
+        .files-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem; margin-top: .75rem; }
+        .file-item { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: .75rem 1rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; transition: .2s; }
+        .file-item:hover { border-color: var(--pri); }
+        .file-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
+        .file-icon.pdf { background: #fee2e2; color: var(--danger); }
+        .file-icon.img { background: #dbeafe; color: var(--pri); }
+        .file-name { font-size: .8rem; font-weight: 600; }
+        .file-meta { font-size: .7rem; color: var(--muted); }
+        .file-new { font-size: .65rem; font-weight: 700; background: #dcfce7; color: var(--success); padding: .1rem .4rem; border-radius: 100px; }
+
+        /* ===== VIDEO CONSOLE PAGE ===== */
+        .vc-layout { display: grid; grid-template-columns: 320px 1fr; gap: 0; height: calc(100vh - 60px); background: var(--dark); overflow: hidden; }
+        .vc-sidebar { background: var(--dark2); border-right: 1px solid var(--dark3); display: flex; flex-direction: column; overflow: hidden; }
+        .vc-sidebar-head { padding: 1.25rem 1.25rem .75rem; border-bottom: 1px solid var(--dark3); }
+        .vc-status-bar { display: flex; align-items: center; justify-content: space-between; }
+        .vc-status-label { font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; font-size: .95rem; }
+        .vc-status-pill { display: flex; align-items: center; gap: .4rem; background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.3); color: #10b981; padding: .25rem .75rem; border-radius: 100px; font-size: .75rem; font-weight: 700; cursor: pointer; }
+        .vc-queue { flex: 1; overflow-y: auto; padding: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+        .q-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--subtle); padding: .25rem .5rem; margin-top: .25rem; }
+        .q-patient { background: var(--dark3); border-radius: 12px; padding: .75rem 1rem; cursor: pointer; transition: .2s; border: 1.5px solid transparent; }
+        .q-patient:hover { border-color: rgba(26,86,219,.5); }
+        .q-patient.active { border-color: var(--pri); background: rgba(26,86,219,.15); }
+        .q-patient.calling { border-color: var(--emerald); background: rgba(5,150,105,.1); animation: callPulse 2s infinite; }
+        @keyframes callPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(5,150,105,.3); } 50% { box-shadow: 0 0 0 6px rgba(5,150,105,0); } }
+        .q-name { font-weight: 700; color: #fff; font-size: .88rem; }
+        .q-detail { font-size: .75rem; color: var(--subtle); margin-top: .15rem; }
+        .q-badges { display: flex; gap: .4rem; margin-top: .4rem; }
+        .q-badge { font-size: .67rem; font-weight: 700; padding: .15rem .5rem; border-radius: 100px; }
+        .q-badge.wait { background: rgba(217,119,6,.2); color: #fbbf24; }
+        .q-badge.files { background: rgba(124,58,237,.2); color: #a78bfa; }
+        .q-badge.urgent { background: rgba(220,38,38,.2); color: #f87171; }
+        .q-badge.video { background: rgba(26,86,219,.2); color: #93c5fd; }
+        .q-accept-btn { width: 100%; margin-top: .6rem; padding: .45rem; border-radius: 8px; border: none; background: var(--pri); color: #fff; font-weight: 700; font-size: .8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .4rem; transition: .2s; }
+        .q-accept-btn:hover { background: var(--pri-d); }
+        .q-accept-btn.reject { background: rgba(220,38,38,.15); color: #f87171; border: 1px solid rgba(220,38,38,.3); }
+
+        /* VIDEO MAIN */
+        .vc-main { display: flex; flex-direction: column; background: #000; }
+        .vc-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; color: var(--subtle); }
+        .vc-empty-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--dark2); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+        .vc-empty h3 { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--subtle); font-size: 1.1rem; }
+        .vc-empty p { font-size: .85rem; color: var(--dark3); max-width: 300px; text-align: center; }
+
+        /* ACTIVE CALL */
+        .vc-call { flex: 1; position: relative; overflow: hidden; }
+        .remote-video-area { width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; }
+        .remote-video { width: 100%; height: 100%; object-fit: cover; }
+        .remote-placeholder { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+        .remote-av { width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(135deg, var(--pri), var(--teal)); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem; color: #fff; border: 4px solid rgba(255,255,255,.15); }
+        .remote-n { font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; font-size: 1.2rem; }
+        .remote-s { font-size: .85rem; color: var(--subtle); }
+        .local-pip { position: absolute; bottom: 5.5rem; right: 1.5rem; width: 160px; height: 120px; border-radius: 12px; overflow: hidden; border: 2.5px solid rgba(255,255,255,.25); box-shadow: 0 6px 24px rgba(0,0,0,.5); cursor: move; }
+        .local-video { width: 100%; height: 100%; object-fit: cover; background: linear-gradient(135deg, #1a3a6e, var(--pri)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: rgba(255,255,255,.7); }
+        .pip-label { position: absolute; bottom: .35rem; left: .5rem; font-size: .65rem; font-weight: 700; color: rgba(255,255,255,.8); }
+        .call-top { position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgba(0,0,0,.75) 0%, transparent 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .call-info { display: flex; align-items: center; gap: 1rem; }
+        .call-live { display: flex; align-items: center; gap: .4rem; background: rgba(220,38,38,.85); color: #fff; padding: .3rem .85rem; border-radius: 100px; font-size: .75rem; font-weight: 700; }
+        .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+        .call-timer { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; }
+        .call-enc { display: flex; align-items: center; gap: .35rem; font-size: .75rem; color: rgba(255,255,255,.7); }
+        .call-end-btn { background: rgba(220,38,38,.9); color: #fff; border: none; padding: .5rem 1.25rem; border-radius: 100px; font-weight: 700; font-size: .85rem; cursor: pointer; display: flex; align-items: center; gap: .4rem; transition: .2s; }
+        .call-end-btn:hover { background: var(--danger); }
+        .call-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(0,0,0,.85) 0%, transparent 100%); padding: 1.5rem; display: flex; align-items: center; justify-content: center; gap: .75rem; }
+        .cc-btn { width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: .2s; position: relative; }
+        .cc-btn.on { background: rgba(255,255,255,.15); color: #fff; }
+        .cc-btn.on:hover { background: rgba(255,255,255,.25); }
+        .cc-btn.off { background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); }
+        .cc-btn.red { background: var(--danger); color: #fff; }
+        .cc-btn.red:hover { background: #b91c1c; }
+
+        /* RIGHT PANEL DURING CALL */
+        .vc-right-panel { width: 320px; background: var(--dark2); border-left: 1px solid var(--dark3); display: flex; flex-direction: column; flex-shrink: 0; }
+        .vrp-tabs { display: flex; border-bottom: 1px solid var(--dark3); }
+        .vrp-tab { flex: 1; padding: .7rem .5rem; font-size: .75rem; font-weight: 700; text-align: center; cursor: pointer; color: var(--subtle); border-bottom: 2px solid transparent; transition: .2s; }
+        .vrp-tab.active { color: #fff; border-bottom-color: var(--pri); }
+        .vrp-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .vrp-panel { display: none; flex: 1; flex-direction: column; padding: .75rem; gap: .6rem; }
+        .vrp-panel.active { display: flex; }
+        .vrp-section-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--subtle); }
+        .vrp-info-row { display: flex; align-items: flex-start; gap: .5rem; }
+        .vrp-info-label { font-size: .75rem; color: var(--subtle); min-width: 80px; }
+        .vrp-info-val { font-size: .8rem; color: #e2e8f0; font-weight: 500; flex: 1; }
+        .vrp-file { background: var(--dark3); border-radius: 10px; padding: .6rem .75rem; display: flex; align-items: center; gap: .6rem; cursor: pointer; transition: .2s; }
+        .vrp-file:hover { background: rgba(26,86,219,.2); }
+        .vrp-file-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; }
+        .vrp-file-icon.pdf { background: rgba(220,38,38,.2); color: #fca5a5; }
+        .vrp-file-icon.img { background: rgba(26,86,219,.2); color: #93c5fd; }
+        .vrp-file-name { font-size: .78rem; color: #e2e8f0; font-weight: 500; }
+        .vrp-file-meta { font-size: .68rem; color: var(--subtle); }
+        .vrp-file-new { font-size: .6rem; font-weight: 700; background: rgba(5,150,105,.2); color: #6ee7b7; padding: .1rem .4rem; border-radius: 100px; }
+        .rx-input-wrap { background: var(--dark3); border-radius: 10px; padding: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+        .rx-inp { background: var(--dark); border: 1.5px solid var(--dark3); border-radius: 8px; padding: .45rem .7rem; color: #e2e8f0; font-size: .8rem; outline: none; width: 100%; font-family: 'DM Sans', sans-serif; }
+        .rx-inp::placeholder { color: var(--subtle); }
+        .rx-inp:focus { border-color: var(--pri); }
+        .rx-row { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+        .rx-list { display: flex; flex-direction: column; gap: .4rem; }
+        .rx-entry { background: rgba(26,86,219,.12); border: 1px solid rgba(26,86,219,.2); border-radius: 8px; padding: .5rem .75rem; display: flex; align-items: center; gap: .5rem; font-size: .78rem; color: #93c5fd; }
+        .rx-entry span { flex: 1; }
+        .rx-del { background: none; border: none; color: #f87171; cursor: pointer; font-size: .8rem; }
+        .rx-send-btn { width: 100%; padding: .55rem; background: var(--pri); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: .82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .4rem; transition: .2s; }
+        .rx-send-btn:hover { background: var(--pri-d); }
+        .chat-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: .5rem; padding: .75rem; }
+        .c-msg { max-width: 88%; }
+        .c-msg.mine { align-self: flex-end; }
+        .c-msg.theirs { align-self: flex-start; }
+        .c-bubble { padding: .5rem .75rem; border-radius: 10px; font-size: .82rem; line-height: 1.5; }
+        .mine .c-bubble { background: var(--pri); color: #fff; border-radius: 10px 10px 0 10px; }
+        .theirs .c-bubble { background: var(--dark3); color: #e2e8f0; border-radius: 10px 10px 10px 0; }
+        .c-meta { font-size: .65rem; color: var(--subtle); margin-top: .2rem; text-align: right; }
+        .theirs .c-meta { text-align: left; }
+        .chat-inp-row { padding: .75rem; border-top: 1px solid var(--dark3); display: flex; gap: .5rem; }
+        .chat-inp { flex: 1; background: var(--dark); border: 1.5px solid var(--dark3); border-radius: 9px; padding: .45rem .7rem; color: #e2e8f0; font-size: .82rem; outline: none; font-family: 'DM Sans', sans-serif; }
+        .chat-inp::placeholder { color: var(--subtle); }
+        .chat-inp:focus { border-color: var(--pri); }
+        .chat-send-btn { width: 34px; height: 34px; background: var(--pri); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: .85rem; }
+
+        /* PROFILE PAGE */
+        .profile-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
+        .profile-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; text-align: center; }
+        .profile-avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--pri), var(--teal)); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem; color: #fff; margin: 0 auto 1rem; }
+        .profile-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; }
+        .profile-spec { color: var(--muted); font-size: .9rem; margin-top: .25rem; }
+        .profile-badges { display: flex; gap: .5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+        .p-badge { background: var(--pri-l); color: var(--pri); font-size: .75rem; font-weight: 600; padding: .3rem .75rem; border-radius: 100px; }
+        .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: 1.5rem; }
+        .ps-item { background: var(--bg); border-radius: 10px; padding: .75rem; text-align: center; }
+        .ps-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+        .ps-lbl { font-size: .72rem; color: var(--muted); }
+        .profile-form { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 1.75rem; }
+        .form-section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem; margin-bottom: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--border); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+        .form-group { display: flex; flex-direction: column; gap: .35rem; }
+        .form-group label { font-size: .8rem; font-weight: 600; color: var(--muted); }
+        .form-input { padding: .6rem .9rem; border: 1.5px solid var(--border); border-radius: 10px; font-size: .88rem; font-family: 'DM Sans', sans-serif; outline: none; color: var(--text); background: var(--bg); transition: .2s; }
+        .form-input:focus { border-color: var(--pri); background: var(--card); }
+        .availability-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .5rem; margin-top: .75rem; }
+        .day-toggle { padding: .5rem .35rem; border-radius: 8px; border: 1.5px solid var(--border); font-size: .75rem; font-weight: 700; text-align: center; cursor: pointer; transition: .2s; color: var(--muted); }
+        .day-toggle.on { background: var(--pri-l); border-color: var(--pri); color: var(--pri); }
+
+        /* PATIENT HISTORY */
+        .history-table { width: 100%; border-collapse: collapse; }
+        .history-table th { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: .75rem 1rem; border-bottom: 1px solid var(--border); text-align: left; }
+        .history-table td { padding: .85rem 1rem; border-bottom: 1px solid var(--bg); font-size: .85rem; }
+        .history-table tr:hover td { background: var(--bg); }
+        .ht-status { font-size: .75rem; font-weight: 700; padding: .25rem .7rem; border-radius: 100px; }
+        .ht-status.completed { background: #dcfce7; color: var(--success); }
+        .ht-status.upcoming { background: var(--pri-l); color: var(--pri); }
+        .ht-status.cancelled { background: #fee2e2; color: var(--danger); }
+
+        /* TOAST */
+        .toast-wrap { position: fixed; top: 1.25rem; right: 1.25rem; display: flex; flex-direction: column; gap: .5rem; z-index: 9999; }
+        .toast { background: var(--dark); color: #fff; border-radius: 12px; padding: .75rem 1.25rem; font-size: .85rem; font-weight: 500; display: flex; align-items: center; gap: .6rem; box-shadow: 0 8px 30px rgba(0,0,0,.2); animation: slideIn .3s ease; min-width: 260px; border: 1px solid var(--dark3); }
+        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.success { border-left: 3px solid var(--emerald); }
+        .toast.info { border-left: 3px solid var(--pri); }
+        .toast.warning { border-left: 3px solid var(--amber); }
+
+        /* UPLOAD ZONE */
+        .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: .2s; }
+        .upload-zone:hover { border-color: var(--pri); background: var(--pri-l); }
+        .upload-zone i { font-size: 1.5rem; color: var(--subtle); margin-bottom: .5rem; }
+        .upload-zone p { font-size: .82rem; color: var(--muted); }
+        .upload-zone small { font-size: .72rem; color: var(--subtle); }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--card); border-radius: 20px; padding: 2rem; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.2); animation: modalIn .25s ease; }
+        @keyframes modalIn { from { transform: scale(.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+        .modal-close:hover { background: var(--card); color: var(--text); }
+
+        /* SCROLLBARS */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 100px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--subtle); }
+
+        @media (max-width: 1200px) { .metrics-row { grid-template-columns: repeat(2, 1fr); } .two-col { grid-template-columns: 1fr; } .profile-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <a class="nav-brand" href="../../index.html"><img src="../../assets/medfind-logo.png" alt="MedFind Bangladesh" style="height:44px;width:auto;object-fit:contain;"></a>
+    <div class="logo-wrap">MF</div>
+    <a class="nav-item active" onclick="showPage('dashboard')" href="#">
+        <i class="fas fa-th-large"></i><span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" onclick="showPage('video-console')" href="#">
+        <i class="fas fa-video"></i><span class="nav-label">Video Console</span>
+        <span class="nav-badge" id="queueBadge">3</span>
+    </a>
+    <a class="nav-item" onclick="showPage('appointments')" href="#">
+        <i class="fas fa-calendar-alt"></i><span class="nav-label">Appointments</span>
+    </a>
+    <a class="nav-item" onclick="showPage('patients')" href="#">
+        <i class="fas fa-users"></i><span class="nav-label">My Patients</span>
+    </a>
+    <a class="nav-item" onclick="showPage('files')" href="#">
+        <i class="fas fa-file-medical"></i><span class="nav-label">Medical Files</span>
+    </a>
+    <a class="nav-item" onclick="showPage('profile')" href="#">
+        <i class="fas fa-user-md"></i><span class="nav-label">My Profile</span>
+    </a>
+    <div class="sidebar-foot">
+        <div class="nav-item" style="position:relative">
+            <div class="doc-avatar" style="position:relative">KH<div class="online-dot"></div></div>
+            <span class="nav-label" style="display:none">Dr. Karimul Hasan</span>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="tb-left">
+            <span class="page-title" id="pageTitle">Dashboard</span>
+            <div class="status-toggle" id="statusToggle" onclick="toggleOnlineStatus()">
+                <div class="status-dot"></div>
+                <span id="statusText">Online</span>
+            </div>
+        </div>
+        <div class="tb-right">
+            <button class="tb-btn" onclick="showPage('video-console')">
+                <i class="fas fa-video"></i>
+                <span class="tb-badge">3</span>
+            </button>
+            <button class="tb-btn"><i class="fas fa-bell"></i><span class="tb-badge">5</span></button>
+            <button class="tb-btn" onclick="showPage('profile')"><i class="fas fa-cog"></i></button>
+        </div>
+    </div>
+
+    <!-- ===== DASHBOARD PAGE ===== -->
+    <div class="content active" id="page-dashboard">
+        <!-- Metrics -->
+        <div class="metrics-row">
+            <div class="metric-card blue">
+                <div class="mc-icon blue"><i class="fas fa-calendar-check"></i></div>
+                <div class="mc-val">24</div>
+                <div class="mc-label">Today's Appointments</div>
+            </div>
+            <div class="metric-card teal">
+                <div class="mc-icon teal"><i class="fas fa-video"></i></div>
+                <div class="mc-val">8</div>
+                <div class="mc-label">Video Consultations</div>
+            </div>
+            <div class="metric-card purple">
+                <div class="mc-icon purple"><i class="fas fa-file-medical"></i></div>
+                <div class="mc-val">12</div>
+                <div class="mc-label">New Files Received</div>
+            </div>
+            <div class="metric-card amber">
+                <div class="mc-icon amber"><i class="fas fa-star"></i></div>
+                <div class="mc-val">4.9</div>
+                <div class="mc-label">Patient Rating</div>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <!-- Consultation Requests -->
+            <div>
+                <div class="section-head">
+                    <span class="section-title">Pending Consultation Requests</span>
+                    <button class="section-btn" onclick="showPage('video-console')">Open Console →</button>
+                </div>
+                <div class="requests-list">
+                    <div class="req-card">
+                        <div class="req-avatar" style="background:linear-gradient(135deg,#2563eb,#60a5fa)">RA</div>
+                        <div class="req-info">
+                            <div class="req-name">Rashida Akter <span class="req-tag new">New</span></div>
+                            <div class="req-meta">
+                                <span><i class="fas fa-heartbeat" style="color:var(--danger)"></i> Chest Pain</span>
+                                <span><i class="fas fa-clock"></i> Waiting 12 min</span>
+                            </div>
+                        </div>
+                        <div class="req-actions">
+                            <button class="btn btn-view" onclick="openPatientFiles('RA')"><i class="fas fa-file-medical"></i> Files</button>
+                            <button class="btn btn-accept" onclick="acceptConsult('RA', 'Rashida Akter')"><i class="fas fa-video"></i> Accept</button>
+                        </div>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">MK</div>
+                        <div class="req-info">
+                            <div class="req-name">Mosharraf Karim <span class="req-tag urgent">Urgent</span> <span class="req-tag files">3 Files</span></div>
+                            <div class="req-meta">
+                                <span><i class="fas fa-brain"></i> Headache, Dizziness</span>
+                                <span><i class="fas fa-clock"></i> Waiting 28 min</span>
+                            </div>
+                        </div>
+                        <div class="req-actions">
+                            <button class="btn btn-view" onclick="openPatientFiles('MK')"><i class="fas fa-file-medical"></i> Files</button>
+                            <button class="btn btn-accept" onclick="acceptConsult('MK', 'Mosharraf Karim')"><i class="fas fa-video"></i> Accept</button>
+                        </div>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-avatar" style="background:linear-gradient(135deg,#059669,#34d399)">FH</div>
+                        <div class="req-info">
+                            <div class="req-name">Fatema Haque <span class="req-tag new">New</span></div>
+                            <div class="req-meta">
+                                <span><i class="fas fa-lungs"></i> Breathing difficulty</span>
+                                <span><i class="fas fa-clock"></i> Waiting 5 min</span>
+                            </div>
+                        </div>
+                        <div class="req-actions">
+                            <button class="btn btn-view" onclick="openPatientFiles('FH')"><i class="fas fa-file-medical"></i> Files</button>
+                            <button class="btn btn-accept" onclick="acceptConsult('FH', 'Fatema Haque')"><i class="fas fa-video"></i> Accept</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div>
+                <div class="section-head">
+                    <span class="section-title">Today's Schedule</span>
+                    <button class="section-btn" onclick="showPage('appointments')">Full View →</button>
+                </div>
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+                        <span style="font-size:.85rem;font-weight:600;color:var(--muted)">Thursday, April 24</span>
+                        <span style="font-size:.8rem;font-weight:700;color:var(--pri)">9:00 AM – 3:00 PM</span>
+                    </div>
+                    <div class="slot-grid">
+                        <div class="slot booked">9:00 AM<br><small>In-person</small></div>
+                        <div class="slot video">9:30 AM<br><small>Video ✓</small></div>
+                        <div class="slot video">10:00 AM<br><small>Video ✓</small></div>
+                        <div class="slot booked">10:30 AM<br><small>In-person</small></div>
+                        <div class="slot booked">11:00 AM<br><small>In-person</small></div>
+                        <div class="slot free">11:30 AM<br><small>Available</small></div>
+                        <div class="slot free">12:00 PM<br><small>Available</small></div>
+                        <div class="slot free">12:30 PM<br><small>Available</small></div>
+                        <div class="slot video" style="opacity:.5">1:00 PM<br><small>Pending</small></div>
+                        <div class="slot booked">1:30 PM<br><small>In-person</small></div>
+                        <div class="slot free">2:00 PM<br><small>Available</small></div>
+                        <div class="slot free">2:30 PM<br><small>Available</small></div>
+                    </div>
+                    <div style="display:flex;gap:1rem;margin-top:.75rem">
+                        <span style="font-size:.72rem;display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:var(--pri-l);border:1px solid #93c5fd;display:inline-block"></span>In-person</span>
+                        <span style="font-size:.72rem;display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:#f3e8ff;border:1px solid #c4b5fd;display:inline-block"></span>Video</span>
+                        <span style="font-size:.72rem;display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:var(--bg);border:1px solid var(--border);display:inline-block"></span>Free</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Files -->
+        <div style="margin-top:1.5rem">
+            <div class="section-head">
+                <span class="section-title">Recently Shared Patient Files</span>
+                <button class="section-btn" onclick="showPage('files')">All Files →</button>
+            </div>
+            <div class="card">
+                <div class="files-grid">
+                    <div class="file-item" onclick="toast('Opening ECG Report...','info')">
+                        <div class="file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                        <div>
+                            <div class="file-name">ECG_Report_Rashida.pdf <span class="file-new">NEW</span></div>
+                            <div class="file-meta">Rashida Akter · 2.4MB · 10 min ago</div>
+                        </div>
+                    </div>
+                    <div class="file-item" onclick="toast('Opening X-Ray image...','info')">
+                        <div class="file-icon img"><i class="fas fa-x-ray"></i></div>
+                        <div>
+                            <div class="file-name">Chest_Xray_MK.jpg <span class="file-new">NEW</span></div>
+                            <div class="file-meta">Mosharraf Karim · 5.1MB · 30 min ago</div>
+                        </div>
+                    </div>
+                    <div class="file-item" onclick="toast('Opening blood report...','info')">
+                        <div class="file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                        <div>
+                            <div class="file-name">BloodTest_FH_Apr2026.pdf</div>
+                            <div class="file-meta">Fatema Haque · 1.2MB · 1 hr ago</div>
+                        </div>
+                    </div>
+                    <div class="file-item" onclick="toast('Opening MRI scan...','info')">
+                        <div class="file-icon img"><i class="fas fa-brain"></i></div>
+                        <div>
+                            <div class="file-name">MRI_Brain_MK_Apr24.jpg</div>
+                            <div class="file-meta">Mosharraf Karim · 8.7MB · 1 hr ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VIDEO CONSOLE PAGE ===== -->
+    <div class="content" id="page-video-console" style="padding:0;overflow:hidden">
+        <div class="vc-layout" id="vcLayout">
+
+            <!-- LEFT: PATIENT QUEUE -->
+            <div class="vc-sidebar">
+                <div class="vc-sidebar-head">
+                    <div class="vc-status-bar">
+                        <span class="vc-status-label">Video Console</span>
+                        <div class="vc-status-pill" id="vcStatusPill">
+                            <div class="pulse-dot"></div> Online
+                        </div>
+                    </div>
+                    <div style="font-size:.75rem;color:var(--subtle);margin-top:.5rem;display:flex;align-items:center;gap:.4rem">
+                        <i class="fas fa-lock" style="color:var(--emerald)"></i>
+                        End-to-end encrypted · WebRTC
+                    </div>
+                </div>
+                <div class="vc-queue">
+                    <div class="q-label">Calling Now</div>
+                    <div class="q-patient calling active" onclick="selectPatient(this, 'Rashida Akter', 'RA', 'Chest Pain, Shortness of Breath')">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#60a5fa);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0">RA</div>
+                            <div>
+                                <div class="q-name">Rashida Akter</div>
+                                <div class="q-detail">Cardiology · F, 42 · Dhaka</div>
+                            </div>
+                        </div>
+                        <div class="q-badges">
+                            <span class="q-badge video"><i class="fas fa-video"></i> Video</span>
+                            <span class="q-badge wait"><i class="fas fa-clock"></i> 12 min</span>
+                            <span class="q-badge files"><i class="fas fa-file-medical"></i> 2 files</span>
+                        </div>
+                        <button class="q-accept-btn" onclick="startVideoCall(event,'Rashida Akter','RA')"><i class="fas fa-video"></i> Start Consultation</button>
+                        <button class="q-accept-btn reject" onclick="rejectRequest(event,'Rashida Akter')"><i class="fas fa-times"></i> Reject</button>
+                    </div>
+
+                    <div class="q-label">Waiting Queue</div>
+                    <div class="q-patient" onclick="selectPatient(this, 'Mosharraf Karim', 'MK', 'Severe Headache, Dizziness, Nausea')">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0">MK</div>
+                            <div>
+                                <div class="q-name">Mosharraf Karim</div>
+                                <div class="q-detail">Neurology · M, 55 · Chittagong</div>
+                            </div>
+                        </div>
+                        <div class="q-badges">
+                            <span class="q-badge urgent"><i class="fas fa-exclamation-triangle"></i> Urgent</span>
+                            <span class="q-badge wait"><i class="fas fa-clock"></i> 28 min</span>
+                            <span class="q-badge files"><i class="fas fa-file-medical"></i> 3 files</span>
+                        </div>
+                        <button class="q-accept-btn" onclick="startVideoCall(event,'Mosharraf Karim','MK')" style="display:none"></button>
+                    </div>
+                    <div class="q-patient" onclick="selectPatient(this, 'Fatema Haque', 'FH', 'Difficulty breathing, Wheezing')">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0">FH</div>
+                            <div>
+                                <div class="q-name">Fatema Haque</div>
+                                <div class="q-detail">Pulmonology · F, 38 · Sylhet</div>
+                            </div>
+                        </div>
+                        <div class="q-badges">
+                            <span class="q-badge video"><i class="fas fa-video"></i> Video</span>
+                            <span class="q-badge wait"><i class="fas fa-clock"></i> 5 min</span>
+                        </div>
+                        <button class="q-accept-btn" onclick="startVideoCall(event,'Fatema Haque','FH')" style="display:none"></button>
+                    </div>
+
+                    <div class="q-label" style="margin-top:.75rem">Upcoming (Scheduled)</div>
+                    <div class="q-patient" style="opacity:.7">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#d97706,#fbbf24);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0">SI</div>
+                            <div>
+                                <div class="q-name">Salma Islam</div>
+                                <div class="q-detail">General · F, 29 · Dhaka</div>
+                            </div>
+                        </div>
+                        <div class="q-badges">
+                            <span class="q-badge wait"><i class="fas fa-calendar"></i> 11:00 AM</span>
+                        </div>
+                    </div>
+                    <div class="q-patient" style="opacity:.7">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#38bdf8);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0">TR</div>
+                            <div>
+                                <div class="q-name">Tariq Rahman</div>
+                                <div class="q-detail">Cardiology · M, 63 · Rajshahi</div>
+                            </div>
+                        </div>
+                        <div class="q-badges">
+                            <span class="q-badge wait"><i class="fas fa-calendar"></i> 12:30 PM</span>
+                            <span class="q-badge files"><i class="fas fa-file-medical"></i> 1 file</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: VIDEO AREA (empty state) -->
+            <div class="vc-main" id="vcMain" style="display:flex;flex-direction:column">
+                <div class="vc-empty" id="vcEmpty">
+                    <div class="vc-empty-icon"><i class="fas fa-video"></i></div>
+                    <h3>Doctor Video Console</h3>
+                    <p>Select a patient from the queue to start a consultation. All calls are end-to-end encrypted.</p>
+                    <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center">
+                        <div style="background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:.75rem 1.25rem;text-align:center">
+                            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:#fff">3</div>
+                            <div style="font-size:.75rem;color:var(--subtle)">Waiting</div>
+                        </div>
+                        <div style="background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:.75rem 1.25rem;text-align:center">
+                            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:#fff">8</div>
+                            <div style="font-size:.75rem;color:var(--subtle)">Today</div>
+                        </div>
+                        <div style="background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:.75rem 1.25rem;text-align:center">
+                            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:#fff">5</div>
+                            <div style="font-size:.75rem;color:var(--subtle)">Upcoming</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIVE CALL VIEW (hidden until call starts) -->
+                <div class="vc-call" id="vcCallArea" style="display:none;flex:1;position:relative">
+                    <div class="remote-video-area" id="remoteVideoArea">
+                        <div class="remote-placeholder" id="remotePlaceholder">
+                            <div class="remote-av" id="remoteAv">RA</div>
+                            <div class="remote-n" id="remotePatientName">Rashida Akter</div>
+                            <div class="remote-s" id="remoteStatus"><i class="fas fa-circle-notch fa-spin"></i> Connecting...</div>
+                        </div>
+                        <video class="remote-video" id="remoteVideoEl" style="display:none" autoplay playsinline></video>
+                    </div>
+                    <!-- Local PiP -->
+                    <div class="local-pip" id="localPip">
+                        <div class="local-video" id="localVideoEl">
+                            <video style="width:100%;height:100%;object-fit:cover" id="localStream" autoplay muted playsinline></video>
+                        </div>
+                        <div class="pip-label">You (Dr. K. Hasan)</div>
+                    </div>
+                    <!-- Top Bar -->
+                    <div class="call-top">
+                        <div class="call-info">
+                            <div class="call-live"><div class="pulse-dot"></div> LIVE</div>
+                            <div class="call-timer" id="callTimer">00:00</div>
+                        </div>
+                        <div class="call-enc"><i class="fas fa-shield-alt"></i> Encrypted</div>
+                        <button class="call-end-btn" onclick="endCall()"><i class="fas fa-phone-slash"></i> End Call</button>
+                    </div>
+                    <!-- Controls -->
+                    <div class="call-controls">
+                        <button class="cc-btn on" id="micBtn" onclick="toggleMic()" title="Mute/Unmute"><i class="fas fa-microphone" id="micIcon"></i></button>
+                        <button class="cc-btn on" id="camBtn" onclick="toggleCam()" title="Camera On/Off"><i class="fas fa-video" id="camIcon"></i></button>
+                        <button class="cc-btn on" onclick="toggleSS()" title="Screen Share"><i class="fas fa-desktop"></i></button>
+                        <button class="cc-btn on" onclick="toggleVRPanel('rxPanel')" title="Prescription"><i class="fas fa-prescription-bottle-alt"></i></button>
+                        <button class="cc-btn on" onclick="toggleVRPPanel('chatPanel')" title="Chat"><i class="fas fa-comment-medical"></i></button>
+                        <button class="cc-btn on" onclick="toggleVRPPanel('filesPanel')" title="Patient Files"><i class="fas fa-file-medical"></i></button>
+                        <button class="cc-btn red" onclick="endCall()" title="End Call"><i class="fas fa-phone-slash"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT INFO PANEL (shown during call) -->
+            <div class="vc-right-panel" id="vcRightPanel" style="display:none">
+                <div class="vrp-tabs">
+                    <div class="vrp-tab active" onclick="switchVRTab('filesPanel',this)"><i class="fas fa-file-medical"></i> Files</div>
+                    <div class="vrp-tab" onclick="switchVRTab('rxPanel',this)"><i class="fas fa-prescription"></i> Rx</div>
+                    <div class="vrp-tab" onclick="switchVRTab('chatPanel',this)"><i class="fas fa-comment"></i> Chat</div>
+                    <div class="vrp-tab" onclick="switchVRTab('patientPanel',this)"><i class="fas fa-user"></i> Info</div>
+                </div>
+                <div class="vrp-body">
+                    <!-- FILES PANEL -->
+                    <div class="vrp-panel active" id="filesPanel">
+                        <div class="vrp-section-label">Patient Shared Files</div>
+                        <div class="vrp-file" onclick="toast('Opening ECG Report...','info')">
+                            <div class="vrp-file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                            <div style="flex:1">
+                                <div class="vrp-file-name">ECG_Report.pdf <span class="vrp-file-new">NEW</span></div>
+                                <div class="vrp-file-meta">2.4MB · 10 min ago</div>
+                            </div>
+                            <i class="fas fa-download" style="color:var(--subtle);font-size:.8rem"></i>
+                        </div>
+                        <div class="vrp-file" onclick="toast('Opening Prescription...','info')">
+                            <div class="vrp-file-icon pdf"><i class="fas fa-prescription"></i></div>
+                            <div style="flex:1">
+                                <div class="vrp-file-name">Previous_Rx.pdf</div>
+                                <div class="vrp-file-meta">0.8MB · 3 days ago</div>
+                            </div>
+                            <i class="fas fa-download" style="color:var(--subtle);font-size:.8rem"></i>
+                        </div>
+                        <div class="vrp-section-label" style="margin-top:.5rem">Send Files to Patient</div>
+                        <div style="border:1.5px dashed var(--dark3);border-radius:10px;padding:1rem;text-align:center;cursor:pointer" onclick="sendFileToPatient()">
+                            <i class="fas fa-cloud-upload-alt" style="font-size:1.2rem;color:var(--subtle)"></i>
+                            <div style="font-size:.78rem;color:var(--subtle);margin-top:.35rem">Upload & Send<br><small style="font-size:.68rem">PDF, Images, Reports</small></div>
+                        </div>
+                    </div>
+
+                    <!-- PRESCRIPTION PANEL -->
+                    <div class="vrp-panel" id="rxPanel">
+                        <div class="vrp-section-label">Digital Prescription</div>
+                        <div class="rx-input-wrap">
+                            <input class="rx-inp" id="rxMed" placeholder="Medicine name *">
+                            <div class="rx-row">
+                                <input class="rx-inp" id="rxDose" placeholder="Dosage (e.g. 500mg)">
+                                <input class="rx-inp" id="rxFreq" placeholder="Frequency (e.g. 1-0-1)">
+                            </div>
+                            <input class="rx-inp" id="rxDur" placeholder="Duration (e.g. 7 days)">
+                            <input class="rx-inp" id="rxNote" placeholder="Special instructions">
+                            <button class="btn btn-view" onclick="addRxItem()" style="width:100%;justify-content:center"><i class="fas fa-plus"></i> Add Medicine</button>
+                        </div>
+                        <div class="rx-list" id="rxList"></div>
+                        <div class="vrp-section-label" style="margin-top:.25rem">Doctor's Notes</div>
+                        <textarea class="rx-inp" placeholder="Diagnosis and notes for the patient..." style="height:80px;resize:none"></textarea>
+                        <button class="rx-send-btn" onclick="sendPrescription()"><i class="fas fa-paper-plane"></i> Send Prescription to Patient</button>
+                    </div>
+
+                    <!-- CHAT PANEL -->
+                    <div class="vrp-panel" id="chatPanel" style="padding:0;flex:1">
+                        <div class="chat-msgs" id="chatMsgs">
+                            <div class="c-msg theirs">
+                                <div class="c-bubble">Hello Doctor, I've been experiencing chest pain for 2 days. I've uploaded my ECG report.</div>
+                                <div class="c-meta">Rashida · 10:12 AM</div>
+                            </div>
+                            <div class="c-msg mine">
+                                <div class="c-bubble">I can see your ECG report. Please describe the pain — is it sharp or dull?</div>
+                                <div class="c-meta">You · 10:13 AM</div>
+                            </div>
+                        </div>
+                        <div class="chat-inp-row">
+                            <input class="chat-inp" id="chatInp" placeholder="Message patient..." onkeydown="if(event.key==='Enter')sendChat()">
+                            <button class="chat-send-btn" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- PATIENT INFO PANEL -->
+                    <div class="vrp-panel" id="patientPanel">
+                        <div class="vrp-section-label">Patient Information</div>
+                        <div style="background:var(--dark3);border-radius:12px;padding:.85rem;display:flex;flex-direction:column;gap:.5rem">
+                            <div class="vrp-info-row"><span class="vrp-info-label">Name</span><span class="vrp-info-val" id="vrpName">Rashida Akter</span></div>
+                            <div class="vrp-info-row"><span class="vrp-info-label">Age / Sex</span><span class="vrp-info-val">42 years / Female</span></div>
+                            <div class="vrp-info-row"><span class="vrp-info-label">Blood Group</span><span class="vrp-info-val" style="color:#f87171;font-weight:700">B+</span></div>
+                            <div class="vrp-info-row"><span class="vrp-info-label">Allergies</span><span class="vrp-info-val" style="color:#fbbf24">Penicillin</span></div>
+                            <div class="vrp-info-row"><span class="vrp-info-label">Complaint</span><span class="vrp-info-val" id="vrpComplaint">Chest pain, shortness of breath</span></div>
+                            <div class="vrp-info-row"><span class="vrp-info-label">Last Visit</span><span class="vrp-info-val">Jan 12, 2026</span></div>
+                        </div>
+                        <div class="vrp-section-label" style="margin-top:.5rem">Previous Conditions</div>
+                        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                            <span style="background:rgba(220,38,38,.15);color:#fca5a5;font-size:.72rem;font-weight:600;padding:.2rem .6rem;border-radius:100px">Hypertension</span>
+                            <span style="background:rgba(217,119,6,.15);color:#fcd34d;font-size:.72rem;font-weight:600;padding:.2rem .6rem;border-radius:100px">Diabetes T2</span>
+                            <span style="background:rgba(26,86,219,.15);color:#93c5fd;font-size:.72rem;font-weight:600;padding:.2rem .6rem;border-radius:100px">High Cholesterol</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== APPOINTMENTS PAGE ===== -->
+    <div class="content" id="page-appointments">
+        <div class="section-head">
+            <span class="section-title">Appointments</span>
+            <button class="btn btn-primary" onclick="toast('Opening slot settings...','info')"><i class="fas fa-plus"></i> Add Slot</button>
+        </div>
+        <div class="card">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th><th>Date & Time</th><th>Type</th><th>Complaint</th><th>Status</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Rashida Akter</strong><br><small style="color:var(--muted)">F, 42 · Dhaka</small></td><td>Apr 24 · 10:00 AM</td><td><span class="req-tag files" style="border-radius:100px"><i class="fas fa-video"></i> Video</span></td><td>Chest pain</td><td><span class="ht-status upcoming">Upcoming</span></td><td><button class="btn btn-accept" style="font-size:.75rem" onclick="startVideoCall(event,'Rashida Akter','RA')"><i class="fas fa-video"></i> Start</button></td></tr>
+                    <tr><td><strong>Mosharraf Karim</strong><br><small style="color:var(--muted)">M, 55 · Chittagong</small></td><td>Apr 24 · 11:00 AM</td><td><span class="req-tag files" style="border-radius:100px"><i class="fas fa-video"></i> Video</span></td><td>Headache</td><td><span class="ht-status upcoming">Upcoming</span></td><td><button class="btn btn-accept" style="font-size:.75rem" onclick="startVideoCall(event,'Mosharraf Karim','MK')"><i class="fas fa-video"></i> Start</button></td></tr>
+                    <tr><td><strong>Fatema Haque</strong><br><small style="color:var(--muted)">F, 38 · Sylhet</small></td><td>Apr 24 · 12:30 PM</td><td><span style="background:#dbeafe;color:var(--pri);font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:100px">In-person</span></td><td>Breathing issues</td><td><span class="ht-status upcoming">Upcoming</span></td><td><button class="btn btn-view" style="font-size:.75rem">View</button></td></tr>
+                    <tr><td><strong>Kamal Hossain</strong><br><small style="color:var(--muted)">M, 67 · Dhaka</small></td><td>Apr 23 · 9:30 AM</td><td><span class="req-tag files" style="border-radius:100px"><i class="fas fa-video"></i> Video</span></td><td>Post-op followup</td><td><span class="ht-status completed">Completed</span></td><td><button class="btn btn-view" style="font-size:.75rem">History</button></td></tr>
+                    <tr><td><strong>Lailun Nahar</strong><br><small style="color:var(--muted)">F, 34 · Rajshahi</small></td><td>Apr 22 · 2:00 PM</td><td><span style="background:#dbeafe;color:var(--pri);font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:100px">In-person</span></td><td>Routine checkup</td><td><span class="ht-status completed">Completed</span></td><td><button class="btn btn-view" style="font-size:.75rem">History</button></td></tr>
+                    <tr><td><strong>Tariq Rahman</strong><br><small style="color:var(--muted)">M, 48 · Khulna</small></td><td>Apr 21 · 11:00 AM</td><td><span class="req-tag files" style="border-radius:100px"><i class="fas fa-video"></i> Video</span></td><td>BP monitoring</td><td><span class="ht-status cancelled">Cancelled</span></td><td><button class="btn btn-view" style="font-size:.75rem">Reschedule</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== PATIENTS PAGE ===== -->
+    <div class="content" id="page-patients">
+        <div class="section-head">
+            <span class="section-title">My Patients</span>
+            <input type="text" style="padding:.5rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;outline:none;width:220px" placeholder="Search patients...">
+        </div>
+        <div class="requests-list">
+            <div class="req-card">
+                <div class="req-avatar" style="background:linear-gradient(135deg,#2563eb,#60a5fa)">RA</div>
+                <div class="req-info">
+                    <div class="req-name">Rashida Akter</div>
+                    <div class="req-meta"><span>F, 42 · Blood: B+</span><span>4 consultations</span><span>Last: Apr 23, 2026</span></div>
+                </div>
+                <div class="req-actions">
+                    <button class="btn btn-view" onclick="openPatientFiles('RA')"><i class="fas fa-file-medical"></i> Files</button>
+                    <button class="btn btn-accept" onclick="startVideoCall(event,'Rashida Akter','RA')"><i class="fas fa-video"></i> Consult</button>
+                </div>
+            </div>
+            <div class="req-card">
+                <div class="req-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">MK</div>
+                <div class="req-info">
+                    <div class="req-name">Mosharraf Karim</div>
+                    <div class="req-meta"><span>M, 55 · Blood: O+</span><span>7 consultations</span><span>Last: Apr 20, 2026</span></div>
+                </div>
+                <div class="req-actions">
+                    <button class="btn btn-view" onclick="openPatientFiles('MK')"><i class="fas fa-file-medical"></i> Files</button>
+                    <button class="btn btn-accept" onclick="startVideoCall(event,'Mosharraf Karim','MK')"><i class="fas fa-video"></i> Consult</button>
+                </div>
+            </div>
+            <div class="req-card">
+                <div class="req-avatar" style="background:linear-gradient(135deg,#059669,#34d399)">FH</div>
+                <div class="req-info">
+                    <div class="req-name">Fatema Haque</div>
+                    <div class="req-meta"><span>F, 38 · Blood: A-</span><span>2 consultations</span><span>Last: Apr 15, 2026</span></div>
+                </div>
+                <div class="req-actions">
+                    <button class="btn btn-view" onclick="openPatientFiles('FH')"><i class="fas fa-file-medical"></i> Files</button>
+                    <button class="btn btn-accept" onclick="startVideoCall(event,'Fatema Haque','FH')"><i class="fas fa-video"></i> Consult</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FILES PAGE ===== -->
+    <div class="content" id="page-files">
+        <div class="section-head">
+            <span class="section-title">Medical Files (Patient Shared)</span>
+            <span style="font-size:.82rem;color:var(--muted)">🔒 Private — Only you and your patients can access these files</span>
+        </div>
+        <div class="two-col">
+            <div>
+                <div class="card" style="margin-bottom:1.5rem">
+                    <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem">Send Files to Patient</div>
+                    <div class="upload-zone" onclick="sendFileToPatient()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload prescription, test results, or reports</p>
+                        <small>PDF, JPG, PNG — Max 20MB per file</small>
+                    </div>
+                    <div style="margin-top:.75rem;display:flex;gap:.5rem">
+                        <select style="flex:1;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:9px;font-size:.82rem;outline:none;color:var(--text)">
+                            <option>Select Patient...</option>
+                            <option>Rashida Akter</option>
+                            <option>Mosharraf Karim</option>
+                            <option>Fatema Haque</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="toast('File sent securely to patient!','success')"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem">Received from Patients</div>
+                    <div style="display:flex;flex-direction:column;gap:.6rem">
+                        <div class="file-item" onclick="toast('Opening ECG Report...','info')">
+                            <div class="file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                            <div style="flex:1"><div class="file-name">ECG_Report_Rashida.pdf <span class="file-new">NEW</span></div><div class="file-meta">Rashida Akter · 2.4MB · 10 min ago</div></div>
+                            <i class="fas fa-download" style="color:var(--subtle)"></i>
+                        </div>
+                        <div class="file-item" onclick="toast('Opening X-Ray...','info')">
+                            <div class="file-icon img"><i class="fas fa-x-ray"></i></div>
+                            <div style="flex:1"><div class="file-name">Chest_Xray_MK.jpg <span class="file-new">NEW</span></div><div class="file-meta">Mosharraf Karim · 5.1MB · 30 min ago</div></div>
+                            <i class="fas fa-download" style="color:var(--subtle)"></i>
+                        </div>
+                        <div class="file-item" onclick="toast('Opening blood test...','info')">
+                            <div class="file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                            <div style="flex:1"><div class="file-name">BloodTest_FH_Apr2026.pdf</div><div class="file-meta">Fatema Haque · 1.2MB · 1 hr ago</div></div>
+                            <i class="fas fa-download" style="color:var(--subtle)"></i>
+                        </div>
+                        <div class="file-item" onclick="toast('Opening MRI scan...','info')">
+                            <div class="file-icon img"><i class="fas fa-brain"></i></div>
+                            <div style="flex:1"><div class="file-name">MRI_Brain_MK.jpg</div><div class="file-meta">Mosharraf Karim · 8.7MB · 1 hr ago</div></div>
+                            <i class="fas fa-download" style="color:var(--subtle)"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PROFILE PAGE ===== -->
+    <div class="content" id="page-profile">
+        <div class="profile-grid">
+            <div>
+                <div class="profile-card">
+                    <div class="profile-avatar">KH</div>
+                    <div class="profile-name">Dr. Karimul Hasan</div>
+                    <div class="profile-spec">Cardiologist · BSMMU, Dhaka</div>
+                    <div class="profile-badges">
+                        <span class="p-badge">MBBS</span>
+                        <span class="p-badge">FCPS</span>
+                        <span class="p-badge">BMDC Verified ✓</span>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="ps-item"><div class="ps-val">4,200+</div><div class="ps-lbl">Patients</div></div>
+                        <div class="ps-item"><div class="ps-val">18 yrs</div><div class="ps-lbl">Experience</div></div>
+                        <div class="ps-item"><div class="ps-val">4.9 ★</div><div class="ps-lbl">Rating</div></div>
+                        <div class="ps-item"><div class="ps-val">312</div><div class="ps-lbl">Reviews</div></div>
+                    </div>
+                    <button class="btn btn-accept" style="width:100%;margin-top:1rem;justify-content:center" onclick="toast('Profile updated!','success')"><i class="fas fa-edit"></i> Update Profile</button>
+                    <button class="btn btn-accept" style="width:100%;margin-top:.5rem;justify-content:center;background:var(--purple)" onclick="showPage('video-console')"><i class="fas fa-video"></i> Open Video Console</button>
+                </div>
+            </div>
+            <div>
+                <div class="profile-form">
+                    <div class="form-section-title">Personal & Professional Info</div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Full Name</label><input class="form-input" value="Dr. Karimul Hasan"></div>
+                        <div class="form-group"><label>Specialization</label><input class="form-input" value="Cardiology"></div>
+                        <div class="form-group"><label>BMDC Registration No.</label><input class="form-input" value="BMDC-12345"></div>
+                        <div class="form-group"><label>Qualification</label><input class="form-input" value="MBBS, FCPS (Cardiology)"></div>
+                        <div class="form-group"><label>Hospital</label><input class="form-input" value="BSMMU, Dhaka"></div>
+                        <div class="form-group"><label>Experience (years)</label><input class="form-input" type="number" value="18"></div>
+                        <div class="form-group"><label>Consultation Fee (৳)</label><input class="form-input" type="number" value="1200"></div>
+                        <div class="form-group"><label>Video Fee (৳)</label><input class="form-input" type="number" value="800"></div>
+                    </div>
+                    <div class="form-section-title">Availability Schedule</div>
+                    <div class="availability-grid" id="availGrid">
+                        <div class="day-toggle on" onclick="this.classList.toggle('on')">Sat</div>
+                        <div class="day-toggle on" onclick="this.classList.toggle('on')">Sun</div>
+                        <div class="day-toggle on" onclick="this.classList.toggle('on')">Mon</div>
+                        <div class="day-toggle on" onclick="this.classList.toggle('on')">Tue</div>
+                        <div class="day-toggle on" onclick="this.classList.toggle('on')">Wed</div>
+                        <div class="day-toggle" onclick="this.classList.toggle('on')">Thu</div>
+                        <div class="day-toggle" onclick="this.classList.toggle('on')">Fri</div>
+                    </div>
+                    <div class="form-grid" style="margin-top:1rem">
+                        <div class="form-group"><label>Start Time</label><input class="form-input" type="time" value="09:00"></div>
+                        <div class="form-group"><label>End Time</label><input class="form-input" type="time" value="14:00"></div>
+                    </div>
+                    <div class="form-section-title">Consultation Settings</div>
+                    <div style="display:flex;flex-direction:column;gap:.75rem">
+                        <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+                            <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--pri)">
+                            <span style="font-size:.88rem">Accept Video Consultations</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+                            <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--pri)">
+                            <span style="font-size:.88rem">Accept In-Person Appointments</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+                            <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--pri)">
+                            <span style="font-size:.88rem">Receive SMS Notifications for new requests</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+                            <input type="checkbox" style="width:16px;height:16px;accent-color:var(--pri)">
+                            <span style="font-size:.88rem">Auto-accept requests from existing patients</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:1.5rem" onclick="toast('Profile & settings saved!','success')"><i class="fas fa-save"></i> Save All Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- end .main -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- PATIENT FILES MODAL -->
+<div class="modal-overlay" id="filesModal">
+    <div class="modal">
+        <div class="modal-head">
+            <div class="modal-title" id="filesModalTitle">Patient Files</div>
+            <button class="modal-close" onclick="closeModal('filesModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="filesModalContent"></div>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:flex-end">
+            <button class="btn btn-view" onclick="closeModal('filesModal')">Close</button>
+            <button class="btn btn-accept" id="acceptFromModal"><i class="fas fa-video"></i> Start Consultation</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== NAVIGATION =====
+const pageTitles = {
+    'dashboard': 'Dashboard',
+    'video-console': 'Video Console',
+    'appointments': 'Appointments',
+    'patients': 'My Patients',
+    'files': 'Medical Files',
+    'profile': 'My Profile'
+};
+
+function showPage(page) {
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('pageTitle').textContent = pageTitles[page] || page;
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(ni => {
+        if (ni.getAttribute('onclick') && ni.getAttribute('onclick').includes("'" + page + "'")) {
+            ni.classList.add('active');
+        }
+    });
+}
+
+// ===== STATUS TOGGLE =====
+let isOnline = true;
+function toggleOnlineStatus() {
+    isOnline = !isOnline;
+    const tog = document.getElementById('statusToggle');
+    const txt = document.getElementById('statusText');
+    const pill = document.getElementById('vcStatusPill');
+    if (isOnline) {
+        tog.classList.remove('offline');
+        txt.textContent = 'Online';
+        pill.innerHTML = '<div class="pulse-dot"></div> Online';
+        toast('You are now Online — patients can reach you', 'success');
+    } else {
+        tog.classList.add('offline');
+        txt.textContent = 'Offline';
+        pill.style.background = 'rgba(100,116,139,.15)';
+        pill.style.color = 'var(--subtle)';
+        pill.innerHTML = '<i class="fas fa-moon"></i> Offline';
+        toast('You are now Offline', 'info');
+    }
+}
+
+// ===== VIDEO CONSOLE =====
+let callActive = false;
+let callTimer = null;
+let callSec = 0;
+let micOn = true, camOn = true;
+let rxItems = [];
+let activeVRTab = 'filesPanel';
+let currentSessionId = null;
+
+function selectPatient(el, name, initials, complaint) {
+    document.querySelectorAll('.q-patient').forEach(p => {
+        p.classList.remove('active');
+        const btn = p.querySelector('.q-accept-btn:not(.reject)');
+        if (btn) btn.style.display = 'none';
+    });
+    el.classList.add('active');
+    const btn = el.querySelector('.q-accept-btn:not(.reject)');
+    if (btn) btn.style.display = 'flex';
+    document.getElementById('vrpName').textContent = name;
+    document.getElementById('vrpComplaint').textContent = complaint;
+}
+
+// ── Doctor WebRTC instance ────────────────────────────────────────────────────
+let medCall = null;
+
+function startVideoCall(e, name, initials, sessionId) {
+    e && e.stopPropagation();
+    showPage('video-console');
+    callActive = true;
+
+    // Use provided sessionId (from appointment) or generate for demo
+    currentSessionId = sessionId || ('MF-' + Math.random().toString(36).slice(2,10).toUpperCase());
+    const token = localStorage.getItem('mf_token') || localStorage.getItem('medfind_token');
+
+    // Update UI
+    document.getElementById('vcEmpty').style.display = 'none';
+    document.getElementById('vcCallArea').style.display = 'block';
+    document.getElementById('vcRightPanel').style.display = 'flex';
+    document.getElementById('remoteAv').textContent = initials;
+    document.getElementById('remotePatientName').textContent = name;
+    document.getElementById('vrpName').textContent = name;
+    document.getElementById('remoteStatus').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting…';
+
+    // ── Real WebRTC — Doctor starts session ──────────────────────────────
+    medCall = new MedFindCall({
+        role:      'doctor',
+        sessionId: currentSessionId,
+        token:     token,
+        callbacks: {
+            onCallStarted: ({ remoteStream }) => {
+                // Attach patient video stream
+                const remoteVid = document.getElementById('remoteVideo');
+                if (remoteVid) { remoteVid.srcObject = remoteStream; remoteVid.play().catch(()=>{}); }
+                document.getElementById('remoteStatus').innerHTML =
+                    '<i class="fas fa-check-circle" style="color:#10b981"></i> Connected';
+                // Start timer
+                callSec = 0;
+                if (callTimer) clearInterval(callTimer);
+                callTimer = setInterval(() => {
+                    callSec++;
+                    const m = Math.floor(callSec/60).toString().padStart(2,'0');
+                    const s = (callSec%60).toString().padStart(2,'0');
+                    document.getElementById('callTimer').textContent = m + ':' + s;
+                }, 1000);
+            },
+            onIceConnected: () => {
+                document.getElementById('remoteStatus').innerHTML =
+                    '<i class="fas fa-check-circle" style="color:#10b981"></i> Live';
+            },
+            onCallEnded: ({ reason }) => {
+                if (reason === 'peer_left') {
+                    toast('Patient has left the session.', 'info');
+                    endCall(true);
+                }
+            },
+            onError: ({ message }) => {
+                document.getElementById('remoteStatus').innerHTML =
+                    '<i class="fas fa-exclamation-circle" style="color:#ef4444"></i> Error';
+                toast('WebRTC error: ' + message, 'error');
+            },
+        }
+    });
+
+    medCall.startSession().then(() => {
+        // Attach local video preview
+        const localVid = document.getElementById('localStream');
+        if (localVid) medCall.attachLocalVideo(localVid);
+        toast('Joining session with ' + name + '…', 'success');
+    }).catch(err => {
+        toast('Could not start session: ' + err.message, 'error');
+    });
+}
+
+function endCall(silent = false) {
+    if (!callActive) return;
+    if (!silent && !confirm('End this consultation?\n\nPrescription and session notes will be saved to patient record.')) return;
+
+    clearInterval(callTimer);
+    callActive = false;
+
+    // Collect prescription from right-panel inputs if present
+    const prescriptionText = (document.getElementById('prescriptionText') || {}).value || '';
+    const followUpNotes    = (document.getElementById('followUpNotes')    || {}).value || '';
+    const recommendedTests = (document.getElementById('recommendedTests') || {}).value || '';
+
+    if (medCall) {
+        medCall.endCall({ text: prescriptionText, followUp: followUpNotes, tests: recommendedTests });
+        medCall = null;
+    } else {
+        // Fallback: stop local tracks manually
+        const vid = document.getElementById('localStream');
+        if (vid && vid.srcObject) vid.srcObject.getTracks().forEach(t => t.stop());
+    }
+
+    document.getElementById('vcCallArea').style.display = 'none';
+    document.getElementById('vcRightPanel').style.display = 'none';
+    document.getElementById('vcEmpty').style.display = 'flex';
+
+    toast('Consultation ended. Session and prescription saved to patient history.', 'success');
+    console.log(`POST /api/v1/telemedicine/sessions/end/ → {duration: ${callSec}s}`);
+}
+
+function toggleMic() {
+    micOn = !micOn;
+    document.getElementById('micBtn').className = micOn ? 'cc-btn on' : 'cc-btn off';
+    document.getElementById('micIcon').className = micOn ? 'fas fa-microphone' : 'fas fa-microphone-slash';
+    const s = document.getElementById('localStream').srcObject;
+    if (s) s.getAudioTracks().forEach(t => t.enabled = micOn);
+}
+
+function toggleCam() {
+    camOn = !camOn;
+    document.getElementById('camBtn').className = camOn ? 'cc-btn on' : 'cc-btn off';
+    document.getElementById('camIcon').className = camOn ? 'fas fa-video' : 'fas fa-video-slash';
+    const s = document.getElementById('localStream').srcObject;
+    if (s) s.getVideoTracks().forEach(t => t.enabled = camOn);
+}
+
+function toggleSS() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        navigator.mediaDevices.getDisplayMedia({video:true}).then(stream => {
+            const v = document.getElementById('localStream');
+            v.srcObject = stream;
+            toast('Screen sharing started', 'info');
+        }).catch(() => toast('Screen share cancelled','info'));
+    }
+}
+
+function switchVRTab(panelId, btn) {
+    document.querySelectorAll('.vrp-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.vrp-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+    activeVRTab = panelId;
+}
+
+function toggleVRPPanel(panelId) {
+    const panel = document.getElementById('vcRightPanel');
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'flex';
+    }
+    document.querySelectorAll('.vrp-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.vrp-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(panelId).classList.add('active');
+    const tabs = document.querySelectorAll('.vrp-tab');
+    const map = {filesPanel:0, rxPanel:1, chatPanel:2, patientPanel:3};
+    if (tabs[map[panelId]]) tabs[map[panelId]].classList.add('active');
+}
+
+// ===== PRESCRIPTION =====
+function addRxItem() {
+    const med = document.getElementById('rxMed').value.trim();
+    if (!med) { document.getElementById('rxMed').focus(); return; }
+    const dose = document.getElementById('rxDose').value;
+    const freq = document.getElementById('rxFreq').value;
+    const dur = document.getElementById('rxDur').value;
+    const note = document.getElementById('rxNote').value;
+    rxItems.push({med, dose, freq, dur, note});
+    renderRxList();
+    ['rxMed','rxDose','rxFreq','rxDur','rxNote'].forEach(id => document.getElementById(id).value = '');
+    toast('Medicine added to prescription', 'info');
+}
+
+function renderRxList() {
+    document.getElementById('rxList').innerHTML = rxItems.map((r,i) => `
+        <div class="rx-entry">
+            <span>💊 ${r.med} · ${r.dose || '—'} · ${r.freq || '—'} · ${r.dur || '—'}</span>
+            <button class="rx-del" onclick="rxItems.splice(${i},1);renderRxList()"><i class="fas fa-times"></i></button>
+        </div>
+    `).join('');
+}
+
+function sendPrescription() {
+    if (!rxItems.length) { toast('Add at least one medicine first','warning'); return; }
+    const patientName = document.getElementById('vrpName').textContent;
+    // In production: POST /api/v1/telemedicine/prescriptions/
+    // This triggers: SMS to patient, email to patient, saves to patient medical history
+    // Patient sees it live in their video-join.html rxPanelV tab
+    const payload = {
+        patient: patientName,
+        doctor: 'Dr. Karimul Hasan',
+        session_id: currentSessionId || 'demo',
+        medicines: rxItems,
+        issued_at: new Date().toISOString()
+    };
+    console.log('POST /api/v1/telemedicine/prescriptions/ →', JSON.stringify(payload));
+    // Save to localStorage so patient page can read it in demo
+    localStorage.setItem('mf_latest_prescription', JSON.stringify(payload));
+    toast(`✅ Digital prescription sent to ${patientName} via SMS, email & live session!`, 'success');
+    rxItems = [];
+    renderRxList();
+}
+
+// ===== CHAT =====
+function sendChat() {
+    const inp = document.getElementById('chatInp');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    const area = document.getElementById('chatMsgs');
+    const now = new Date().toLocaleTimeString('en-BD', {hour:'2-digit',minute:'2-digit'});
+    area.innerHTML += `
+        <div class="c-msg mine">
+            <div class="c-bubble">${msg}</div>
+            <div class="c-meta">You · ${now}</div>
+        </div>`;
+    area.scrollTop = area.scrollHeight;
+    inp.value = '';
+    // POST /api/v1/telemedicine/sessions/{id}/messages/ → {role:'doctor', content: msg}
+    console.log(`POST /api/v1/telemedicine/messages/ → {content: "${msg}"}`);
+}
+
+// ===== FILE SHARING (Doctor → Patient) =====
+function sendFileToPatient() {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.pdf,image/*';
+    inp.onchange = e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        // POST /api/v1/records/doctor-files/ → {file, patient_id, session_id, access: 'patient_only'}
+        // File is encrypted and stored — only assigned patient can download
+        const fileRecord = {
+            name: f.name,
+            size: (f.size/1048576).toFixed(1) + 'MB',
+            sent_at: new Date().toISOString(),
+            access: 'patient_only'
+        };
+        localStorage.setItem('mf_latest_doctor_file', JSON.stringify(fileRecord));
+        console.log('POST /api/v1/records/doctor-files/ →', JSON.stringify(fileRecord));
+        toast(`"${f.name}" sent securely to patient! Patient can download in their session.`, 'success');
+    };
+    inp.click();
+}
+
+function openPatientFiles(initials) {
+    const patients = {
+        RA: { name: 'Rashida Akter', files: [
+            {icon:'fas fa-file-pdf', cls:'pdf', name:'ECG_Report.pdf', size:'2.4MB', date:'10 min ago', badge:'NEW'},
+            {icon:'fas fa-prescription', cls:'pdf', name:'Previous_Prescription.pdf', size:'0.8MB', date:'3 days ago', badge:''}
+        ]},
+        MK: { name: 'Mosharraf Karim', files: [
+            {icon:'fas fa-x-ray', cls:'img', name:'Chest_Xray.jpg', size:'5.1MB', date:'30 min ago', badge:'NEW'},
+            {icon:'fas fa-brain', cls:'img', name:'MRI_Brain.jpg', size:'8.7MB', date:'1 hr ago', badge:'NEW'},
+            {icon:'fas fa-file-pdf', cls:'pdf', name:'BloodTest.pdf', size:'1.2MB', date:'2 days ago', badge:''}
+        ]},
+        FH: { name: 'Fatema Haque', files: [
+            {icon:'fas fa-file-pdf', cls:'pdf', name:'BloodTest_Apr.pdf', size:'1.2MB', date:'1 hr ago', badge:'NEW'}
+        ]}
+    };
+    const p = patients[initials];
+    if (!p) return;
+    document.getElementById('filesModalTitle').textContent = `${p.name}'s Files`;
+    document.getElementById('filesModalContent').innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+            ${p.files.map(f => `
+                <div style="display:flex;align-items:center;gap:.75rem;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:.7rem 1rem;cursor:pointer" onclick="toast('Opening ${f.name}...','info')">
+                    <div style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:${f.cls==='pdf'?'#fee2e2':'#dbeafe'};color:${f.cls==='pdf'?'#dc2626':'#1a56db'}"><i class="${f.icon}"></i></div>
+                    <div style="flex:1"><div style="font-size:.82rem;font-weight:600">${f.name} ${f.badge?`<span style="font-size:.65rem;font-weight:700;background:#dcfce7;color:#16a34a;padding:.1rem .4rem;border-radius:100px">${f.badge}</span>`:''}</div><div style="font-size:.72rem;color:#64748b">${f.size} · ${f.date}</div></div>
+                    <i class="fas fa-download" style="color:#94a3b8"></i>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    document.getElementById('acceptFromModal').onclick = () => { closeModal('filesModal'); startVideoCall(null, p.name, initials); };
+    document.getElementById('filesModal').classList.add('show');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ===== ACCEPT/REJECT =====
+function acceptConsult(initials, name) {
+    openPatientFiles(initials);
+}
+
+function rejectRequest(e, name) {
+    e.stopPropagation();
+    if (confirm(`Reject consultation request from ${name}?`)) {
+        toast(`Request from ${name} rejected`, 'info');
+    }
+}
+
+// ===== TOAST =====
+function toast(msg, type='info') {
+    const w = document.getElementById('toastWrap');
+    const icons = {success:'fa-check-circle',info:'fa-info-circle',warning:'fa-exclamation-triangle'};
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<i class="fas ${icons[type]||icons.info}" style="color:${type==='success'?'#10b981':type==='warning'?'#f59e0b':'#60a5fa'}"></i> ${msg}`;
+    w.appendChild(t);
+    setTimeout(() => t.remove(), 4000);
+}
+
+// On load: show dashboard
+window.onload = () => { showPage('dashboard'); };
+</script>
+</body>
+</html>
